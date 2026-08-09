@@ -1,0 +1,42 @@
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 2rem;
+  padding: 1.25rem 0;
+}
+
+.tierGroup {
+  min-width: 9rem;
+}
+
+.tierLabel {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-accent);
+  margin-bottom: 0.4rem;
+}
+
+.regionList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.regionList a {
+  color: var(--color-ink-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.regionList a:hover,
+.regionList a:focus-visible {
+  color: var(--color-ink);
+  text-decoration: underline;
+}

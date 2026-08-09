@@ -1,0 +1,31 @@
+.section {
+  padding: 2rem 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.section:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.heading {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--color-ink);
+  margin: 0 0 0.4rem;
+}
+
+.description {
+  color: var(--color-ink-muted);
+  margin: 0 0 1.25rem;
+  max-width: 42rem;
+}
+
+.group + .group {
+  margin-top: 1.5rem;
+}
+
+.empty {
+  color: var(--color-ink-muted);
+  font-style: italic;
+}

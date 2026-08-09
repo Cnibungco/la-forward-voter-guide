@@ -1,0 +1,37 @@
+:root {
+  --color-bg: #f4f6f8;
+  --color-surface: #ffffff;
+  --color-ink: #12203a;
+  --color-ink-muted: #4b5768;
+  --color-border: #dde2e8;
+  --color-accent: #b5842a;
+  --color-accent-ink: #7a5714;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: linear-gradient(180deg, #eef1f5 0%, var(--color-bg) 340px, var(--color-bg) 100%);
+  color: var(--color-ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading), serif;
+}

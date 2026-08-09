@@ -1,0 +1,27 @@
+---
+description: Data fetching and caching conventions
+globs: sanity/lib/**/*.ts,app/**/*.tsx
+alwaysApply: false
+---
+
+# Data fetching
+
+- One nested GROQ query (`sanity/lib/queries.ts` → `GUIDE_QUERY`) fetches
+  the entire guide in a single request. Don't split this into
+  per-region/per-race queries — confirmed decision, see
+  `docs/backend-strategy.md` §3.
+- Use `export const revalidate = 300` (ISR) on pages that fetch guide
+  content — not `force-dynamic`, and not a webhook-triggered
+  revalidation route. This is a deliberate "fewer moving parts" choice
+  for volunteer/pro-bono maintenance, not an oversight.
+- `useCdn: true` on the Sanity client is intentional — there's no
+  draft/preview requirement (editors publish directly, no review step).
+- `sanity/lib/client.ts` throws if `NEXT_PUBLIC_SANITY_PROJECT_ID` is
+  missing. Keep this — fail loudly at build time rather than silently
+  rendering an empty guide.
+- This app has no local schema and no `sanity` package dependency — the
+  Studio (and schema) live in the sibling `studio-la-forward-voter-guide`
+  repo. Don't re-add `sanity.config.ts` or `schemaTypes/` here.
+- `lib/types.ts` hand-mirrors `GUIDE_QUERY`'s shape (typegen deferred,
+  see `docs/backend-strategy.md`). If the Studio schema changes, update
+  these types by hand to match.

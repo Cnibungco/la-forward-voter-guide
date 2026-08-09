@@ -1,0 +1,67 @@
+.page {
+  min-height: 100vh;
+}
+
+.header {
+  background: linear-gradient(135deg, var(--color-ink) 0%, #1c3252 100%);
+  color: #fff;
+}
+
+.headerInner {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 3rem;
+}
+
+.brand {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  color: var(--color-accent);
+  margin: 0 0 0.5rem;
+}
+
+.title {
+  font-size: clamp(2.25rem, 5vw, 3.25rem);
+  margin: 0 0 0.75rem;
+  line-height: 1.05;
+}
+
+.tagline {
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.82);
+  margin: 0;
+  max-width: 34rem;
+}
+
+.container {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+
+.main {
+  padding-top: 0.5rem;
+}
+
+.tierSection + .tierSection {
+  margin-top: 1.5rem;
+}
+
+.tierHeading {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-accent-ink);
+  border-bottom: 2px solid var(--color-accent);
+  display: inline-block;
+  padding-bottom: 0.25rem;
+  margin: 0 0 0.5rem;
+}
+
+.empty {
+  color: var(--color-ink-muted);
+  padding: 3rem 0;
+}

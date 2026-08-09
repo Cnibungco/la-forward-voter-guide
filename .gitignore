@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Sanity
+.sanity/
+
+# Build / misc
+*.tsbuildinfo
+.DS_Store

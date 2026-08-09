@@ -1,0 +1,35 @@
+---
+description: Core project context for the LA Forward Voter Guide - stack, locked decisions, and constraints
+alwaysApply: true
+---
+
+# LA Forward Voter Guide
+
+Civic voter guide for a nonprofit (LA Forward), built pro-bono. Optimize
+every decision for **longevity and low maintenance burden**, not
+short-term convenience — this must keep working after the original
+builders step back, maintained by non-technical staff.
+
+**Stack:** Next.js (App Router) + a **standalone** Sanity Studio. The
+Studio lives in its own sibling repo/folder, `studio-la-forward-voter-guide`,
+next to this app folder — not embedded, not a route in this app. This app
+only fetches published content; it has no `sanity.config.ts`, no
+`schemaTypes/`, and no dependency on the `sanity` package.
+
+**Content model:** Region → Race/Measure → Entry. Entry references Race
+(one-directional only — never add a reverse `race.entries` array; see
+`schemaTypes/race.ts` in the Studio repo for why).
+
+**Locked — don't relitigate without asking the user first:**
+- CMS is Sanity, not Contentful/Strapi/other
+- Studio is standalone, in `studio-la-forward-voter-guide` — do not embed
+  it in or move it into this app
+- One nested GROQ query for the whole guide, not per-section queries
+- Single `production` dataset, no separate testing dataset
+- Time-based ISR (5 min), not a revalidation webhook
+- Entry rating: No Recommendation / Recommended / Endorsed (fixed 3 values)
+- Measure position: Support / Oppose / No Position
+
+Full reasoning for all of the above: `docs/backend-strategy.md` (note:
+the embedded-Studio recommendation in that doc was superseded — see the
+amendment at the bottom of that file).
