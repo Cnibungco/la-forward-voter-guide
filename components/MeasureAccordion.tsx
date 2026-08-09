@@ -1,24 +1,25 @@
 import {PortableText} from '@/components/PortableText'
 import {RatingBadge} from '@/components/RatingBadge'
-import {RECOMMENDATION_LABELS, RECOMMENDATION_TONE} from '@/lib/labels'
-import type {GuideMeasure} from '@/lib/types'
+import {POSITION_LABELS, POSITION_TONE} from '@/lib/labels'
+import type {MeasureLike} from '@/lib/types'
 
 import styles from './Accordion.module.css'
 
 interface MeasureAccordionProps {
-  measure: GuideMeasure
+  measure: MeasureLike
 }
 
+/**
+ * Renders either a State/County `measure` document or a city-ballot
+ * `ballotMeasure` block — see `MeasureLike` (lib/types.ts) and §11.
+ */
 export function MeasureAccordion({measure}: MeasureAccordionProps) {
   return (
     <details className={styles.accordion} id={measure.slug ?? undefined}>
       <summary className={styles.summary}>
         <span className={styles.title}>{measure.title}</span>
-        {measure.recommendation && (
-          <RatingBadge
-            label={RECOMMENDATION_LABELS[measure.recommendation]}
-            tone={RECOMMENDATION_TONE[measure.recommendation]}
-          />
+        {measure.position && (
+          <RatingBadge label={POSITION_LABELS[measure.position]} tone={POSITION_TONE[measure.position]} />
         )}
       </summary>
       <div className={styles.panel}>

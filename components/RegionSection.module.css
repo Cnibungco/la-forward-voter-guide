@@ -25,6 +25,14 @@
   margin-top: 1.5rem;
 }
 
+.groupLabel {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin: 0 0 0.6rem;
+}
+
 .empty {
   color: var(--color-ink-muted);
   font-style: italic;

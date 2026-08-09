@@ -1,11 +1,11 @@
 import {EntryCard} from '@/components/EntryCard'
 import {PortableText} from '@/components/PortableText'
-import type {GuideRace} from '@/lib/types'
+import type {RaceLike} from '@/lib/types'
 
 import styles from './Accordion.module.css'
 
 interface RaceAccordionProps {
-  race: GuideRace
+  race: RaceLike
 }
 
 /**
@@ -13,8 +13,13 @@ interface RaceAccordionProps {
  * hydration cost, keyboard/screen-reader support built into the browser.
  * Collapsed by default, matching how the guide is meant to be consumed
  * (backend strategy §3: "collapsed by default, expandable on click").
+ *
+ * Renders either a State/County `race` document or a city-ballot
+ * `ballotRace` block — see `RaceLike` (lib/types.ts) and §11.
  */
 export function RaceAccordion({race}: RaceAccordionProps) {
+  const entries = race.entries ?? []
+
   return (
     <details className={styles.accordion} id={race.slug ?? undefined}>
       <summary className={styles.summary}>
@@ -27,9 +32,9 @@ export function RaceAccordion({race}: RaceAccordionProps) {
             <PortableText value={race.context} />
           </div>
         )}
-        {race.entries.length > 0 ? (
+        {entries.length > 0 ? (
           <ul className={styles.entryList}>
-            {race.entries.map((entry) => (
+            {entries.map((entry) => (
               <EntryCard key={entry._id} entry={entry} />
             ))}
           </ul>

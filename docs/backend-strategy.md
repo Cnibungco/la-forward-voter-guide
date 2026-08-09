@@ -221,3 +221,101 @@ What changed in this app:
 The schema (Region/Race/Measure/Entry) and desk `structure.ts` now live
 in `studio-la-forward-voter-guide`, pointed at the same `wcogcahu` /
 `production` project and dataset. §1–§9 above otherwise still stand.
+
+## 11. City ballot content model: raceGroup / measureGroup / specialDistrict
+
+**Context:** City ballots vary too widely for the flat Region → Race/Measure
+document model (Torrance might have 2 items, Glendale 7), and some
+districts (school boards, community college boards — e.g. LACCD serves 36
+cities, LAUSD 25+) serve many cities at once, so they can't reference a
+single owning Region the way Race/Measure do today.
+
+**Decision — hybrid model:**
+- City-tier `Region` documents get a new `sections` field: an ordered,
+  editor-controlled array of `raceGroup`/`measureGroup` blocks. Race and
+  measure content inside these blocks are lightweight **embedded objects**
+  (`ballotRace`/`ballotMeasure`), not separate documents — ownership is by
+  containment, not by reference.
+- `Entry` (candidate) stays a top-level document — its own edit view,
+  photo field, rating, and the Studio "All Entries" list are unchanged.
+  What flips: instead of `entry.race` pointing at a race document,
+  `ballotRace.entries` is an array of references *to* `entry` documents.
+  `entry.race` becomes optional as a result — set it for state/county
+  entries (unchanged), leave it blank for city-ballot entries (which are
+  discovered via containment instead).
+- New `specialDistrict` document type: its own `sections` (same
+  `raceGroup`/`measureGroup` shape as a city) plus `citiesServed`, a
+  multi-reference to every City-tier Region it applies to. A city's page
+  renders its own `sections` plus every `specialDistrict` that lists it,
+  combined into one list — city's own content first, special districts
+  appended in alphabetical title order (see the GROQ pattern below).
+- State/County Regions and the existing top-level `race`/`measure`
+  documents/queries are unchanged — this model only applies where a city
+  ballot (or a district spanning multiple cities) needs it.
+
+**Known gap, not solved this pass:** special-district coverage that
+extends into unincorporated LA County (e.g. LAUSD) has no Region document
+to link for those areas, since unincorporated areas aren't modeled as
+Regions. Noted in `specialDistrict.ts` schema comments.
+
+**Naming:** the embedded race/measure objects are named `ballotRace` /
+`ballotMeasure`, not `race`/`measure` — those names are already taken by
+the state/county document types, and reusing them would collide.
+
+**Order fields:** confirmed Sanity Studio's array editor natively
+drag-reorders any array (object arrays and reference arrays alike), and
+GROQ returns array items in their stored order — so `sections`,
+`raceGroup.races`, and `measureGroup.measures` deliberately have no
+explicit numeric `order` field. The existing `order` fields on
+`region`/`race`/`measure`/`entry` are unaffected — they solve a different
+problem (sorting *independent top-level documents* returned by a filter,
+which has no inherent order), not duplicated by this.
+
+**Confirmed GROQ merge pattern** for a city page (own sections first, then
+special districts in title order, using GROQ's `+` array-concatenation
+operator and its flat-map behavior on `arrayOfDocs.sections[]`):
+
+```groq
+*[_type == "region" && tier == "city"] | order(order) {
+  title, slug, tier, description,
+  "sections":
+    sections[]{
+      _key, _type, label,
+      _type == "raceGroup" => {
+        races[]{
+          _key, title, "slug": slug.current, office, context,
+          "entries": entries[]->{_id, name, "slug": slug.current, photo, rating, reasoning}
+        }
+      },
+      _type == "measureGroup" => {
+        measures[]{_key, title, "slug": slug.current, summary, position, pros, cons}
+      }
+    }
+    +
+    (*[_type == "specialDistrict" && references(^._id)] | order(title asc)).sections[]{
+      _key, _type, label,
+      _type == "raceGroup" => {
+        races[]{
+          _key, title, "slug": slug.current, office, context,
+          "entries": entries[]->{_id, name, "slug": slug.current, photo, rating, reasoning}
+        }
+      },
+      _type == "measureGroup" => {
+        measures[]{_key, title, "slug": slug.current, summary, position, pros, cons}
+      }
+    }
+}
+```
+
+**Also confirmed in this pass:**
+- Entry rating scale stays at 3 values (No Recommendation / Recommended /
+  Endorsed) — "Harm Reduction" was considered and explicitly re-rejected,
+  matching §1.
+- `measure.recommendation` renamed to `measure.position` (zero-cost, no
+  content exists yet) to match the term already locked in §1 and
+  `.cursor/rules/project-overview.mdc`; both `position` and `pros`/`cons`
+  are now required — not either/or.
+
+Frontend follow-up (not part of this schema-only pass): `voter-guide-app`'s
+`lib/types.ts`, `sanity/lib/queries.ts`, and rendering components need
+matching updates once this schema is deployed.

@@ -1,7 +1,7 @@
-import type {EntryRating, MeasureRecommendation} from '@/lib/types'
+import type {EntryRating, MeasurePosition} from '@/lib/types'
 
 /**
- * Display strings for the locked rating/recommendation enums (see
+ * Display strings for the locked rating/position enums (see
  * .cursor/rules/project-overview.mdc). If these values ever change,
  * that's a schema + product decision to confirm first, not something
  * to patch here in isolation.
@@ -12,7 +12,7 @@ export const RATING_LABELS: Record<EntryRating, string> = {
   endorsed: 'Endorsed',
 }
 
-export const RECOMMENDATION_LABELS: Record<MeasureRecommendation, string> = {
+export const POSITION_LABELS: Record<MeasurePosition, string> = {
   support: 'Support',
   oppose: 'Oppose',
   no_position: 'No Position',
@@ -32,7 +32,7 @@ export const RATING_TONE: Record<EntryRating, BadgeTone> = {
   endorsed: 'strong',
 }
 
-export const RECOMMENDATION_TONE: Record<MeasureRecommendation, BadgeTone> = {
+export const POSITION_TONE: Record<MeasurePosition, BadgeTone> = {
   support: 'positive',
   oppose: 'negative',
   no_position: 'neutral',
