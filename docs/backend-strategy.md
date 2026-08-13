@@ -391,31 +391,40 @@ support, so geocoding can't happen in the browser). `POST {address}` →
 ```
 
 - `'none'` — geocode failed, or outside LA County.
-- `'city'` — matched a city (`citySlug` set), but that city's own council
-  boundary isn't sourced yet; `districtCodes` still carries the
-  always-available CD/SD/AD/SUP codes.
+- `'city'` — matched a city (`citySlug` set), but its council district
+  didn't resolve to a code — either the boundary isn't sourced yet, *or*
+  it is sourced but this point didn't land inside any of its polygons (a
+  data gap/edge case); `districtCodes` still carries whichever
+  CD/SD/AD/SUP codes did resolve.
 - `'precise'` — either unincorporated LA County (`citySlug: null`, nothing
-  further to resolve) or a city whose council boundary *is* sourced (see
-  the list above).
+  further to resolve) or a city whose council boundary *did* resolve a
+  code for this address.
 
 Census's layer names change on a schedule outside our control (e.g. the
 "119th Congressional Districts" layer becomes "120th" after the next
 election). The route matches layer keys by substring (`findLayerValue`),
 not exact string, so it keeps working across those renames without a code
-change.
+change. Each local boundary-file lookup (`matchDistrictCode`) also catches
+its own errors — a missing/malformed file for one layer (e.g. a typo'd
+filename when a future maintainer adds a city) degrades just that layer
+to "unresolved" rather than discarding every code already resolved before
+it ran.
 
 **Filtering logic** (`lib/districtMatching.ts`) — applied client-side to
 the already-fetched `GuideRegion[]`, not a second Sanity query:
 
 - `coverablePrefixesFor(result)` — which prefixes this specific match can
-  be trusted to filter by (state/county prefixes always; `CC` only when
-  `precision === 'precise'` and a city matched).
+  be trusted to filter by, derived directly from the prefixes actually
+  present in `result.districtCodes` (not from `precision` or which files
+  exist) — so a sourced-but-not-actually-resolved layer (see `'city'`
+  above) is treated the same as an unsourced one: unverifiable, never
+  used to hide a race.
 - `passesDistrictFilter(district, result)` — a race with no district
   always passes; one whose code is in `result.districtCodes` passes; one
   whose *prefix* isn't coverable (school sub-district, trustee area, most
-  cities' council districts) also passes — never hide a race on a layer
-  we can't actually verify. Only a coverable-but-non-matching code hides
-  the race.
+  cities' council districts, or a layer that failed to resolve for this
+  address) also passes — never hide a race on a layer we can't actually
+  verify. Only a coverable-but-non-matching code hides the race.
 - `filterRegionsByMatch(regions, result)` — drops City-tier Regions that
   aren't the matched city (a voter's ballot never includes another city's
   races); keeps State/County Regions always, trimming their races by the

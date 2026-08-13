@@ -1,56 +1,53 @@
 import type {GuideRegion, MatchBallotResult} from '@/lib/types'
 
 /**
- * District code prefixes we can resolve via the state/county boundary
- * layers used by `app/api/match-ballot/route.ts` (Census-provided CD/SD/AD,
- * plus the county-wide supervisorial GeoJSON) — available for every LA
- * County address, city or unincorporated. See
- * data/boundaries/README.md for what's sourced and what isn't.
+ * The leading letters of a district code, e.g. `"CD4"` -> `"CD"`. Trimmed
+ * and uppercased so stray whitespace or a lowercase typo in a CMS field
+ * (this is free text, not an enum — see
+ * studio-la-forward-voter-guide/.cursor/rules/sanity-schema.mdc) doesn't
+ * silently fail to match.
  */
-export const STATE_COUNTY_PREFIXES = ['CD', 'SD', 'AD', 'SUP'] as const
-
-/**
- * City council district prefix (see the code convention in
- * docs/backend-strategy.md §12). Only resolvable for a city whose council
- * boundaries are actually sourced — currently just LA City, hence
- * `result.precision === 'precise'` rather than `'city'`. Kept as a named
- * constant (not inlined) so it's obvious what "the one extra prefix
- * `precise` unlocks" means when reading `coverablePrefixesFor` below.
- */
-export const CITY_COUNCIL_PREFIX = 'CC'
-
 function districtPrefix(code: string): string {
-  return code.match(/^[A-Za-z]+/)?.[0]?.toUpperCase() ?? ''
+  return code.trim().match(/^[A-Za-z]+/)?.[0]?.toUpperCase() ?? ''
 }
 
 /**
  * Which district-code prefixes this match result can actually be trusted
- * to filter by. Anything outside this set (school board sub-districts,
- * community college trustee areas, most cities' council districts — none
- * of that boundary data is sourced yet) is deliberately treated as
- * "unknown" rather than "no match", so `passesDistrictFilter` never hides
- * a race we simply can't verify.
+ * to filter by — derived directly from the prefixes present in
+ * `result.districtCodes`, i.e. the layers that *actually resolved* a code
+ * for this address, not just the layers we have boundary files for. This
+ * matters for graceful degradation: if a city's council boundary is
+ * sourced but this particular point didn't land inside any of its
+ * polygons (a gap/edge case in the source data), `CC` simply won't appear
+ * here, and `passesDistrictFilter` will correctly treat it as
+ * unverifiable rather than hiding every council race. Anything outside
+ * this set (school board sub-districts, community college trustee areas,
+ * most cities' council districts — none of that boundary data is sourced
+ * yet) is likewise treated as "unknown" rather than "no match".
  */
 export function coverablePrefixesFor(result: MatchBallotResult): readonly string[] {
   if (result.precision === 'none') return []
-  if (result.precision === 'precise' && result.citySlug !== null) {
-    return [...STATE_COUNTY_PREFIXES, CITY_COUNCIL_PREFIX]
-  }
-  return STATE_COUNTY_PREFIXES
+  return [...new Set(result.districtCodes.map(districtPrefix))]
 }
 
 /**
  * Should a race/measure with this `district` code be shown for a given
  * match result? Never hides content on a boundary layer we haven't
- * sourced — see docs/address-matching-strategy.md's graceful-degradation
- * requirement. A district code only hides content when we affirmatively
- * resolved that layer for this address *and* it didn't match.
+ * sourced (or that failed to resolve for this address) — see
+ * docs/address-matching-strategy.md's graceful-degradation requirement. A
+ * district code only hides content when we affirmatively resolved that
+ * layer for this address *and* it didn't match. Comparison is
+ * case/whitespace-insensitive throughout — `district` is free-typed CMS
+ * text (see studio-la-forward-voter-guide/.cursor/rules/sanity-schema.mdc),
+ * so a `"cc14"` in Studio should still match the `"CC14"`
+ * `app/api/match-ballot/route.ts` produces.
  */
 export function passesDistrictFilter(district: string | null, result: MatchBallotResult): boolean {
-  if (!district) return true // at-large / citywide — always shown once its Region is in view
+  const trimmed = district?.trim().toUpperCase()
+  if (!trimmed) return true // at-large / citywide — always shown once its Region is in view
   if (result.precision === 'none') return true
-  if (result.districtCodes.includes(district)) return true
-  return !coverablePrefixesFor(result).includes(districtPrefix(district))
+  if (result.districtCodes.some((code) => code.toUpperCase() === trimmed)) return true
+  return !coverablePrefixesFor(result).includes(districtPrefix(trimmed))
 }
 
 /**
@@ -60,9 +57,19 @@ export function passesDistrictFilter(district: string | null, result: MatchBallo
  * shape). No hardcoded city list to maintain: any city Census resolves
  * that also happens to have a matching Region slug in Sanity will match
  * automatically.
+ *
+ * Diacritics are transliterated to their base letter (NFD-normalize, drop
+ * combining marks) *before* stripping non-alphanumerics, so e.g. Census's
+ * "La Cañada Flintridge" and a Sanity slug of "la-canada-flintridge"
+ * (the conventional, ASCII spelling almost anyone would type) both land
+ * on the same string. Without this step "ñ" would simply be deleted
+ * rather than folded to "n", producing "la-ca-ada-flintridge" instead —
+ * a real city this app covers, so this isn't a hypothetical.
  */
 export function slugifyPlaceName(name: string): string {
   return name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, '-')
@@ -84,7 +91,7 @@ export function filterRegionsByMatch(regions: GuideRegion[], match: MatchBallotR
   if (match.precision === 'none') return regions
 
   return regions
-    .filter((region) => region.tier !== 'city' || region.slug === match.citySlug)
+    .filter((region) => region.tier !== 'city' || (match.citySlug !== null && region.slug === match.citySlug))
     .map((region) => ({
       ...region,
       races: region.races.filter((race) => passesDistrictFilter(race.district, match)),

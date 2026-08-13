@@ -63,13 +63,28 @@ disposable sandbox. Two ways to handle it, your choice which:
 - Treat their first session as real content entry from the start (a
   region/race they'd need eventually anyway), so nothing needs deleting
 
+## Testing
+
+`npm test` runs the Vitest suite (`lib/districtMatching.test.ts`,
+`app/api/match-ballot/route.test.ts`) — unit tests for the address-matching
+filter logic and the `/api/match-ballot` route, including edge cases like
+at-large cities, unincorporated county addresses, out-of-county rejection,
+and the privacy guarantee that the submitted address is never logged. A
+couple of test cases assert against the real files in
+`data/boundaries/*.geojson` for a couple of known addresses (not mocked)
+so a bad boundary-file edit would actually fail a test. No test framework
+existed before this pass — Vitest was chosen for minimal config and to
+keep the maintenance burden low; there's no separate test dataset/mocked
+Sanity client, since none of the current tests need one.
+
 ## What's not built yet
 
 - Content — the Studio's schema is deployed but no Region/Race/Measure/
   Entry documents exist yet. The homepage renders an empty-state message
   until Sea/David add content in Studio.
-- Address-based ballot filter (PRD §6) — separate backend, Preferred not
-  Required, intentionally not part of this.
 - `sanity typegen` for auto-generated query types — worth adding once the
   schema stabilizes past this initial pass; skipped for now since the
   schema is still likely to shift once Sea/David's test surfaces issues.
+
+Address-based ballot filtering (PRD §6) **is built** — see
+`docs/address-matching-strategy.md` and `docs/backend-strategy.md` §12.

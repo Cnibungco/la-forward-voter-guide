@@ -106,14 +106,30 @@ function loadBoundaryLayer(fileName: string): LoadedLayer {
   return parsed
 }
 
+/**
+ * Resolves a district code from a local boundary file, or `null` if the
+ * point isn't inside any of its polygons. Deliberately swallows any error
+ * (missing/malformed file, unexpected geometry) rather than letting it
+ * propagate: a problem with one boundary layer — e.g. a typo'd file name
+ * when a future maintainer adds a city per data/boundaries/README.md —
+ * should degrade just that one layer to "unresolved", not take down the
+ * whole match (which would otherwise fall through to the outer catch and
+ * discard the CD/SD/AD/SUP codes already resolved before this call).
+ */
 function matchDistrictCode(lonLat: [number, number], layer: BoundaryLayer): string | null {
-  const collection = loadBoundaryLayer(layer.file)
-  const testPoint = point(lonLat)
-  const feature = collection.features.find((candidate) =>
-    booleanPointInPolygon(testPoint, candidate as Feature<Polygon | MultiPolygon>),
-  )
-  const value = feature?.properties?.[layer.property]
-  return value === undefined || value === null ? null : `${layer.prefix}${value}`
+  try {
+    const collection = loadBoundaryLayer(layer.file)
+    const testPoint = point(lonLat)
+    const feature = collection.features.find((candidate) =>
+      booleanPointInPolygon(testPoint, candidate as Feature<Polygon | MultiPolygon>),
+    )
+    const value = feature?.properties?.[layer.property]
+    return value === undefined || value === null ? null : `${layer.prefix}${value}`
+  } catch (error) {
+    const name = error instanceof Error ? error.name : 'UnknownError'
+    console.error(`[match-ballot] boundary layer "${layer.file}" failed to load/match: ${name}`)
+    return null
+  }
 }
 
 /**
@@ -213,7 +229,13 @@ export async function POST(request: Request) {
       councilDistrict,
     ].filter((code): code is string => code !== null)
 
-    const precision: MatchBallotResult['precision'] = citySlug === null || councilLayer ? 'precise' : 'city'
+    // Only claim 'precise' for a city when its council boundary actually
+    // resolved a district for this point — a sourced layer that the point
+    // happens to fall outside of (data gap, annexation, etc.) degrades to
+    // 'city' just like an unsourced one, rather than silently reporting a
+    // city council race as filtered when it never actually matched.
+    const precision: MatchBallotResult['precision'] =
+      citySlug === null || councilDistrict !== null ? 'precise' : 'city'
 
     return NextResponse.json({precision, citySlug, districtCodes} satisfies MatchBallotResult)
   } catch (error) {
