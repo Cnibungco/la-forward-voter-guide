@@ -46,6 +46,13 @@ export interface RaceLike {
   title: string
   slug: string | null
   office: string | null
+  /**
+   * Machine-matchable district code for address-based ballot matching
+   * (e.g. "CD4", "SD24", "CC4"), or null for an at-large/citywide race —
+   * those always render once their parent Region matches, regardless of
+   * match precision. See docs/address-matching-strategy.md.
+   */
+  district: string | null
   context: PortableTextBlock[] | null
   entries: GuideEntry[] | null
 }
@@ -97,6 +104,27 @@ export interface GuideMeasureGroup {
 
 /** One block in a city Region's (or specialDistrict's) ordered `sections` array. */
 export type GuideSection = GuideRaceGroup | GuideMeasureGroup
+
+/**
+ * Response shape for `POST /api/match-ballot` — see
+ * docs/address-matching-strategy.md and docs/backend-strategy.md §12.
+ *
+ * - `precision: "none"` — geocode failed, or the address is outside LA
+ *   County. `citySlug`/`districtCodes` are meaningless in this case.
+ * - `precision: "city"` — matched a city, but that city's own
+ *   council-district boundary isn't sourced yet (see
+ *   data/boundaries/README.md), so its races/measures render unfiltered.
+ *   `districtCodes` is still populated with state/county codes.
+ * - `precision: "precise"` — either matched to a city whose council
+ *   boundary *is* sourced (currently just LA City), or the address is in
+ *   unincorporated LA County (`citySlug: null`, nothing further to
+ *   resolve).
+ */
+export interface MatchBallotResult {
+  precision: 'precise' | 'city' | 'none'
+  citySlug: string | null
+  districtCodes: string[]
+}
 
 export interface GuideRegion {
   _id: string

@@ -29,6 +29,11 @@ only fetches published content; it has no `sanity.config.ts`, no
 - Time-based ISR (5 min), not a revalidation webhook
 - Entry rating: No Recommendation / Recommended / Endorsed (fixed 3 values)
 - Measure position: Support / Oppose / No Position
+- Address-based ballot matching (see `docs/address-matching-strategy.md`)
+  never persists, logs, or sends the user's address anywhere except the
+  one server-side Census Geocoder call needed to match it — including in
+  error paths. This is a privacy commitment made in writing to the user,
+  not just an implementation detail.
 
 Full reasoning for all of the above: `docs/backend-strategy.md` (note:
 the embedded-Studio recommendation in that doc was superseded — see the

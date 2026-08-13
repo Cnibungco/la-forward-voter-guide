@@ -25,3 +25,10 @@ alwaysApply: false
 - `lib/types.ts` hand-mirrors `GUIDE_QUERY`'s shape (typegen deferred,
   see `docs/backend-strategy.md`). If the Studio schema changes, update
   these types by hand to match.
+- `app/api/match-ballot/route.ts` is the one deliberate exception to
+  "fully static/ISR, no server logic" — it geocodes an address server-side
+  (Census Geocoder has no CORS support, so it can't be called from the
+  browser) and returns a district match. It does not query Sanity; it
+  filters the `GuideRegion[]` the client already fetched via
+  `GUIDE_QUERY`. Never log the request body or the address in any catch
+  block in this route — see `docs/address-matching-strategy.md`.

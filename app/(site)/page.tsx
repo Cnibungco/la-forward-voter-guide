@@ -1,9 +1,7 @@
 import Link from 'next/link'
 
-import {GuideNav} from '@/components/GuideNav'
-import {RegionSection} from '@/components/RegionSection'
-import {TIER_LABELS} from '@/lib/labels'
-import type {GuideRegion, RegionTier} from '@/lib/types'
+import {GuideBody} from '@/components/GuideBody'
+import type {GuideRegion} from '@/lib/types'
 import {client} from '@/sanity/lib/client'
 import {GUIDE_QUERY} from '@/sanity/lib/queries'
 
@@ -14,15 +12,8 @@ import styles from './page.module.css'
 // project and revalidated in the background every 5 minutes.
 export const revalidate = 300
 
-const TIER_ORDER: RegionTier[] = ['state', 'county', 'city']
-
 export default async function GuidePage() {
   const regions = (await client.fetch(GUIDE_QUERY)) as GuideRegion[]
-
-  const tiers = TIER_ORDER.map((tier) => ({
-    tier,
-    regions: regions.filter((region) => region.tier === tier),
-  })).filter(({regions: tierRegions}) => tierRegions.length > 0)
 
   return (
     <div className={styles.page}>
@@ -37,27 +28,18 @@ export default async function GuidePage() {
       </header>
 
       <div className={styles.container}>
-        <GuideNav regions={regions} />
-
-        <main className={styles.main}>
-          {tiers.length === 0 ? (
-            <p className={styles.empty}>
-              No content has been published yet. Once regions, races, and measures are added in{' '}
-              <Link href="/studio">Studio</Link>, they&apos;ll show up here.
-            </p>
-          ) : (
-            tiers.map(({tier, regions: tierRegions}) => (
-              <section key={tier} className={styles.tierSection} aria-labelledby={`${tier}-tier-heading`}>
-                <h2 id={`${tier}-tier-heading`} className={styles.tierHeading}>
-                  {TIER_LABELS[tier]}
-                </h2>
-                {tierRegions.map((region) => (
-                  <RegionSection key={region._id} region={region} />
-                ))}
-              </section>
-            ))
-          )}
-        </main>
+        {regions.length === 0 ? (
+          <p className={styles.empty}>
+            No content has been published yet. Once regions, races, and measures are added in{' '}
+            <Link href="/studio">Studio</Link>, they&apos;ll show up here.
+          </p>
+        ) : (
+          // Client component: owns the address-lookup UI and filters this
+          // already-fetched data — see docs/address-matching-strategy.md.
+          // Data fetching stays server-side/ISR; only the rendering below
+          // this point is interactive.
+          <GuideBody regions={regions} />
+        )}
       </div>
     </div>
   )

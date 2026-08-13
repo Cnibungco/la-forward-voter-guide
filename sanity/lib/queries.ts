@@ -16,6 +16,7 @@ const sectionFields = `
       title,
       "slug": slug.current,
       office,
+      district,
       context,
       "entries": entries[]->{
         _id,
@@ -65,6 +66,7 @@ export const GUIDE_QUERY = defineQuery(`
       title,
       "slug": slug.current,
       office,
+      district,
       context,
       "entries": *[_type == "entry" && references(^._id)] | order(order asc) {
         _id,

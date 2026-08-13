@@ -161,7 +161,7 @@ this.
 | 2 | Sanity client + GROQ query layer, `sanity typegen` for TS types from schema | Not started |
 | 3 | Seed script with placeholder content for local dev / the 15-min test | Not started |
 | 4 | Embed Studio in Next.js app, wire up `/studio` route | Not started |
-| 5 | Address-based ballot filter backend (PRD §6) | Deliberately separate, later, Preferred not Required |
+| 5 | Address-based ballot filter backend (PRD §6) | Decided, in scope for Oct 1 launch — see §12 and `docs/address-matching-strategy.md` |
 
 ---
 
@@ -319,3 +319,125 @@ operator and its flat-map behavior on `arrayOfDocs.sections[]`):
 Frontend follow-up (not part of this schema-only pass): `voter-guide-app`'s
 `lib/types.ts`, `sanity/lib/queries.ts`, and rendering components need
 matching updates once this schema is deployed.
+
+## 12. Address-based ballot matching — how it was built
+
+Implements the decision doc at `docs/address-matching-strategy.md`. This
+section is the "as-built" architecture reference; the doc above stays the
+record of *why*.
+
+**District code field.** `race.district` / `ballotRace.district` — optional
+string, e.g. `"CD4"`, `"SD24"`, `"CC4"`. Blank means at-large/citywide, and
+such races always render once their Region is in view, regardless of match
+precision. Convention:
+
+- `CD<n>` Congressional, `SD<n>` State Senate, `AD<n>` State Assembly,
+  `SUP<n>` county supervisorial, `CC<n>` city council (no city prefix — the
+  race already lives inside that city's Region). `SB<n>` (school board
+  sub-district) and `TA<n>` (community college trustee area) are reserved
+  for future use once that boundary data is sourced — see below.
+- Measures have no `district` field — they were out of scope for this
+  phase (ballot measures in this guide are city-wide or state-wide, not
+  sub-districted).
+
+**Census layer verification.** Confirmed by direct API call (2026-08-12)
+that Census's `Unified School Districts` layer resolves LAUSD as a whole
+(`GEOID 0622710`, `Los Angeles Unified School District`) for an in-district
+address. That's useful for confirming *membership* in LAUSD, but Census
+has no layer for the 7 internal board sub-districts, so it doesn't unlock
+`SB<n>` matching by itself — sub-district boundaries would still need
+separate sourcing (e.g. from LAUSD directly). Community college trustee
+areas (`TA<n>`, e.g. LACCD) aren't a Census geography at all. Both remain
+open items — races using those prefixes render unfiltered (see below)
+until that data exists.
+
+**Boundary data sourced** (`voter-guide-app/data/boundaries/`, server-only,
+not under `public/`): LA County supervisorial districts (5, county-wide,
+redraws once per decade) and city council districts for 9 cities — Los
+Angeles (15), Pasadena (7), Torrance (6), Pomona (6), Monterey Park (5),
+Covina (5), Lakewood (5), Carson (4), and Inglewood (4) — each simplified
+or field-filtered from ArcGIS REST GeoJSON exports via `mapshaper`. See
+that folder's README for exact sources and the "add another city" recipe.
+Congressional/State Senate/State Assembly/city-name/county boundaries need
+no local file — Census's `geographies` endpoint returns them in the same
+call used to get coordinates.
+
+**Per-city boundary survey (2026-08-13).** Of the ~20 non-LA cities this
+guide covers, most turned out to need no boundary file at all: their
+council seats are elected at-large, so there's no sub-district race to
+filter — San Marino, Sierra Madre, La Cañada Flintridge, La Puente, Bell,
+Bell Gardens, Commerce, Lawndale, Gardena, Glendale (a 2023-24 districting
+process was studied but never adopted — June 2026 election was still 3
+at-large seats), and all four Palos Verdes Peninsula cities (Palos Verdes
+Estates, Rancho Palos Verdes, Rolling Hills, Rolling Hills Estates). Eight
+more are by-district and now have a sourced boundary file (see above) —
+six of them (Carson, Inglewood, Monterey Park, Pasadena, Pomona, Torrance)
+came from a single authoritative source: LA County RRCC's own
+`Precinct_Maps` ArcGIS service (`INCORPORATED_CITIES1` layer), which the
+Registrar-Recorder maintains to build actual ballots — about as
+authoritative as boundary data gets. One remaining city, Lomita
+(by-district since the 2024 election, 5 districts), has no machine-readable
+source — only a static map image on the city's site — and stays on the
+graceful "full unfiltered ballot" fallback. Compton Unified School
+District's 7 trustee areas are the same story: a PDF map exists, but no
+GIS layer, so it degrades the same way as LAUSD's board sub-districts.
+
+**API route** — `app/api/match-ballot/route.ts`, the one deliberate
+exception to this app's fully-static/ISR model (Census has no CORS
+support, so geocoding can't happen in the browser). `POST {address}` →
+
+```ts
+{precision: 'precise' | 'city' | 'none', citySlug: string | null, districtCodes: string[]}
+```
+
+- `'none'` — geocode failed, or outside LA County.
+- `'city'` — matched a city (`citySlug` set), but that city's own council
+  boundary isn't sourced yet; `districtCodes` still carries the
+  always-available CD/SD/AD/SUP codes.
+- `'precise'` — either unincorporated LA County (`citySlug: null`, nothing
+  further to resolve) or a city whose council boundary *is* sourced (see
+  the list above).
+
+Census's layer names change on a schedule outside our control (e.g. the
+"119th Congressional Districts" layer becomes "120th" after the next
+election). The route matches layer keys by substring (`findLayerValue`),
+not exact string, so it keeps working across those renames without a code
+change.
+
+**Filtering logic** (`lib/districtMatching.ts`) — applied client-side to
+the already-fetched `GuideRegion[]`, not a second Sanity query:
+
+- `coverablePrefixesFor(result)` — which prefixes this specific match can
+  be trusted to filter by (state/county prefixes always; `CC` only when
+  `precision === 'precise'` and a city matched).
+- `passesDistrictFilter(district, result)` — a race with no district
+  always passes; one whose code is in `result.districtCodes` passes; one
+  whose *prefix* isn't coverable (school sub-district, trustee area, most
+  cities' council districts) also passes — never hide a race on a layer
+  we can't actually verify. Only a coverable-but-non-matching code hides
+  the race.
+- `filterRegionsByMatch(regions, result)` — drops City-tier Regions that
+  aren't the matched city (a voter's ballot never includes another city's
+  races); keeps State/County Regions always, trimming their races by the
+  above.
+
+**Frontend** — `components/AddressLookup.tsx` wraps Geoapify's vanilla-JS
+widget (`@geoapify/geocoder-autocomplete`, no official React binding) in a
+plain container div; the browser talks to Geoapify directly with a
+publishable, referrer-restricted key (`NEXT_PUBLIC_GEOAPIFY_API_KEY`) and
+never touches our server until a suggestion is picked. If the key is
+missing, it renders a "not configured" message instead of throwing — the
+rest of the guide is unaffected. `components/GuideBody.tsx` (client
+component, rendered from the server-rendered `page.tsx`) owns the match
+state, the `POST /api/match-ballot` call, the filtered/unfiltered toggle,
+and the degradation messaging.
+
+**What's left, on purpose** (matches the decision doc's own open items,
+now narrowed by the survey above): LAUSD board sub-district and LACCD
+trustee-area boundaries, Compton Unified's 7 trustee areas, and Lomita's
+5 council districts — all four have no GIS source found yet, so they stay
+on the graceful unfiltered fallback until someone sources a file for them
+(same "drop a GeoJSON, add one map entry" recipe as every other city). A
+real, referrer-restricted Geoapify key is configured
+(`NEXT_PUBLIC_GEOAPIFY_API_KEY` in `.env.local`); nothing further is
+needed to bring this feature live.
