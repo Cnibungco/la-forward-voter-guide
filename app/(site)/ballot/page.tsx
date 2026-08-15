@@ -8,6 +8,6 @@ export const metadata = {
 }
 
 export default async function BallotPage() {
-  const regions = await getGuide()
+  const {regions} = await getGuide()
   return <GuideBody regions={regions} />
 }

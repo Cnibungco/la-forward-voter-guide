@@ -40,6 +40,12 @@
   color: #7a2140;
 }
 
+.alwaysFull {
+  gap: 6px;
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
 .alwaysFull .full {
   display: inline;
 }

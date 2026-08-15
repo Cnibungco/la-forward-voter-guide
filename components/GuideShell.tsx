@@ -13,7 +13,7 @@ interface GuideShellProps {
   crumb?: string
   activeSlug?: string | null
   heading?: ReactNode
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export function GuideShell({regions, title, crumb, activeSlug, heading, children}: GuideShellProps) {
@@ -61,13 +61,15 @@ export function GuideShell({regions, title, crumb, activeSlug, heading, children
                   ✕
                 </button>
               </div>
-              <GuideNav
-                regions={regions}
-                activeSlug={activeSlug}
-                search={search}
-                onSearch={setSearch}
-                onNavigate={closeDrawer}
-              />
+              <div className={styles.drawerNav}>
+                <GuideNav
+                  regions={regions}
+                  activeSlug={activeSlug}
+                  search={search}
+                  onSearch={setSearch}
+                  onNavigate={closeDrawer}
+                />
+              </div>
             </nav>
           </>
         )}

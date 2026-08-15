@@ -1,5 +1,7 @@
 import {Landing} from '@/components/Landing'
+import {TrustBar} from '@/components/TrustBar'
 import {getGuide} from '@/lib/guide'
+import {resolvedDisclaimer, resolvedSampleBallotUrl} from '@/lib/siteSettings'
 
 import styles from './page.module.css'
 
@@ -7,7 +9,7 @@ import styles from './page.module.css'
 export const revalidate = 300
 
 export default async function LandingPage() {
-  const regions = await getGuide()
+  const {regions, settings} = await getGuide()
 
   if (regions.length === 0) {
     return (
@@ -18,5 +20,14 @@ export default async function LandingPage() {
     )
   }
 
-  return <Landing regions={regions} />
+  return (
+    <>
+      <TrustBar />
+      <Landing
+        regions={regions}
+        sampleBallotUrl={resolvedSampleBallotUrl(settings)}
+        disclaimer={resolvedDisclaimer(settings)}
+      />
+    </>
+  )
 }

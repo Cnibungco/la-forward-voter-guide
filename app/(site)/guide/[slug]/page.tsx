@@ -6,7 +6,7 @@ import {Methodology} from '@/components/Methodology'
 import {RegionSection} from '@/components/RegionSection'
 import {getGuide} from '@/lib/guide'
 import {TIER_CRUMBS} from '@/lib/labels'
-import {regionBySlug} from '@/lib/regions'
+import {hasSlug, regionBySlug} from '@/lib/regions'
 
 export const revalidate = 300
 
@@ -15,13 +15,13 @@ interface RegionPageProps {
 }
 
 export async function generateStaticParams() {
-  const regions = await getGuide()
-  return regions.filter((region) => region.slug).map((region) => ({slug: region.slug as string}))
+  const {regions} = await getGuide()
+  return regions.filter(hasSlug).map((region) => ({slug: region.slug}))
 }
 
 export async function generateMetadata({params}: RegionPageProps) {
   const {slug} = await params
-  const regions = await getGuide()
+  const {regions} = await getGuide()
   const region = regionBySlug(regions, slug)
   return {
     title: region ? `${region.title} · LA Forward Voter Guide` : 'LA Forward Voter Guide',
@@ -30,7 +30,7 @@ export async function generateMetadata({params}: RegionPageProps) {
 
 export default async function RegionPage({params}: RegionPageProps) {
   const {slug} = await params
-  const regions = await getGuide()
+  const {regions} = await getGuide()
   const region = regionBySlug(regions, slug)
   if (!region) notFound()
 

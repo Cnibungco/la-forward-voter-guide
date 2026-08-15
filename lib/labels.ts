@@ -48,11 +48,7 @@ export const TIER_LABELS = {
   city: 'Local cities',
 } as const
 
-export const TIER_CRUMBS = {
-  state: 'State',
-  county: 'County',
-  city: 'Local cities',
-} as const
+export const TIER_CRUMBS = TIER_LABELS
 
 export type BadgeKind = EntryRating | MeasurePosition
 
@@ -74,7 +70,7 @@ export const BADGE_ICONS: Record<BadgeKind, string> = {
 export const CANDIDATE_LEGEND: {kind: EntryRating; desc: string}[] = [
   {
     kind: 'no_recommendation',
-    desc: "We looked at this race and didn't land on a position — that's a rating too, not a skip.",
+    desc: "We looked at this race and didn't land on a position, and that's a rating too, not a skip.",
   },
   {
     kind: 'recommended',
@@ -89,7 +85,7 @@ export const CANDIDATE_LEGEND: {kind: EntryRating; desc: string}[] = [
 export const MEASURE_LEGEND: {kind: MeasurePosition; desc: string}[] = [
   {
     kind: 'no_position',
-    desc: "We didn't take a side on this one — reasoning is still behind the tap.",
+    desc: "We didn't take a side on this one; reasoning is still behind the tap.",
   },
   {
     kind: 'support',

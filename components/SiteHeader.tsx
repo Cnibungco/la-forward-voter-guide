@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import {useState} from 'react'
 
-import {DONATE_HREF, ORG_HREF} from '@/lib/copy'
+import {ORG_HREF} from '@/lib/copy'
 
 import styles from './SiteHeader.module.css'
 
@@ -35,9 +35,9 @@ export function SiteHeader() {
         <a href={ORG_HREF} target="_blank" rel="noopener noreferrer" className={styles.orgLink}>
           laforward.org ↗
         </a>
-        <a href={DONATE_HREF} target="_blank" rel="noopener noreferrer" className={styles.donate}>
+        <Link href="/#donate" className={styles.donate}>
           Donate
-        </a>
+        </Link>
       </div>
     </header>
   )

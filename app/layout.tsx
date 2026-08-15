@@ -2,7 +2,6 @@ import {Barlow_Condensed, Work_Sans} from 'next/font/google'
 
 import {MatchProvider} from '@/components/MatchProvider'
 import {SiteHeader} from '@/components/SiteHeader'
-import {TrustBar} from '@/components/TrustBar'
 
 import './globals.css'
 
@@ -29,7 +28,6 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
       <body>
         <MatchProvider>
           <SiteHeader />
-          <TrustBar />
           {children}
         </MatchProvider>
       </body>

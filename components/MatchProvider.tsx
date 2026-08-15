@@ -2,6 +2,7 @@
 
 import {createContext, useCallback, useContext, useMemo, useState, type ReactNode} from 'react'
 
+import {isMatchBallotResult} from '@/lib/districtMatching'
 import type {MatchBallotResult} from '@/lib/types'
 
 export type LookupStatus = 'idle' | 'loading' | 'error'
@@ -40,7 +41,8 @@ export function MatchProvider({children}: {children: ReactNode}) {
         body: JSON.stringify({address}),
       })
       if (!response.ok) throw new Error('match-ballot request failed')
-      const result = (await response.json()) as MatchBallotResult
+      const result: unknown = await response.json()
+      if (!isMatchBallotResult(result)) throw new Error('match-ballot response was malformed')
       setMatch(result)
       setStatus('idle')
       return result.precision === 'none' ? 'outside' : 'ballot'

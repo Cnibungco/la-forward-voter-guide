@@ -1,6 +1,9 @@
+import {ComingSoonRow} from '@/components/ComingSoonRow'
 import {EntryCard} from '@/components/EntryCard'
 import {PortableText} from '@/components/PortableText'
-import type {GuideEntry, RaceLike} from '@/lib/types'
+import {isDraftStatus, raceNeedsWriteup, visibleEntries} from '@/lib/contentStatus'
+import {raceRowLabel} from '@/lib/raceLabel'
+import type {RaceLike} from '@/lib/types'
 
 import styles from './Accordion.module.css'
 
@@ -17,11 +20,19 @@ interface RaceAccordionProps {
  * Renders either a State/County `race` document or a city-ballot
  * `ballotRace` block — see `RaceLike` (lib/types.ts) and §11.
  *
- * One row per candidate. A single-entry race shows "{title} — {name}"
+ * One row per candidate. A single-entry race shows "{title}: {name}"
  * on the row; multi-candidate races keep the race title as a heading.
+ * Pending races (on the ballot, write-up not ready) render as
+ * "Recommendation coming soon" with no rating.
  */
 export function RaceAccordion({race}: RaceAccordionProps) {
-  const entries = race.entries ?? []
+  if (isDraftStatus(race.contentStatus)) return null
+
+  const entries = visibleEntries(race.entries)
+
+  if (raceNeedsWriteup(race)) {
+    return <ComingSoonRow title={race.title} id={race.slug} />
+  }
 
   return (
     <div className={styles.raceBlock}>
@@ -32,21 +43,9 @@ export function RaceAccordion({race}: RaceAccordionProps) {
           <PortableText value={race.context} />
         </div>
       )}
-      {entries.length > 0 ? (
-        entries.map((entry) => (
-          <EntryCard key={entry._id} entry={entry} label={rowLabel(race, entry, entries)} />
-        ))
-      ) : (
-        <p className={styles.empty}>No candidates entered yet.</p>
-      )}
+      {entries.map((entry) => (
+        <EntryCard key={entry._id} entry={entry} label={raceRowLabel(race, entry, entries)} />
+      ))}
     </div>
   )
-}
-
-function rowLabel(race: RaceLike, entry: GuideEntry, entries: GuideEntry[]): string {
-  if (entries.length === 1 && race.title) {
-    if (race.title.includes(entry.name)) return race.title
-    return `${race.title} — ${entry.name}`
-  }
-  return entry.name
 }

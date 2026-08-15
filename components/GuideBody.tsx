@@ -10,6 +10,7 @@ import {useMatch} from '@/components/MatchProvider'
 import {RegionSection} from '@/components/RegionSection'
 import {filterRegionsByMatch} from '@/lib/districtMatching'
 import {TIER_LABELS} from '@/lib/labels'
+import {regionMatchingCitySlug} from '@/lib/regions'
 import type {GuideRegion, RegionTier} from '@/lib/types'
 
 import styles from './GuideBody.module.css'
@@ -47,8 +48,8 @@ export function GuideBody({regions}: GuideBodyProps) {
     return filterRegionsByMatch(regions, match)
   }, [regions, match, isFiltering])
 
-  const matchedCityTitle =
-    match?.citySlug != null ? regions.find((region) => region.slug === match.citySlug)?.title ?? null : null
+  const matchedCity = match ? regionMatchingCitySlug(regions, match.citySlug) : undefined
+  const matchedCityTitle = matchedCity?.title ?? null
 
   const tiers = TIER_ORDER.map((tier) => ({
     tier,
@@ -62,13 +63,13 @@ export function GuideBody({regions}: GuideBodyProps) {
       regions={regions}
       title="Your ballot"
       crumb="Your ballot"
-      activeSlug={match.citySlug}
+      activeSlug={matchedCity?.slug ?? match.citySlug}
     >
       <div className={styles.statusBanner}>
         <p>
           {isFiltering
             ? match.precision === 'city' && matchedCityTitle
-              ? `We don't have precise district boundaries for ${matchedCityTitle} yet, so we're showing its full ballot below — your state and county races are still narrowed to your address.`
+              ? `We don't have precise district boundaries for ${matchedCityTitle} yet, so we're showing its full ballot below. Your state and county races are still narrowed to your address.`
               : 'Showing the races and measures that apply to your address below.'
             : 'Showing the full guide.'}
         </p>

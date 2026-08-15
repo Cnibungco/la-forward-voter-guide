@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {coverablePrefixesFor, filterRegionsByMatch, passesDistrictFilter, slugifyPlaceName} from './districtMatching'
+import {coverablePrefixesFor, filterRegionsByMatch, isMatchBallotResult, passesDistrictFilter, slugifyPlaceName} from './districtMatching'
 import type {GuideRegion, MatchBallotResult} from './types'
 
 const NONE: MatchBallotResult = {precision: 'none', citySlug: null, districtCodes: []}
@@ -223,5 +223,26 @@ describe('filterRegionsByMatch', () => {
       sections: [{_key: 'rg1', _type: 'raceGroup', label: 'Empty', races: null}],
     })
     expect(() => filterRegionsByMatch([region], LA_CITY_PRECISE)).not.toThrow()
+  })
+
+  it('keeps a los-angeles-city CMS region when Census returns los-angeles', () => {
+    const matched = makeRegion({_id: 'la', tier: 'city', slug: 'los-angeles-city'})
+    const other = makeRegion({_id: 'sm', tier: 'city', slug: 'santa-monica'})
+    const result = filterRegionsByMatch([matched, other], LA_CITY_PRECISE)
+    expect(result.map((r) => r._id)).toEqual(['la'])
+  })
+})
+
+describe('isMatchBallotResult', () => {
+  it('accepts a well-formed result', () => {
+    expect(isMatchBallotResult(LA_CITY_PRECISE)).toBe(true)
+    expect(isMatchBallotResult(NONE)).toBe(true)
+  })
+
+  it('rejects missing fields, bad precision, and non-string district codes', () => {
+    expect(isMatchBallotResult(null)).toBe(false)
+    expect(isMatchBallotResult({precision: 'maybe', citySlug: null, districtCodes: []})).toBe(false)
+    expect(isMatchBallotResult({precision: 'precise', citySlug: 'los-angeles'})).toBe(false)
+    expect(isMatchBallotResult({precision: 'precise', citySlug: null, districtCodes: [14]})).toBe(false)
   })
 })

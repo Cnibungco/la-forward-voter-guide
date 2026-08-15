@@ -18,8 +18,48 @@ Full decision history and reasoning: `docs/backend-strategy.md` (see
 - Studio is standalone (`studio-la-forward-voter-guide`), not embedded
   in this app
 - One nested GROQ query fetches the whole guide (`sanity/lib/queries.ts`)
-- Single `production` dataset — no separate testing dataset (see below)
+- Single `production` dataset — no separate testing dataset
 - Time-based ISR, 5 min, no revalidation webhook to maintain
+- Address lookup never stores, logs, or sends the user's address except
+  the one server-side Census Geocoder call needed to match it (see
+  `docs/address-matching-strategy.md`)
+
+## Public site
+
+| Route | What it is |
+|---|---|
+| `/` | Landing: address lookup, browse-by-jurisdiction cards, ratings legend |
+| `/ballot` | Matched (or full) ballot after an address lookup |
+| `/guide/[slug]` | One Region — statewide sections, county, or a city |
+| `/outside` | Address was outside LA County; nothing about it was stored |
+
+Staff-editable chrome (disclaimer, county sample-ballot URL) lives in
+the Studio **Site Settings** singleton, not in this repo. Election-cycle
+copy such as the hero kicker is in `lib/copy.ts`.
+
+## Content
+
+The November 2026 skeleton is already in the `production` dataset:
+statewide props and offices, State Senate/Assembly districts, LA County
+measures, City of Los Angeles races and measures, other cities (mostly a
+City Council race), and school boards for Palos Verdes USD and Torrance
+Unified.
+
+State/County use top-level `race` / `measure` documents that reference a
+`region`. City ballots (and school boards) use a Region's or
+`specialDistrict`'s `sections` array — see `docs/backend-strategy.md`
+§11.
+
+**Content status** (on races, measures, entries, and city ballot items)
+is independent of Sanity's own draft documents:
+
+- `draft` — hidden from the public guide
+- `pending` — shown as "Recommendation coming soon"
+- `published` — rating/position and reasoning are required and shown
+
+New items default to `pending`. Flip to `published` in Studio when the
+write-up is ready. The public site can take up to 5 minutes to catch up
+(ISR).
 
 ## Setup
 
@@ -27,9 +67,13 @@ This app expects `studio-la-forward-voter-guide` to exist as a sibling
 folder (same parent directory as this repo) and to already be pointed
 at a real Sanity project.
 
-1. `cp .env.example .env.local` and fill in the real project ID (see
-   the Studio's `sanity.config.ts` / `sanity.cli.ts` for the project ID
-   and dataset — currently `wcogcahu` / `production`).
+1. `cp .env.example .env.local` and fill in:
+   - Sanity project ID / dataset — see the Studio's `sanity.config.ts`
+     (currently `wcogcahu` / `production`)
+   - `NEXT_PUBLIC_GEOAPIFY_API_KEY` — free tier at
+     [geoapify.com](https://www.geoapify.com/). Restrict the key by HTTP
+     referrer before production. Without it, address lookup shows "not
+     configured"; the rest of the guide still works.
 2. `npm install`
 3. `npm run dev` → app at `localhost:3000`
 4. In the Studio folder (separate terminal): `npm run dev` → Studio at
@@ -53,38 +97,31 @@ production URL once deployed) from the Studio folder:
 
 ## Dataset: production only, no testing dataset
 
-Per your call — optimizes for one less thing to explain to a future
-maintainer. The real cost: when Sea/David do their first hands-on test in
-Studio, whatever they create is live in the actual dataset, not a
-disposable sandbox. Two ways to handle it, your choice which:
-
-- Have them prefix test entries with something obvious ("TEST — delete
-  me") and delete before real content entry starts, or
-- Treat their first session as real content entry from the start (a
-  region/race they'd need eventually anyway), so nothing needs deleting
+There is no sandbox dataset. Whatever Sea/David publish in Studio is
+what the live site will show after the next ISR refresh. Use
+`contentStatus: draft` to keep unfinished items off the public guide
+without needing a second dataset.
 
 ## Testing
 
-`npm test` runs the Vitest suite (`lib/districtMatching.test.ts`,
-`app/api/match-ballot/route.test.ts`) — unit tests for the address-matching
-filter logic and the `/api/match-ballot` route, including edge cases like
-at-large cities, unincorporated county addresses, out-of-county rejection,
-and the privacy guarantee that the submitted address is never logged. A
-couple of test cases assert against the real files in
-`data/boundaries/*.geojson` for a couple of known addresses (not mocked)
-so a bad boundary-file edit would actually fail a test. No test framework
-existed before this pass — Vitest was chosen for minimal config and to
-keep the maintenance burden low; there's no separate test dataset/mocked
-Sanity client, since none of the current tests need one.
+`npm test` runs the Vitest suite:
 
-## What's not built yet
+- `lib/districtMatching.test.ts` and `app/api/match-ballot/route.test.ts`
+  — address matching, including at-large cities, unincorporated county,
+  out-of-county rejection, and the privacy guarantee that the submitted
+  address is never logged. A couple of cases hit the real files in
+  `data/boundaries/*.geojson` for known addresses (not mocked), so a bad
+  boundary-file edit fails a test.
+- `lib/regions.test.ts`, `lib/labels.test.ts`, `lib/contentStatus.test.ts`,
+  `lib/raceLabel.test.ts`, `lib/geoapifyAddress.test.ts` — nav order,
+  rating copy, pending/published display, and the address widget wrapper.
 
-- Content — the Studio's schema is deployed but no Region/Race/Measure/
-  Entry documents exist yet. The homepage renders an empty-state message
-  until Sea/David add content in Studio.
-- `sanity typegen` for auto-generated query types — worth adding once the
-  schema stabilizes past this initial pass; skipped for now since the
-  schema is still likely to shift once Sea/David's test surfaces issues.
+There is no mocked Sanity client. Tests cover app logic, not CMS content.
 
-Address-based ballot filtering (PRD §6) **is built** — see
-`docs/address-matching-strategy.md` and `docs/backend-strategy.md` §12.
+## Still deferred
+
+- `sanity typegen` for auto-generated query types — `lib/types.ts` is
+  kept in sync with `GUIDE_QUERY` by hand. Worth adding once the schema
+  is done shifting.
+- Endorsement write-ups — the skeleton is in Studio; ratings, reasoning,
+  and candidate photos still get filled in there as research lands.

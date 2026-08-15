@@ -22,11 +22,6 @@
   max-width: 900px;
 }
 
-.link {
-  color: var(--color-navy-2);
-  font-weight: 600;
-}
-
 @media (min-width: 860px) {
   .bar {
     padding: 10px 28px;

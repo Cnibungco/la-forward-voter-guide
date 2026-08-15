@@ -38,15 +38,19 @@ export function GuideNav({regions, activeSlug, search, onSearch, onNavigate}: Gu
       </label>
 
       <p className={styles.tier}>State &amp; county</p>
-      {stateCounty.map((region) => (
-        <NavItem
-          key={region._id}
-          href={`/guide/${region.slug}`}
-          label={region.title}
-          active={activeSlug === region.slug}
-          onNavigate={onNavigate}
-        />
-      ))}
+      {stateCounty.length === 0 ? (
+        query ? <p className={styles.empty}>No state or county matches that search.</p> : null
+      ) : (
+        stateCounty.map((region) => (
+          <NavItem
+            key={region._id}
+            href={`/guide/${region.slug}`}
+            label={region.title}
+            active={activeSlug === region.slug}
+            onNavigate={onNavigate}
+          />
+        ))
+      )}
 
       <p className={styles.tier}>Local cities</p>
       {cities.length === 0 ? (

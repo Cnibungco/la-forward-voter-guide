@@ -42,6 +42,26 @@
   background: #fafbf8;
 }
 
+.pendingRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 10px;
+  padding: 14px 4px;
+}
+
+.comingSoon {
+  flex-shrink: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-ink-2);
+  background: #ecece8;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
 .label {
   flex: 1;
   font-size: 14px;

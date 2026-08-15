@@ -7,20 +7,23 @@ import styles from './RegionSection.module.css'
 
 interface RegionSectionProps {
   region: GuideRegion
-  headingLevel?: 'h2' | 'h3' | 'none'
+  headingLevel?: 'h3' | 'none'
 }
 
 export function RegionSection({region, headingLevel = 'none'}: RegionSectionProps) {
   const sections = region.sections ?? []
   const hasContent = region.races.length > 0 || region.measures.length > 0 || sections.length > 0
-  const Heading = headingLevel === 'h2' ? 'h2' : 'h3'
 
   return (
-    <section className={styles.section} id={region.slug ?? undefined} aria-labelledby={headingLevel === 'none' ? undefined : `${region.slug}-heading`}>
+    <section
+      className={styles.section}
+      id={region.slug ?? undefined}
+      aria-labelledby={headingLevel === 'none' ? undefined : `${region.slug}-heading`}
+    >
       {headingLevel !== 'none' && (
-        <Heading id={`${region.slug}-heading`} className={styles.heading}>
+        <h3 id={`${region.slug}-heading`} className={styles.heading}>
           {region.title}
-        </Heading>
+        </h3>
       )}
       {region.description && <p className={styles.description}>{region.description}</p>}
 

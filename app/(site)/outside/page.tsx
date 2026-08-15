@@ -2,9 +2,10 @@ import Link from 'next/link'
 
 import {GuideShell} from '@/components/GuideShell'
 import {Methodology} from '@/components/Methodology'
-import {OUTSIDE_BODY, OUTSIDE_EYEBROW, OUTSIDE_TITLE} from '@/lib/copy'
+import {OUTSIDE_BODY, OUTSIDE_EYEBROW, OUTSIDE_TITLE, SAMPLE_BALLOT_LABEL} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
 import {isLosAngelesCity, regionByTier} from '@/lib/regions'
+import {resolvedSampleBallotUrl} from '@/lib/siteSettings'
 
 import styles from './outside.module.css'
 
@@ -15,10 +16,11 @@ export const metadata = {
 }
 
 export default async function OutsidePage() {
-  const regions = await getGuide()
+  const {regions, settings} = await getGuide()
   const stateRegion = regionByTier(regions, 'state')
   const countyRegion = regionByTier(regions, 'county')
   const laCity = regions.find(isLosAngelesCity)
+  const sampleBallotUrl = resolvedSampleBallotUrl(settings)
 
   return (
     <GuideShell
@@ -47,6 +49,11 @@ export default async function OutsidePage() {
           <Link href={`/guide/${laCity.slug}`} className={styles.link}>
             {laCity.title}
           </Link>
+        )}
+        {sampleBallotUrl && (
+          <a href={sampleBallotUrl} target="_blank" rel="noopener noreferrer" className={styles.link}>
+            {SAMPLE_BALLOT_LABEL} ↗
+          </a>
         )}
       </div>
       <Methodology />

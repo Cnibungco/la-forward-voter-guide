@@ -29,5 +29,6 @@ export function censusAddressFromFeature(properties: unknown): string | null {
 }
 
 function stringProp(value: unknown): string | undefined {
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value)
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined
 }

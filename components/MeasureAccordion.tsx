@@ -1,5 +1,7 @@
+import {ComingSoonRow} from '@/components/ComingSoonRow'
 import {PortableText} from '@/components/PortableText'
 import {RatingBadge} from '@/components/RatingBadge'
+import {isDraftStatus, measureNeedsWriteup} from '@/lib/contentStatus'
 import type {MeasureLike} from '@/lib/types'
 
 import styles from './Accordion.module.css'
@@ -13,6 +15,11 @@ interface MeasureAccordionProps {
  * `ballotMeasure` block — see `MeasureLike` (lib/types.ts) and §11.
  */
 export function MeasureAccordion({measure}: MeasureAccordionProps) {
+  if (isDraftStatus(measure.contentStatus)) return null
+  if (measureNeedsWriteup(measure)) {
+    return <ComingSoonRow title={measure.title} id={measure.slug} />
+  }
+
   const hasPros = Boolean(measure.pros && measure.pros.length > 0)
   const hasCons = Boolean(measure.cons && measure.cons.length > 0)
 

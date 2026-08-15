@@ -68,7 +68,9 @@
   background: var(--color-surface);
   z-index: 31;
   padding: 16px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   box-shadow: 2px 0 16px rgba(0, 0, 0, 0.2);
 }
 
@@ -76,7 +78,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
   margin-bottom: 10px;
+}
+
+.drawerNav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .drawerTitle {

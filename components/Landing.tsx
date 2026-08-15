@@ -6,19 +6,23 @@ import {useRouter} from 'next/navigation'
 import {useState} from 'react'
 
 import {AddressLookup} from '@/components/AddressLookup'
-import {Methodology} from '@/components/Methodology'
 import {RatingBadge} from '@/components/RatingBadge'
 import {useMatch} from '@/components/MatchProvider'
 import {
   ADDRESS_LABEL,
+  COURAGE_CA_HREF,
   DONATE_ASK,
   DONATE_HREF,
   ELECTION_KICKER,
+  HERO_IMAGE_ALT,
   HERO_SUB,
   HERO_TITLE,
+  LANDING_ABOUT_BODY,
+  LANDING_ABOUT_SUMMARY,
   LAVOTE_HREF,
   LEGEND_HEAD,
   LEGEND_SUB,
+  SAMPLE_BALLOT_LABEL,
 } from '@/lib/copy'
 import {CANDIDATE_LEGEND, MEASURE_LEGEND} from '@/lib/labels'
 import {firstOtherCity, isLosAngelesCity, regionByTier} from '@/lib/regions'
@@ -28,12 +32,15 @@ import styles from './Landing.module.css'
 
 interface LandingProps {
   regions: GuideRegion[]
+  sampleBallotUrl: string | null
+  disclaimer: string
 }
 
-export function Landing({regions}: LandingProps) {
+export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
   const router = useRouter()
   const {lookupAddress, status} = useMatch()
   const [heroFailed, setHeroFailed] = useState(false)
+  const [aboutOpen, setAboutOpen] = useState(false)
 
   const stateRegion = regionByTier(regions, 'state')
   const countyRegion = regionByTier(regions, 'county')
@@ -52,7 +59,7 @@ export function Landing({regions}: LandingProps) {
         {!heroFailed && (
           <Image
             src="/hero.webp"
-            alt=""
+            alt={HERO_IMAGE_ALT}
             fill
             priority
             className={styles.heroImage}
@@ -76,14 +83,51 @@ export function Landing({regions}: LandingProps) {
         .
       </p>
 
+      <div className={styles.noteCard}>
+        <button
+          type="button"
+          className={styles.noteToggle}
+          aria-expanded={aboutOpen}
+          onClick={() => setAboutOpen((open) => !open)}
+        >
+          <span>{LANDING_ABOUT_SUMMARY}</span>
+          <span className={aboutOpen ? `${styles.noteChev} ${styles.noteChevOpen}` : styles.noteChev} aria-hidden="true" />
+        </button>
+        {aboutOpen && (
+          <div className={styles.noteBody}>
+            <p>{disclaimer}</p>
+            {LANDING_ABOUT_BODY.map((paragraph) => (
+              <p key={paragraph.slice(0, 32)}>{paragraph}</p>
+            ))}
+            {sampleBallotUrl && (
+              <p>
+                <a href={sampleBallotUrl} target="_blank" rel="noopener noreferrer">
+                  {SAMPLE_BALLOT_LABEL} ↗
+                </a>
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+
       <div className={styles.addressCard}>
         <p className={styles.addressLabel}>{ADDRESS_LABEL}</p>
         <AddressLookup onSelect={handleAddressSelected} />
         {status === 'loading' && <p className={styles.status}>Looking up your ballot…</p>}
         {status === 'error' && (
           <p className={styles.statusError}>
-            Something went wrong looking up that address. Browse a jurisdiction below — nothing about
+            Something went wrong looking up that address. Browse a jurisdiction below. Nothing about
             it was stored.
+            {sampleBallotUrl && (
+              <>
+                {' '}
+                You can also check the{' '}
+                <a href={sampleBallotUrl} target="_blank" rel="noopener noreferrer">
+                  {SAMPLE_BALLOT_LABEL}
+                </a>
+                .
+              </>
+            )}
           </p>
         )}
       </div>
@@ -121,6 +165,14 @@ export function Landing({regions}: LandingProps) {
         )}
       </div>
 
+      <p className={styles.courage}>
+        Looking for a different county? Check out{' '}
+        <a href={COURAGE_CA_HREF} target="_blank" rel="noopener noreferrer">
+          Courage CA&apos;s statewide voter guide
+        </a>
+        .
+      </p>
+
       <div className={styles.legend} id="ratings">
         <p className={styles.legendHead}>{LEGEND_HEAD}</p>
         <p className={styles.legendSub}>{LEGEND_SUB}</p>
@@ -141,10 +193,6 @@ export function Landing({regions}: LandingProps) {
             </div>
           ))}
         </div>
-      </div>
-
-      <div className={styles.methodology}>
-        <Methodology />
       </div>
 
       <div id="donate" className={styles.give}>

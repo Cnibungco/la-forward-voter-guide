@@ -7,15 +7,18 @@ alwaysApply: false
 # Data fetching
 
 - One nested GROQ query (`sanity/lib/queries.ts` → `GUIDE_QUERY`) fetches
-  the entire guide in a single request. Don't split this into
-  per-region/per-race queries — confirmed decision, see
-  `docs/backend-strategy.md` §3.
+  the entire guide in a single request, including the `siteSettings`
+  singleton. Don't split this into per-region/per-race queries —
+  confirmed decision, see `docs/backend-strategy.md` §3. `getGuide()`
+  returns `{regions, settings}` and is wrapped in React `cache()` so
+  multiple calls on the same request share one fetch.
 - Use `export const revalidate = 300` (ISR) on pages that fetch guide
   content — not `force-dynamic`, and not a webhook-triggered
   revalidation route. This is a deliberate "fewer moving parts" choice
   for volunteer/pro-bono maintenance, not an oversight.
-- `useCdn: true` on the Sanity client is intentional — there's no
-  draft/preview requirement (editors publish directly, no review step).
+- `useCdn: true` on the Sanity client is intentional — Studio uses
+  `liveEdit` (no draft/publish copies) and Content status is the
+  editorial control. There's no preview-of-unpublished-content requirement.
 - `sanity/lib/client.ts` throws if `NEXT_PUBLIC_SANITY_PROJECT_ID` is
   missing. Keep this — fail loudly at build time rather than silently
   rendering an empty guide.

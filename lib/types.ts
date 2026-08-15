@@ -25,7 +25,14 @@ export type EntryRating = 'no_recommendation' | 'recommended' | 'endorsed'
 
 export type MeasurePosition = 'support' | 'oppose' | 'no_position'
 
+export type ContentStatus = 'draft' | 'pending' | 'published'
+
 export type RegionTier = 'state' | 'county' | 'city'
+
+export interface SiteSettings {
+  disclaimer: string | null
+  sampleBallotUrl: string | null
+}
 
 export interface GuideEntry {
   _id: string
@@ -34,6 +41,7 @@ export interface GuideEntry {
   photo: SanityImageValue | null
   rating: EntryRating | null
   reasoning: PortableTextBlock[] | null
+  contentStatus?: ContentStatus | null
 }
 
 /**
@@ -55,6 +63,7 @@ export interface RaceLike {
   district: string | null
   context: PortableTextBlock[] | null
   entries: GuideEntry[] | null
+  contentStatus?: ContentStatus | null
 }
 
 /**
@@ -68,6 +77,7 @@ export interface MeasureLike {
   position: MeasurePosition | null
   pros: PortableTextBlock[] | null
   cons: PortableTextBlock[] | null
+  contentStatus?: ContentStatus | null
 }
 
 export interface GuideRace extends RaceLike {
@@ -116,9 +126,9 @@ export type GuideSection = GuideRaceGroup | GuideMeasureGroup
  *   data/boundaries/README.md), so its races/measures render unfiltered.
  *   `districtCodes` is still populated with state/county codes.
  * - `precision: "precise"` — either matched to a city whose council
- *   boundary *is* sourced (currently just LA City), or the address is in
- *   unincorporated LA County (`citySlug: null`, nothing further to
- *   resolve).
+ *   boundary *is* sourced (see `CITY_COUNCIL_LAYERS` in
+ *   `app/api/match-ballot/route.ts`), or the address is in unincorporated
+ *   LA County (`citySlug: null`, nothing further to resolve).
  */
 export interface MatchBallotResult {
   precision: 'precise' | 'city' | 'none'

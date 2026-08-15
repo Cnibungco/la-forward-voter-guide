@@ -1,7 +1,9 @@
 import Image from 'next/image'
 
+import {ComingSoonRow} from '@/components/ComingSoonRow'
 import {PortableText} from '@/components/PortableText'
 import {RatingBadge} from '@/components/RatingBadge'
+import {entryNeedsWriteup, isDraftStatus} from '@/lib/contentStatus'
 import {urlForImage} from '@/lib/image'
 import type {GuideEntry} from '@/lib/types'
 
@@ -14,6 +16,11 @@ interface EntryCardProps {
 }
 
 export function EntryCard({entry, label}: EntryCardProps) {
+  if (isDraftStatus(entry.contentStatus)) return null
+  if (entryNeedsWriteup(entry)) {
+    return <ComingSoonRow title={label} id={entry.slug} />
+  }
+
   const photoUrl = entry.photo ? urlForImage(entry.photo).width(160).height(160).fit('crop').url() : null
 
   return (

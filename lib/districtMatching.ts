@@ -1,4 +1,17 @@
+import {citySlugsMatch} from '@/lib/regions'
 import type {GuideRegion, MatchBallotResult} from '@/lib/types'
+
+export function isMatchBallotResult(value: unknown): value is MatchBallotResult {
+  if (!value || typeof value !== 'object') return false
+  const record = value as Record<string, unknown>
+  const precision = record.precision
+  return (
+    (precision === 'precise' || precision === 'city' || precision === 'none') &&
+    (record.citySlug === null || typeof record.citySlug === 'string') &&
+    Array.isArray(record.districtCodes) &&
+    record.districtCodes.every((code) => typeof code === 'string')
+  )
+}
 
 /**
  * The leading letters of a district code, e.g. `"CD4"` -> `"CD"`. Trimmed
@@ -91,7 +104,7 @@ export function filterRegionsByMatch(regions: GuideRegion[], match: MatchBallotR
   if (match.precision === 'none') return regions
 
   return regions
-    .filter((region) => region.tier !== 'city' || (match.citySlug !== null && region.slug === match.citySlug))
+    .filter((region) => region.tier !== 'city' || citySlugsMatch(region.slug, match.citySlug))
     .map((region) => ({
       ...region,
       races: region.races.filter((race) => passesDistrictFilter(race.district, match)),
