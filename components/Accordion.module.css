@@ -1,20 +1,35 @@
-.accordion {
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  background: var(--color-surface);
-  overflow: hidden;
+.raceBlock + .raceBlock {
+  margin-top: 4px;
 }
 
-.accordion + .accordion {
-  margin-top: 0.75rem;
+.raceTitle {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--color-navy);
+  margin: 12px 0 4px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--color-ink-2);
+  margin: 0 0 6px;
+}
+
+.row {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.row:last-child {
+  border-bottom: none;
 }
 
 .summary {
   display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 0.5rem 0.75rem;
-  padding: 0.9rem 1.1rem;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  padding: 14px 4px;
   cursor: pointer;
   list-style: none;
 }
@@ -23,70 +38,79 @@
   display: none;
 }
 
-.summary::before {
-  content: '+';
-  font-family: var(--font-heading);
-  font-size: 1.1rem;
-  color: var(--color-accent);
-  margin-right: 0.35rem;
-  line-height: 1;
+.summary:hover {
+  background: #fafbf8;
 }
 
-.accordion[open] > .summary::before {
-  content: '\2212';
-}
-
-.title {
-  font-family: var(--font-heading);
-  font-size: 1.15rem;
+.label {
+  flex: 1;
+  font-size: 14px;
   font-weight: 600;
   color: var(--color-ink);
 }
 
-.subtitle {
-  font-size: 0.9rem;
-  color: var(--color-ink-muted);
+.chev {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--color-ink-2);
+  border-bottom: 1.5px solid var(--color-ink-2);
+  transform: rotate(45deg);
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+.row[open] > .summary .chev {
+  transform: rotate(-135deg);
 }
 
 .panel {
-  padding: 0 1.1rem 1.1rem;
-  border-top: 1px solid var(--color-border);
-  padding-top: 1rem;
+  padding: 2px 4px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .context {
-  margin-bottom: 0.75rem;
-  color: var(--color-ink-muted);
-}
-
-.entryList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  margin: 0 0 8px;
+  color: var(--color-ink-2);
+  font-size: 13.5px;
 }
 
 .empty {
-  color: var(--color-ink-muted);
+  color: var(--color-ink-2);
   font-style: italic;
-  margin: 0;
+  margin: 8px 4px;
+  font-size: 13.5px;
 }
 
 .summaryText {
-  margin: 0 0 1rem;
-  color: var(--color-ink-muted);
+  margin: 0;
+  color: var(--color-ink-2);
+  font-size: 13.5px;
 }
 
 .proCon {
   display: grid;
-  gap: 1.25rem;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  grid-template-columns: 1fr;
 }
 
 .proConHeading {
-  font-family: var(--font-heading);
-  font-size: 0.95rem;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--color-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--color-ink);
-  margin: 0 0 0.4rem;
+  margin: 0 0 3px;
+}
+
+@media (min-width: 860px) {
+  .label {
+    font-size: 15px;
+  }
+
+  .proCon {
+    grid-template-columns: 1fr 1fr;
+  }
 }

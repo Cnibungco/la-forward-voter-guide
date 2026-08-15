@@ -1,6 +1,6 @@
 import {EntryCard} from '@/components/EntryCard'
 import {PortableText} from '@/components/PortableText'
-import type {RaceLike} from '@/lib/types'
+import type {GuideEntry, RaceLike} from '@/lib/types'
 
 import styles from './Accordion.module.css'
 
@@ -16,32 +16,37 @@ interface RaceAccordionProps {
  *
  * Renders either a State/County `race` document or a city-ballot
  * `ballotRace` block — see `RaceLike` (lib/types.ts) and §11.
+ *
+ * One row per candidate. A single-entry race shows "{title} — {name}"
+ * on the row; multi-candidate races keep the race title as a heading.
  */
 export function RaceAccordion({race}: RaceAccordionProps) {
   const entries = race.entries ?? []
 
   return (
-    <details className={styles.accordion} id={race.slug ?? undefined}>
-      <summary className={styles.summary}>
-        <span className={styles.title}>{race.title}</span>
-        {race.office && <span className={styles.subtitle}>{race.office}</span>}
-      </summary>
-      <div className={styles.panel}>
-        {race.context && (
-          <div className={styles.context}>
-            <PortableText value={race.context} />
-          </div>
-        )}
-        {entries.length > 0 ? (
-          <ul className={styles.entryList}>
-            {entries.map((entry) => (
-              <EntryCard key={entry._id} entry={entry} />
-            ))}
-          </ul>
-        ) : (
-          <p className={styles.empty}>No candidates entered yet.</p>
-        )}
-      </div>
-    </details>
+    <div className={styles.raceBlock}>
+      {entries.length !== 1 && race.title && <p className={styles.raceTitle}>{race.title}</p>}
+      {race.office && entries.length !== 1 && <p className={styles.subtitle}>{race.office}</p>}
+      {race.context && (
+        <div className={styles.context}>
+          <PortableText value={race.context} />
+        </div>
+      )}
+      {entries.length > 0 ? (
+        entries.map((entry) => (
+          <EntryCard key={entry._id} entry={entry} label={rowLabel(race, entry, entries)} />
+        ))
+      ) : (
+        <p className={styles.empty}>No candidates entered yet.</p>
+      )}
+    </div>
   )
+}
+
+function rowLabel(race: RaceLike, entry: GuideEntry, entries: GuideEntry[]): string {
+  if (entries.length === 1 && race.title) {
+    if (race.title.includes(entry.name)) return race.title
+    return `${race.title} — ${entry.name}`
+  }
+  return entry.name
 }

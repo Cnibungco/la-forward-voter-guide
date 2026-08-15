@@ -1,39 +1,90 @@
-import {TIER_LABELS} from '@/lib/labels'
-import type {GuideRegion, RegionTier} from '@/lib/types'
+'use client'
+
+import Link from 'next/link'
+
+import {navCities, navStateCounty} from '@/lib/regions'
+import type {GuideRegion} from '@/lib/types'
 
 import styles from './GuideNav.module.css'
 
 interface GuideNavProps {
   regions: GuideRegion[]
+  activeSlug?: string | null
+  search: string
+  onSearch: (value: string) => void
+  onNavigate?: () => void
 }
 
-// Tiers are hardcoded nav sections, not CMS content — see
-// schemaTypes/region.ts. Fixed display order regardless of what exists
-// in the dataset.
-const TIER_ORDER: RegionTier[] = ['state', 'county', 'city']
-
-export function GuideNav({regions}: GuideNavProps) {
-  const tiers = TIER_ORDER.map((tier) => ({
-    tier,
-    regions: regions.filter((region) => region.tier === tier),
-  })).filter(({regions}) => regions.length > 0)
-
-  if (tiers.length === 0) return null
+export function GuideNav({regions, activeSlug, search, onSearch, onNavigate}: GuideNavProps) {
+  const query = search.trim().toLowerCase()
+  const stateCounty = navStateCounty(regions).filter(
+    (region) => !query || region.title.toLowerCase().includes(query),
+  )
+  const cities = navCities(regions).filter(
+    (region) => !query || region.title.toLowerCase().includes(query),
+  )
 
   return (
-    <nav className={styles.nav} aria-label="Jump to a section of the guide">
-      {tiers.map(({tier, regions}) => (
-        <div key={tier} className={styles.tierGroup}>
-          <span className={styles.tierLabel}>{TIER_LABELS[tier]}</span>
-          <ul className={styles.regionList}>
-            {regions.map((region) => (
-              <li key={region._id}>
-                <a href={`#${region.slug}`}>{region.title}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
+    <>
+      <label className={styles.searchLabel}>
+        <span className={styles.visuallyHidden}>Find your city</span>
+        <input
+          type="search"
+          className={styles.search}
+          placeholder="Find your city"
+          value={search}
+          onChange={(event) => onSearch(event.target.value)}
+        />
+      </label>
+
+      <p className={styles.tier}>State &amp; county</p>
+      {stateCounty.map((region) => (
+        <NavItem
+          key={region._id}
+          href={`/guide/${region.slug}`}
+          label={region.title}
+          active={activeSlug === region.slug}
+          onNavigate={onNavigate}
+        />
       ))}
-    </nav>
+
+      <p className={styles.tier}>Local cities</p>
+      {cities.length === 0 ? (
+        <p className={styles.empty}>No cities match that search.</p>
+      ) : (
+        cities.map((region) => (
+          <NavItem
+            key={region._id}
+            href={`/guide/${region.slug}`}
+            label={region.title}
+            active={activeSlug === region.slug}
+            onNavigate={onNavigate}
+          />
+        ))
+      )}
+    </>
+  )
+}
+
+function NavItem({
+  href,
+  label,
+  active,
+  onNavigate,
+}: {
+  href: string
+  label: string
+  active: boolean
+  onNavigate?: () => void
+}) {
+  return (
+    <Link
+      href={href}
+      className={active ? `${styles.item} ${styles.itemActive}` : styles.item}
+      onClick={onNavigate}
+      aria-current={active ? 'page' : undefined}
+    >
+      {label}
+    </Link>
   )
 }

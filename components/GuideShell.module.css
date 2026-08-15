@@ -1,0 +1,151 @@
+.shell {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.triggerBar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
+  padding: 10px 16px;
+}
+
+.burger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  padding: 6px;
+  width: 28px;
+}
+
+.burger span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--color-ink);
+}
+
+.triggerTitle {
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--color-navy);
+}
+
+.body {
+  display: flex;
+  gap: 0;
+  padding: 16px;
+  align-items: flex-start;
+  position: relative;
+}
+
+.rail {
+  display: none;
+}
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 24, 36, 0.5);
+  z-index: 30;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 82vw;
+  max-width: 300px;
+  background: var(--color-surface);
+  z-index: 31;
+  padding: 16px;
+  overflow-y: auto;
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.2);
+}
+
+.drawerHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.drawerTitle {
+  font-weight: 700;
+  color: var(--color-navy);
+  font-family: var(--font-heading), sans-serif;
+  font-size: 16px;
+}
+
+.drawerClose {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: var(--color-ink-2);
+  padding: 4px;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.crumb {
+  font-size: 12.5px;
+  color: var(--color-ink-3);
+  margin: 0 0 4px;
+}
+
+.title {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  color: var(--color-navy);
+  margin: 0 0 14px;
+}
+
+@media (min-width: 860px) {
+  .triggerBar {
+    display: none;
+  }
+
+  .body {
+    gap: 24px;
+    padding: 28px;
+  }
+
+  .rail {
+    display: block;
+    width: 230px;
+    flex-shrink: 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    padding: 14px;
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+  }
+
+  .main {
+    padding: 26px 30px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+}

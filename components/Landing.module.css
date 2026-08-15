@@ -1,0 +1,289 @@
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 0 60px;
+}
+
+.hero {
+  position: relative;
+  height: 260px;
+  overflow: hidden;
+  background: var(--color-navy);
+}
+
+.heroImage {
+  object-fit: cover;
+}
+
+.heroPlate {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(27, 42, 74, 0) 0%, rgba(27, 42, 74, 0.88) 65%);
+  pointer-events: none;
+}
+
+.kicker {
+  color: var(--color-gold);
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 6px;
+}
+
+.heroTitle {
+  color: #fff;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 1.05;
+  margin: 0 0 8px;
+  max-width: 20ch;
+}
+
+.heroSub {
+  color: #dce3f0;
+  font-size: 14px;
+  margin: 0;
+  max-width: 42ch;
+}
+
+.lavote {
+  font-size: 13px;
+  color: var(--color-ink-2);
+  text-align: center;
+  margin: 18px 16px 0;
+}
+
+.addressCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  padding: 18px 16px;
+  margin: 16px 16px 0;
+}
+
+.addressLabel {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  margin: 0 0 10px;
+  color: var(--color-navy);
+}
+
+.status {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--color-ink-2);
+}
+
+.statusError {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #7a2140;
+}
+
+.orRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 16px 14px;
+}
+
+.orLine {
+  flex: 1;
+  height: 1px;
+  background: var(--color-line);
+}
+
+.orText {
+  font-size: 12px;
+  color: var(--color-ink-3);
+  white-space: nowrap;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 0 16px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  padding: 16px 14px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--color-ink);
+  text-align: left;
+  text-decoration: none;
+}
+
+.card:hover {
+  border-color: var(--color-navy-2);
+  background: #fafbff;
+  color: var(--color-ink);
+}
+
+.cardEyebrow {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--color-navy-2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.legend {
+  background: var(--color-legend-bg);
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  padding: 18px 16px;
+  margin: 18px 16px 0;
+}
+
+.legendHead {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  margin: 0 0 4px;
+  color: var(--color-navy);
+}
+
+.legendSub {
+  font-size: 13px;
+  color: var(--color-ink-2);
+  margin: 0 0 14px;
+  max-width: 55ch;
+}
+
+.legendSubHead {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 18px 0 10px;
+}
+
+.legendGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.legendItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legendDesc {
+  font-size: 12.5px;
+  color: var(--color-ink-2);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.methodology {
+  margin: 8px 16px 0;
+}
+
+.give {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: var(--color-navy);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 18px 16px 0;
+}
+
+.giveText {
+  color: #dce3f0;
+  font-size: 13px;
+  margin: 0;
+  max-width: 40ch;
+}
+
+.giveBtn {
+  background: var(--color-gold);
+  color: var(--color-navy);
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.giveBtn:hover {
+  background: var(--color-gold-hover);
+  color: var(--color-navy);
+}
+
+@media (min-width: 860px) {
+  .wrap {
+    padding: 0 0 80px;
+  }
+
+  .hero {
+    height: 360px;
+  }
+
+  .heroPlate {
+    padding: 32px;
+  }
+
+  .heroTitle {
+    font-size: 42px;
+  }
+
+  .heroSub {
+    font-size: 16px;
+  }
+
+  .lavote {
+    margin: 22px 0 0;
+  }
+
+  .addressCard {
+    padding: 24px;
+    margin: 20px 0 0;
+  }
+
+  .orRow {
+    margin: 26px 0 16px;
+  }
+
+  .cards {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    margin: 0;
+  }
+
+  .legend {
+    padding: 24px;
+    margin: 22px 0 0;
+  }
+
+  .legendGrid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .methodology {
+    margin: 8px 0 0;
+  }
+
+  .give {
+    padding: 18px 22px;
+    margin: 22px 0 0;
+  }
+}

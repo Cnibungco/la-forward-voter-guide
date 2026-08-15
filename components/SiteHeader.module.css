@@ -1,0 +1,105 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--color-navy);
+  padding: 10px 16px;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.logo {
+  height: 26px;
+  width: auto;
+  display: block;
+}
+
+.logoFallback {
+  background: #fff;
+  color: var(--color-navy);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 4px 7px;
+  border-radius: 3px;
+}
+
+.tagline {
+  color: #c9d4e8;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  padding-left: 12px;
+  white-space: nowrap;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.orgLink {
+  color: #c9d4e8;
+  font-size: 12.5px;
+  text-decoration: none;
+  display: none;
+}
+
+.orgLink:hover {
+  color: #fff;
+}
+
+.donate {
+  background: var(--color-red);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.donate:hover {
+  background: var(--color-red-hover);
+  color: #fff;
+}
+
+@media (min-width: 860px) {
+  .header {
+    padding: 12px 28px;
+  }
+
+  .logo {
+    height: 30px;
+  }
+
+  .tagline {
+    font-size: 16px;
+  }
+
+  .right {
+    gap: 18px;
+  }
+
+  .orgLink {
+    display: inline;
+  }
+}

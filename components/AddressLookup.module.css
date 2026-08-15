@@ -1,41 +1,45 @@
 .wrapper {
-  margin-bottom: 0.75rem;
+  width: 100%;
 }
 
 .autocomplete {
-  max-width: 32rem;
+  width: 100%;
 }
 
-/* Override Geoapify's minimal theme just enough to match the guide's own
-   look — see node_modules/@geoapify/geocoder-autocomplete/styles/minimal.css
-   for the full class list this is scoped against. */
 .autocomplete :global(.geoapify-autocomplete-input) {
   width: 100%;
-  padding: 0.7rem 0.9rem;
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
-  font-size: 1rem;
+  height: 46px;
+  padding: 0 14px;
+  border: 1.5px solid var(--color-line);
+  border-radius: 8px;
+  font-size: 15px;
   font-family: var(--font-body), system-ui, sans-serif;
   color: var(--color-ink);
-  background: var(--color-surface);
+  background: var(--color-bg);
 }
 
 .autocomplete :global(.geoapify-autocomplete-input:focus) {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 1px;
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.autocomplete :global(.geoapify-autocomplete-items) {
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  margin-top: 4px;
 }
 
 .privacyNote {
-  margin: 0.5rem 0 0;
-  font-size: 0.85rem;
-  color: var(--color-ink-muted);
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--color-ink-3);
 }
 
 .missingKey {
-  margin: 0 0 0.75rem;
+  margin: 0;
   padding: 0.75rem 1rem;
-  border: 1px dashed var(--color-border);
-  border-radius: 0.5rem;
-  color: var(--color-ink-muted);
+  border: 1px dashed var(--color-line);
+  border-radius: 8px;
+  color: var(--color-ink-2);
   font-size: 0.9rem;
 }

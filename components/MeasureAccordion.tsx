@@ -1,6 +1,5 @@
 import {PortableText} from '@/components/PortableText'
 import {RatingBadge} from '@/components/RatingBadge'
-import {POSITION_LABELS, POSITION_TONE} from '@/lib/labels'
 import type {MeasureLike} from '@/lib/types'
 
 import styles from './Accordion.module.css'
@@ -14,30 +13,34 @@ interface MeasureAccordionProps {
  * `ballotMeasure` block — see `MeasureLike` (lib/types.ts) and §11.
  */
 export function MeasureAccordion({measure}: MeasureAccordionProps) {
+  const hasPros = Boolean(measure.pros && measure.pros.length > 0)
+  const hasCons = Boolean(measure.cons && measure.cons.length > 0)
+
   return (
-    <details className={styles.accordion} id={measure.slug ?? undefined}>
+    <details className={styles.row} id={measure.slug ?? undefined}>
       <summary className={styles.summary}>
-        <span className={styles.title}>{measure.title}</span>
-        {measure.position && (
-          <RatingBadge label={POSITION_LABELS[measure.position]} tone={POSITION_TONE[measure.position]} />
-        )}
+        <span className={styles.label}>{measure.title}</span>
+        {measure.position && <RatingBadge kind={measure.position} />}
+        <span className={styles.chev} aria-hidden="true" />
       </summary>
       <div className={styles.panel}>
         {measure.summary && <p className={styles.summaryText}>{measure.summary}</p>}
-        <div className={styles.proCon}>
-          {measure.pros && measure.pros.length > 0 && (
-            <div>
-              <h4 className={styles.proConHeading}>Pros</h4>
-              <PortableText value={measure.pros} />
-            </div>
-          )}
-          {measure.cons && measure.cons.length > 0 && (
-            <div>
-              <h4 className={styles.proConHeading}>Cons</h4>
-              <PortableText value={measure.cons} />
-            </div>
-          )}
-        </div>
+        {(hasPros || hasCons) && (
+          <div className={styles.proCon}>
+            {hasPros && (
+              <div>
+                <p className={styles.proConHeading}>What it would do</p>
+                <PortableText value={measure.pros} />
+              </div>
+            )}
+            {hasCons && (
+              <div>
+                <p className={styles.proConHeading}>The concern</p>
+                <PortableText value={measure.cons} />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </details>
   )

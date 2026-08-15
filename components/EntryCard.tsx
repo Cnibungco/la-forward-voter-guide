@@ -3,40 +3,44 @@ import Image from 'next/image'
 import {PortableText} from '@/components/PortableText'
 import {RatingBadge} from '@/components/RatingBadge'
 import {urlForImage} from '@/lib/image'
-import {RATING_LABELS, RATING_TONE} from '@/lib/labels'
 import type {GuideEntry} from '@/lib/types'
 
-import styles from './EntryCard.module.css'
+import styles from './Accordion.module.css'
+import cardStyles from './EntryCard.module.css'
 
 interface EntryCardProps {
   entry: GuideEntry
+  label: string
 }
 
-export function EntryCard({entry}: EntryCardProps) {
+export function EntryCard({entry, label}: EntryCardProps) {
   const photoUrl = entry.photo ? urlForImage(entry.photo).width(160).height(160).fit('crop').url() : null
 
   return (
-    <li className={styles.card} id={entry.slug ?? undefined}>
-      {photoUrl ? (
-        <Image
-          className={styles.photo}
-          src={photoUrl}
-          alt=""
-          width={64}
-          height={64}
-        />
-      ) : (
-        <div className={styles.photoPlaceholder} aria-hidden="true" />
-      )}
-      <div className={styles.body}>
-        <div className={styles.heading}>
-          <span className={styles.name}>{entry.name}</span>
-          {entry.rating && <RatingBadge label={RATING_LABELS[entry.rating]} tone={RATING_TONE[entry.rating]} />}
-        </div>
-        <div className={styles.reasoning}>
-          <PortableText value={entry.reasoning} />
-        </div>
+    <details className={styles.row} id={entry.slug ?? undefined}>
+      <summary className={styles.summary}>
+        <span className={styles.label}>{label}</span>
+        {entry.rating && <RatingBadge kind={entry.rating} />}
+        <span className={styles.chev} aria-hidden="true" />
+      </summary>
+      <div className={styles.panel}>
+        {photoUrl && (
+          <Image
+            className={cardStyles.photo}
+            src={photoUrl}
+            alt=""
+            width={64}
+            height={64}
+          />
+        )}
+        {entry.reasoning ? (
+          <div className={cardStyles.reasoning}>
+            <PortableText value={entry.reasoning} />
+          </div>
+        ) : (
+          <p className={styles.empty}>No reasoning published yet.</p>
+        )}
       </div>
-    </li>
+    </details>
   )
 }

@@ -1,0 +1,34 @@
+.bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--color-accent-bg);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.icon {
+  color: #1f5c3d;
+  font-weight: 800;
+  font-size: 14px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.text {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-navy-2);
+  max-width: 900px;
+}
+
+.link {
+  color: var(--color-navy-2);
+  font-weight: 600;
+}
+
+@media (min-width: 860px) {
+  .bar {
+    padding: 10px 28px;
+  }
+}

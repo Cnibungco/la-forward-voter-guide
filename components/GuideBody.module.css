@@ -1,74 +1,51 @@
-.lookup {
-  margin-bottom: 1.5rem;
-}
-
-.status {
-  margin: 0 0 1.5rem;
-  color: var(--color-ink-muted);
-}
-
-.statusError {
-  margin: 0 0 1.5rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  background: #fbeceb;
-  color: #7a2318;
-}
-
 .statusBanner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  margin: 0 0 1.5rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  background: #eef3ee;
-  color: #234a2e;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--color-legend-bg);
+  border: 1px solid var(--color-line);
+  color: var(--color-ink-2);
 }
 
 .statusBanner p {
   margin: 0;
-  max-width: 34rem;
+  max-width: 42rem;
+  font-size: 13.5px;
 }
 
 .toggle {
   flex-shrink: 0;
-  padding: 0.4rem 0.9rem;
-  border: 1px solid var(--color-accent-ink);
-  border-radius: 0.4rem;
-  background: transparent;
-  color: var(--color-accent-ink);
-  font-size: 0.9rem;
+  padding: 8px 14px;
+  border: 1.5px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-bg);
+  color: var(--color-navy-2);
+  font-size: 13.5px;
   font-weight: 600;
-  cursor: pointer;
 }
 
 .toggle:hover {
-  background: rgba(181, 132, 42, 0.12);
-}
-
-.main {
-  padding-top: 0.5rem;
+  border-color: var(--color-navy-2);
 }
 
 .tierSection + .tierSection {
-  margin-top: 1.5rem;
+  margin-top: 8px;
 }
 
 .tierHeading {
-  font-size: 1.1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-accent-ink);
-  border-bottom: 2px solid var(--color-accent);
-  display: inline-block;
-  padding-bottom: 0.25rem;
-  margin: 0 0 0.5rem;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--color-navy);
+  margin: 0 0 8px;
 }
 
 .empty {
-  color: var(--color-ink-muted);
-  padding: 3rem 0;
+  color: var(--color-ink-2);
+  padding: 1rem 0;
 }

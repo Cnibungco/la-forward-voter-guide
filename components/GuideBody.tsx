@@ -1,13 +1,16 @@
 'use client'
 
-import {useMemo, useState} from 'react'
+import {useRouter} from 'next/navigation'
+import {useEffect, useMemo} from 'react'
 
-import {AddressLookup} from '@/components/AddressLookup'
-import {GuideNav} from '@/components/GuideNav'
+import {CompactLegend} from '@/components/CompactLegend'
+import {GuideShell} from '@/components/GuideShell'
+import {Methodology} from '@/components/Methodology'
+import {useMatch} from '@/components/MatchProvider'
 import {RegionSection} from '@/components/RegionSection'
 import {filterRegionsByMatch} from '@/lib/districtMatching'
 import {TIER_LABELS} from '@/lib/labels'
-import type {GuideRegion, MatchBallotResult, RegionTier} from '@/lib/types'
+import type {GuideRegion, RegionTier} from '@/lib/types'
 
 import styles from './GuideBody.module.css'
 
@@ -17,38 +20,25 @@ interface GuideBodyProps {
   regions: GuideRegion[]
 }
 
-type LookupStatus = 'idle' | 'loading' | 'error'
-
 /**
- * Owns the address-matching UI and filters the already-fetched
- * `regions` (from `GUIDE_QUERY`) client-side — this is the one place
- * `.cursor/rules/data-fetching.mdc`'s "no second Sanity query" promise
- * gets kept for this feature. See docs/address-matching-strategy.md.
+ * "Your ballot" view. Owns the already-fetched `regions` (from
+ * `GUIDE_QUERY`) and filters them client-side from the match result in
+ * context — this is the one place .cursor/rules/data-fetching.mdc's
+ * "no second Sanity query" promise gets kept for this feature. See
+ * docs/address-matching-strategy.md.
  */
 export function GuideBody({regions}: GuideBodyProps) {
-  const [match, setMatch] = useState<MatchBallotResult | null>(null)
-  const [status, setStatus] = useState<LookupStatus>('idle')
-  const [showFullGuide, setShowFullGuide] = useState(false)
+  const router = useRouter()
+  const {match, status, showFullGuide, setShowFullGuide} = useMatch()
 
-  async function handleAddressSelected(address: string) {
-    setStatus('loading')
-    setMatch(null)
-    setShowFullGuide(false)
-
-    try {
-      const response = await fetch('/api/match-ballot', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({address}),
-      })
-      if (!response.ok) throw new Error('match-ballot request failed')
-      const result = (await response.json()) as MatchBallotResult
-      setMatch(result)
-      setStatus('idle')
-    } catch {
-      setStatus('error')
+  useEffect(() => {
+    if (status === 'loading') return
+    if (!match) {
+      router.replace('/')
+      return
     }
-  }
+    if (match.precision === 'none') router.replace('/outside')
+  }, [match, status, router])
 
   const isFiltering = match !== null && match.precision !== 'none' && !showFullGuide
 
@@ -65,61 +55,45 @@ export function GuideBody({regions}: GuideBodyProps) {
     regions: effectiveRegions.filter((region) => region.tier === tier),
   })).filter(({regions: tierRegions}) => tierRegions.length > 0)
 
+  if (!match || match.precision === 'none') return null
+
   return (
-    <>
-      <div className={styles.lookup}>
-        <AddressLookup onSelect={handleAddressSelected} />
+    <GuideShell
+      regions={regions}
+      title="Your ballot"
+      crumb="Your ballot"
+      activeSlug={match.citySlug}
+    >
+      <div className={styles.statusBanner}>
+        <p>
+          {isFiltering
+            ? match.precision === 'city' && matchedCityTitle
+              ? `We don't have precise district boundaries for ${matchedCityTitle} yet, so we're showing its full ballot below — your state and county races are still narrowed to your address.`
+              : 'Showing the races and measures that apply to your address below.'
+            : 'Showing the full guide.'}
+        </p>
+        <button type="button" className={styles.toggle} onClick={() => setShowFullGuide((prev) => !prev)}>
+          {isFiltering ? 'Show full guide' : 'Show my ballot again'}
+        </button>
       </div>
 
-      {status === 'loading' && <p className={styles.status}>Looking up your ballot…</p>}
+      <Methodology />
+      <CompactLegend />
 
-      {status === 'error' && (
-        <p className={styles.statusError}>
-          Something went wrong looking up that address. Here&apos;s the full guide — you can browse for
-          your races and measures below.
-        </p>
+      {tiers.length === 0 ? (
+        <p className={styles.empty}>No races or measures match your address in this guide.</p>
+      ) : (
+        tiers.map(({tier, regions: tierRegions}) => (
+          <section key={tier} className={styles.tierSection} aria-labelledby={`${tier}-tier-heading`}>
+            <h2 id={`${tier}-tier-heading`} className={styles.tierHeading}>
+              {TIER_LABELS[tier]}
+            </h2>
+            {tierRegions.map((region) => (
+              <RegionSection key={region._id} region={region} headingLevel="h3" />
+            ))}
+          </section>
+        ))
       )}
-
-      {status === 'idle' && match?.precision === 'none' && (
-        <p className={styles.statusError}>
-          We couldn&apos;t match that address to an LA County ballot. Here&apos;s the full guide — you can
-          browse for your races and measures below.
-        </p>
-      )}
-
-      {status === 'idle' && match && match.precision !== 'none' && (
-        <div className={styles.statusBanner}>
-          <p>
-            {isFiltering
-              ? match.precision === 'city' && matchedCityTitle
-                ? `We don't have precise district boundaries for ${matchedCityTitle} yet, so we're showing its full ballot below — your state and county races are still narrowed to your address.`
-                : 'Showing the races and measures that apply to your address below.'
-              : 'Showing the full guide.'}
-          </p>
-          <button type="button" className={styles.toggle} onClick={() => setShowFullGuide((prev) => !prev)}>
-            {isFiltering ? 'Show full guide' : 'Show my ballot again'}
-          </button>
-        </div>
-      )}
-
-      <GuideNav regions={effectiveRegions} />
-
-      <main className={styles.main}>
-        {tiers.length === 0 ? (
-          <p className={styles.empty}>No races or measures match your address in the sections above.</p>
-        ) : (
-          tiers.map(({tier, regions: tierRegions}) => (
-            <section key={tier} className={styles.tierSection} aria-labelledby={`${tier}-tier-heading`}>
-              <h2 id={`${tier}-tier-heading`} className={styles.tierHeading}>
-                {TIER_LABELS[tier]}
-              </h2>
-              {tierRegions.map((region) => (
-                <RegionSection key={region._id} region={region} />
-              ))}
-            </section>
-          ))
-        )}
-      </main>
-    </>
+    </GuideShell>
   )
 }
