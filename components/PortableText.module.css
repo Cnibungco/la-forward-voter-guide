@@ -12,3 +12,13 @@
   padding-left: 1.25em;
   line-height: 1.6;
 }
+
+.link {
+  color: var(--color-navy-2);
+  text-decoration: underline;
+  word-break: break-word;
+}
+
+.link:hover {
+  color: var(--color-navy);
+}
