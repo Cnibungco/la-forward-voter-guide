@@ -74,3 +74,23 @@ export function navCities(regions: GuideRegion[]): LinkedRegion[] {
 export function firstOtherCity(regions: GuideRegion[]): GuideRegion | undefined {
   return navCities(regions).find((region) => !isLosAngelesCity(region))
 }
+
+/** Sidebar order flattened: state & county, then local cities. */
+export function navSequence(regions: GuideRegion[]): LinkedRegion[] {
+  return [...navStateCounty(regions), ...navCities(regions)]
+}
+
+/** Previous and next jurisdictions around `slug` in sidebar order. */
+export function adjacentRegions(
+  regions: GuideRegion[],
+  slug: string | null | undefined,
+): {prev: LinkedRegion | null; next: LinkedRegion | null} {
+  if (!slug) return {prev: null, next: null}
+  const sequence = navSequence(regions)
+  const index = sequence.findIndex((region) => region.slug === slug)
+  if (index === -1) return {prev: null, next: null}
+  return {
+    prev: sequence[index - 1] ?? null,
+    next: sequence[index + 1] ?? null,
+  }
+}

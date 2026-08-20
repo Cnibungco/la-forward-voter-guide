@@ -6,24 +6,34 @@ import {useRouter} from 'next/navigation'
 import {useState} from 'react'
 
 import {AddressLookup} from '@/components/AddressLookup'
-import {RatingBadge} from '@/components/RatingBadge'
+import {EntryCard} from '@/components/EntryCard'
 import {useMatch} from '@/components/MatchProvider'
+import {RatingBadge} from '@/components/RatingBadge'
 import {
   ADDRESS_LABEL,
+  CHECK_REGISTRATION_HREF,
+  CHECK_REGISTRATION_LABEL,
   COURAGE_CA_HREF,
   DONATE_ASK,
   DONATE_HREF,
   ELECTION_KICKER,
+  ENDORSED_HEAD,
+  ENDORSED_SUB,
   HERO_IMAGE_ALT,
   HERO_SUB,
   HERO_TITLE,
+  KEY_DATES,
+  KEY_DATES_HEAD,
   LANDING_ABOUT_BODY,
   LANDING_ABOUT_SUMMARY,
-  LAVOTE_HREF,
   LEGEND_HEAD,
   LEGEND_SUB,
+  REGISTER_HREF,
+  REGISTER_LABEL,
   SAMPLE_BALLOT_LABEL,
+  type KeyDatePart,
 } from '@/lib/copy'
+import {endorsedCandidates} from '@/lib/endorsed'
 import {CANDIDATE_LEGEND, MEASURE_LEGEND} from '@/lib/labels'
 import {firstOtherCity, isLosAngelesCity, regionByTier} from '@/lib/regions'
 import type {GuideRegion} from '@/lib/types'
@@ -36,16 +46,34 @@ interface LandingProps {
   disclaimer: string
 }
 
+function KeyDateEvent({parts}: {parts: KeyDatePart[]}) {
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (typeof part === 'string') return <span key={index}>{part}</span>
+        if ('href' in part) {
+          return (
+            <a key={index} href={part.href} target="_blank" rel="noopener noreferrer">
+              {part.label}
+            </a>
+          )
+        }
+        return <strong key={index}>{part.strong}</strong>
+      })}
+    </>
+  )
+}
+
 export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
   const router = useRouter()
   const {lookupAddress, status} = useMatch()
   const [heroFailed, setHeroFailed] = useState(false)
-  const [aboutOpen, setAboutOpen] = useState(false)
 
   const stateRegion = regionByTier(regions, 'state')
   const countyRegion = regionByTier(regions, 'county')
   const laCity = regions.find(isLosAngelesCity)
   const otherCity = firstOtherCity(regions)
+  const endorsed = endorsedCandidates(regions)
 
   async function handleAddressSelected(address: string) {
     const destination = await lookupAddress(address)
@@ -75,40 +103,61 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
         </div>
       </section>
 
-      <p className={styles.lavote}>
-        Need a vote center or drop box first? Visit{' '}
-        <a href={LAVOTE_HREF} target="_blank" rel="noopener noreferrer">
-          lavote.gov
-        </a>
-        .
-      </p>
+      <section className={styles.datesCard} aria-labelledby="key-dates-heading">
+        <div className={styles.datesAccent} aria-hidden="true">
+          <span />
+          <span />
+        </div>
+        <h2 id="key-dates-heading" className={styles.datesHead}>
+          {KEY_DATES_HEAD}
+        </h2>
+        <ol className={styles.dates}>
+          {KEY_DATES.map((item) => (
+            <li
+              key={item.date}
+              className={item.electionDay ? `${styles.dateRow} ${styles.electionDay}` : styles.dateRow}
+            >
+              <span className={styles.dateWhen}>{item.date}</span>
+              <span className={styles.dateEvent}>
+                <KeyDateEvent parts={item.event} />
+              </span>
+            </li>
+          ))}
+        </ol>
+        <div className={styles.dateActions}>
+          <a
+            href={CHECK_REGISTRATION_HREF}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.dateBtn}
+          >
+            {CHECK_REGISTRATION_LABEL}
+          </a>
+          <a href={REGISTER_HREF} target="_blank" rel="noopener noreferrer" className={styles.dateBtn}>
+            {REGISTER_LABEL}
+          </a>
+        </div>
+      </section>
 
-      <div className={styles.noteCard}>
-        <button
-          type="button"
-          className={styles.noteToggle}
-          aria-expanded={aboutOpen}
-          onClick={() => setAboutOpen((open) => !open)}
-        >
+      <details className={styles.noteCard}>
+        <summary className={styles.noteToggle}>
           <span>{LANDING_ABOUT_SUMMARY}</span>
-          <span className={aboutOpen ? `${styles.noteChev} ${styles.noteChevOpen}` : styles.noteChev} aria-hidden="true" />
-        </button>
-        {aboutOpen && (
-          <div className={styles.noteBody}>
-            <p>{disclaimer}</p>
-            {LANDING_ABOUT_BODY.map((paragraph) => (
-              <p key={paragraph.slice(0, 32)}>{paragraph}</p>
-            ))}
-            {sampleBallotUrl && (
-              <p>
-                <a href={sampleBallotUrl} target="_blank" rel="noopener noreferrer">
-                  {SAMPLE_BALLOT_LABEL} ↗
-                </a>
-              </p>
-            )}
-          </div>
-        )}
-      </div>
+          <span className={styles.noteChev} aria-hidden="true" />
+        </summary>
+        <div className={styles.noteBody}>
+          <p>{disclaimer}</p>
+          {LANDING_ABOUT_BODY.map((paragraph) => (
+            <p key={paragraph.slice(0, 32)}>{paragraph}</p>
+          ))}
+          {sampleBallotUrl && (
+            <p>
+              <a href={sampleBallotUrl} target="_blank" rel="noopener noreferrer">
+                {SAMPLE_BALLOT_LABEL} ↗
+              </a>
+            </p>
+          )}
+        </div>
+      </details>
 
       <div className={styles.addressCard}>
         <p className={styles.addressLabel}>{ADDRESS_LABEL}</p>
@@ -172,6 +221,22 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
         </a>
         .
       </p>
+
+      {endorsed.length > 0 && (
+        <section className={styles.endorse} aria-labelledby="endorsed-heading">
+          <h2 id="endorsed-heading" className={styles.sectionHead}>
+            {ENDORSED_HEAD}
+          </h2>
+          <p className={styles.endorseSub}>{ENDORSED_SUB}</p>
+          {endorsed.map((item) => (
+            <EntryCard
+              key={item.entry._id}
+              entry={item.entry}
+              label={`${item.entry.name} · ${item.raceTitle}`}
+            />
+          ))}
+        </section>
+      )}
 
       <div className={styles.legend} id="ratings">
         <p className={styles.legendHead}>{LEGEND_HEAD}</p>

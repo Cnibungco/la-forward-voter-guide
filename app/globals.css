@@ -1,9 +1,5 @@
 :root {
-  --color-navy: #1b2a4a;
-  --color-navy-2: #2e4374;
-  --color-gold: #f2b705;
-  --color-red: #d7263d;
-  --color-red-hover: #b81f33;
+  /* Neutral base — unchanged. Brand color sits on top as emphasis only. */
   --color-ink: #1a1a1a;
   --color-ink-2: #57584f;
   --color-ink-3: #8a8b82;
@@ -11,11 +7,37 @@
   --color-bg: #f5f6f3;
   --color-surface: #ffffff;
   --color-line: #e2e3dd;
-  --color-accent-bg: #eaeff7;
-  --color-legend-bg: #eef1e9;
-  --color-gold-hover: #e0a800;
   --radius: 12px;
+
+  /*
+   * Official LA Forward brand palette — the 6 swatches from brand assets,
+   * not CSS sampled from laforward.org. Do not "correct" these back to
+   * website-sampled values (#1C3A5F / #EB9B33 / #A21616).
+   *
+   *   #00285a  dark navy          — header, headings, primary chrome
+   *   #003da6  deep royal blue    — links, active states
+   *   #0681fc  bright sky blue    — sparse accent only (focus/highlight)
+   *   #ffa400  vibrant gold       — CTAs, donate, selection
+   *   #ffc845  medium yellow/gold — endorsed star
+   *   #ffe8b1  pale creamy yellow — endorsed badge wash
+   */
+  --color-navy: #00285a;
+  --color-navy-2: #003da6;
+  --color-sky: #0681fc;
+  --color-gold: #ffa400;
+  --color-gold-mid: #ffc845;
+  --color-gold-tint: #ffe8b1;
+  --color-gold-hover: color-mix(in srgb, var(--color-gold) 82%, black);
+  --color-on-navy: color-mix(in srgb, white 82%, var(--color-navy));
+  --color-accent-bg: color-mix(in srgb, var(--color-navy) 10%, white);
+  /* Neutral panel — gold-tint as the full legend wash hid the endorsed star. */
+  --color-legend-bg: var(--color-surface);
   --focus-ring: 3px solid var(--color-gold);
+
+  /* Semantic yes/no — not brand swatches. Support stays green; Oppose
+     stays red so those meanings don't get mapped onto gold/orange. */
+  --color-support: #1f5c3d;
+  --color-red: #c62828;
 }
 
 * {
@@ -34,6 +56,8 @@ body {
   font-family: var(--font-body), system-ui, sans-serif;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  /* Google Translate offsets <body> when it injects its banner. */
+  top: 0 !important;
 }
 
 a {
@@ -59,6 +83,7 @@ h2,
 h3,
 h4 {
   font-family: var(--font-heading), sans-serif;
+  color: var(--color-navy);
 }
 
 :focus-visible {
@@ -68,4 +93,16 @@ h4 {
 
 ::selection {
   background: var(--color-gold);
+  color: var(--color-navy);
+}
+
+/* Google Translate injects a top banner iframe and offsets <body>. Hide only
+   the banner — not every .skiptranslate iframe, or the language menu vanishes. */
+.goog-te-banner-frame {
+  display: none !important;
+}
+
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
 }

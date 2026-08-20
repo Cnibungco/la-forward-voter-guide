@@ -45,8 +45,6 @@
 }
 
 .pop {
-  position: static;
-  z-index: 15;
   background: var(--color-legend-bg);
   border: 1px solid var(--color-line);
   border-radius: 12px;
@@ -85,6 +83,7 @@
 @media (min-width: 860px) {
   .pop {
     position: absolute;
+    z-index: 15;
     top: calc(100% + 8px);
     left: 0;
     width: 620px;

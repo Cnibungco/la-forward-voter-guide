@@ -35,7 +35,13 @@ export default async function RegionPage({params}: RegionPageProps) {
   if (!region) notFound()
 
   return (
-    <GuideShell regions={regions} title={region.title} crumb={TIER_CRUMBS[region.tier]} activeSlug={slug}>
+    <GuideShell
+      regions={regions}
+      title={region.title}
+      crumb={TIER_CRUMBS[region.tier]}
+      activeSlug={slug}
+      showPageNav
+    >
       <Methodology />
       <CompactLegend />
       <RegionSection region={region} />

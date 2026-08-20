@@ -1,12 +1,14 @@
 import {describe, expect, it} from 'vitest'
 
 import {
+  adjacentRegions,
   canonicalCitySlug,
   citySlugsMatch,
   firstOtherCity,
   hasSlug,
   isLosAngelesCity,
   navCities,
+  navSequence,
   navStateCounty,
   regionBySlug,
   regionByTier,
@@ -145,6 +147,45 @@ describe('firstOtherCity', () => {
 
   it('returns undefined when only LA is published', () => {
     expect(firstOtherCity([city('Los Angeles', 'los-angeles')])).toBeUndefined()
+  })
+})
+
+describe('navSequence / adjacentRegions', () => {
+  const statewide = region('State of California', 'california', 'state', 1)
+  const county = region('LA County', 'la-county', 'county', 1)
+  const la = city('Los Angeles', 'los-angeles')
+  const burbank = city('Burbank', 'burbank')
+  const whittier = city('Whittier', 'whittier')
+
+  it('follows sidebar order: state, county, LA, then alpha cities', () => {
+    expect(navSequence([whittier, county, la, statewide, burbank]).map((item) => item.slug)).toEqual([
+      'california',
+      'la-county',
+      'los-angeles',
+      'burbank',
+      'whittier',
+    ])
+  })
+
+  it('returns prev and next around the current slug', () => {
+    const {prev, next} = adjacentRegions([statewide, county, la, burbank], 'la-county')
+    expect(prev?.slug).toBe('california')
+    expect(next?.slug).toBe('los-angeles')
+  })
+
+  it('omits prev on the first item and next on the last', () => {
+    const first = adjacentRegions([statewide, county, la], 'california')
+    expect(first.prev).toBeNull()
+    expect(first.next?.slug).toBe('la-county')
+
+    const last = adjacentRegions([statewide, county, la], 'los-angeles')
+    expect(last.prev?.slug).toBe('la-county')
+    expect(last.next).toBeNull()
+  })
+
+  it('returns nulls for an unknown or empty slug', () => {
+    expect(adjacentRegions([statewide], 'missing')).toEqual({prev: null, next: null})
+    expect(adjacentRegions([statewide], null)).toEqual({prev: null, next: null})
   })
 })
 

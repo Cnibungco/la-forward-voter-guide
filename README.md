@@ -26,16 +26,42 @@ Full decision history and reasoning: `docs/backend-strategy.md` (see
 
 ## Public site
 
+Every page has the site header: LA Forward wordmark (not translated), a
+language picker (Google Translate), and Donate.
+
 | Route | What it is |
 |---|---|
-| `/` | Landing: address lookup, browse-by-jurisdiction cards, ratings legend |
+| `/` | Landing — see section order below |
 | `/ballot` | Matched (or full) ballot after an address lookup |
 | `/guide/[slug]` | One Region — statewide sections, county, or a city |
 | `/outside` | Address was outside LA County; nothing about it was stored |
 
+Landing, in order:
+
+1. Hero
+2. Key dates (cream card; Check registration / Register to vote)
+3. About this guide (one accordion; no FAQ)
+4. Find your ballot (address lookup)
+5. Browse manually (state / county / LA City / other cities, plus Courage CA)
+6. Endorsed candidates (gold border; omitted when none are published)
+7. Ratings legend (full static copy)
+8. Donate
+
+Guide pages (`/guide/[slug]`) add previous/next jurisdiction links in
+sidebar order (state → county → LA City → other cities). First page
+shows Next only; last page shows Previous only. A Back to top link
+appears under that bar when the document is taller than about 1.75
+viewports. Ballot and Outside pages do not get this chrome.
+
 Staff-editable chrome (disclaimer, county sample-ballot URL) lives in
 the Studio **Site Settings** singleton, not in this repo. Election-cycle
-copy such as the hero kicker is in `lib/copy.ts`.
+copy — hero, key dates, about paragraphs, register/check-registration
+URLs, donate ask — is in `lib/copy.ts`.
+
+Official brand hexes live in `app/globals.css` (`#00285a`, `#003da6`,
+`#0681fc`, `#ffa400`, `#ffc845`, `#ffe8b1`). Headings are Barlow
+Condensed; body is Work Sans. Rating badges: thumbs up / yellow star /
+check / X; No recommendation and No position are gray text with no icon.
 
 ## Content
 
@@ -59,7 +85,8 @@ is independent of Sanity's own draft documents:
 
 New items default to `pending`. Flip to `published` in Studio when the
 write-up is ready. The public site can take up to 5 minutes to catch up
-(ISR).
+(ISR). Measures without a finished write-up should stay `pending` so
+they render the coming-soon row instead of an empty accordion.
 
 ## Setup
 
@@ -112,9 +139,16 @@ without needing a second dataset.
   address is never logged. A couple of cases hit the real files in
   `data/boundaries/*.geojson` for known addresses (not mocked), so a bad
   boundary-file edit fails a test.
-- `lib/regions.test.ts`, `lib/labels.test.ts`, `lib/contentStatus.test.ts`,
-  `lib/raceLabel.test.ts`, `lib/geoapifyAddress.test.ts` — nav order,
-  rating copy, pending/published display, and the address widget wrapper.
+- `lib/regions.test.ts` — sidebar order, LA City slug folding, and
+  previous/next jurisdiction helpers (`navSequence`, `adjacentRegions`).
+- `lib/endorsed.test.ts` — landing Endorsed section: published only,
+  city ballot races, sidebar order, empty when none.
+- `lib/contentLength.test.ts` — when Back to top should appear.
+- `lib/labels.test.ts`, `lib/contentStatus.test.ts`,
+  `lib/raceLabel.test.ts`, `lib/geoapifyAddress.test.ts`,
+  `lib/guidePayload.test.ts`, `lib/siteSettings.test.ts` — rating copy
+  and icons, pending/published display, address widget wrapper, payload
+  defaults, and Site Settings fallbacks.
 
 There is no mocked Sanity client. Tests cover app logic, not CMS content.
 

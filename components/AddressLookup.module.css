@@ -19,6 +19,7 @@
 }
 
 .autocomplete :global(.geoapify-autocomplete-input:focus) {
+  border-color: var(--color-sky);
   outline: var(--focus-ring);
   outline-offset: 2px;
 }

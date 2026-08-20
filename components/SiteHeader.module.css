@@ -39,7 +39,7 @@
 }
 
 .tagline {
-  color: #c9d4e8;
+  color: var(--color-on-navy);
   font-family: var(--font-heading), sans-serif;
   font-weight: 700;
   font-size: 14px;
@@ -57,7 +57,7 @@
 }
 
 .orgLink {
-  color: #c9d4e8;
+  color: var(--color-on-navy);
   font-size: 12.5px;
   text-decoration: none;
   display: none;
@@ -68,8 +68,8 @@
 }
 
 .donate {
-  background: var(--color-red);
-  color: #fff;
+  background: var(--color-gold);
+  color: var(--color-navy);
   font-weight: 700;
   font-size: 13.5px;
   padding: 8px 16px;
@@ -78,8 +78,8 @@
 }
 
 .donate:hover {
-  background: var(--color-red-hover);
-  color: #fff;
+  background: var(--color-gold-hover);
+  color: var(--color-navy);
 }
 
 @media (min-width: 860px) {

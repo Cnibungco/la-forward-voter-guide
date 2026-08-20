@@ -74,7 +74,7 @@ export function AddressLookup({onSelect}: AddressLookupProps) {
   }
 
   return (
-    <div className={styles.wrapper}>
+    <div className={`${styles.wrapper} notranslate`} translate="no">
       <div ref={containerRef} className={styles.autocomplete} />
       <p className={styles.privacyNote}>{PRIVACY_NOTE}</p>
     </div>

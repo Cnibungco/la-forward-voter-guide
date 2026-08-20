@@ -1,5 +1,13 @@
 import type {EntryRating, MeasurePosition} from '@/lib/types'
 
+export type BadgeKind = EntryRating | MeasurePosition
+
+/**
+ * Icon drawn by RatingBadge. Null is deliberate: a dash/minus reads too
+ * much like "vote no" (8/19 pattern review).
+ */
+export type BadgeIcon = 'thumbs_up' | 'star' | 'check' | 'x'
+
 /**
  * Display strings for the locked rating/position enums (see
  * .cursor/rules/project-overview.mdc). If these values ever change,
@@ -18,10 +26,10 @@ export const RATING_SHORT_LABELS: Record<EntryRating, string> = {
   endorsed: 'Endorsed',
 }
 
-export const RATING_ICONS: Record<EntryRating, string> = {
-  no_recommendation: '\u2013',
-  recommended: '\u2713',
-  endorsed: '\u2605',
+export const RATING_ICONS: Record<EntryRating, BadgeIcon | null> = {
+  no_recommendation: null,
+  recommended: 'thumbs_up',
+  endorsed: 'star',
 }
 
 export const POSITION_LABELS: Record<MeasurePosition, string> = {
@@ -36,10 +44,10 @@ export const POSITION_SHORT_LABELS: Record<MeasurePosition, string> = {
   no_position: 'No pos.',
 }
 
-export const POSITION_ICONS: Record<MeasurePosition, string> = {
-  support: '+',
-  oppose: '\u2715',
-  no_position: '\u2013',
+export const POSITION_ICONS: Record<MeasurePosition, BadgeIcon | null> = {
+  support: 'check',
+  oppose: 'x',
+  no_position: null,
 }
 
 export const TIER_LABELS = {
@@ -49,8 +57,6 @@ export const TIER_LABELS = {
 } as const
 
 export const TIER_CRUMBS = TIER_LABELS
-
-export type BadgeKind = EntryRating | MeasurePosition
 
 export const BADGE_LABELS: Record<BadgeKind, string> = {
   ...RATING_LABELS,
@@ -62,7 +68,7 @@ export const BADGE_SHORT_LABELS: Record<BadgeKind, string> = {
   ...POSITION_SHORT_LABELS,
 }
 
-export const BADGE_ICONS: Record<BadgeKind, string> = {
+export const BADGE_ICONS: Record<BadgeKind, BadgeIcon | null> = {
   ...RATING_ICONS,
   ...POSITION_ICONS,
 }

@@ -16,6 +16,72 @@ export const HERO_IMAGE_ALT =
 
 export const LAVOTE_HREF = 'https://www.lavote.gov'
 
+export const REGISTER_HREF = 'https://registertovote.ca.gov/'
+
+export const CHECK_REGISTRATION_HREF = 'https://voterstatus.sos.ca.gov'
+
+export const EARLY_VOTING_HREF = 'https://caearlyvoting.sos.ca.gov/'
+
+export const REGISTER_LABEL = 'Register to vote'
+
+export const CHECK_REGISTRATION_LABEL = 'Check registration'
+
+export const KEY_DATES_HEAD = 'Key dates'
+
+export type KeyDatePart = string | {href: string; label: string} | {strong: string}
+
+export interface KeyDate {
+  date: string
+  event: KeyDatePart[]
+  electionDay?: boolean
+}
+
+/** Voter-facing dates for the Nov 3, 2026 general. Edit here each cycle. */
+export const KEY_DATES: KeyDate[] = [
+  {
+    date: 'OCT 5',
+    event: [
+      'Ballots mailed to all active registered voters. You can also pick up a ballot (or drop one off) at an ',
+      {href: EARLY_VOTING_HREF, label: 'Early Voting site'},
+      '.',
+    ],
+  },
+  {
+    date: 'OCT 6',
+    event: ['Secure ballot drop-off boxes open.'],
+  },
+  {
+    date: 'OCT 19',
+    event: [
+      {
+        strong:
+          'Last day to register to vote (or update your registration address) online to receive your ballot by mail. ',
+      },
+      'After October 19, you must complete same-day voter registration and request your ballot in person at a vote center.',
+    ],
+  },
+  {
+    date: 'OCT 24',
+    event: ['Vote centers open across LA County to vote or drop off your ballot.'],
+  },
+  {
+    date: 'OCT 27',
+    event: [
+      {href: LAVOTE_HREF, label: 'Last recommended day'},
+      ' to mail your ballot at the post office.',
+    ],
+  },
+  {
+    date: 'NOV 3',
+    event: ['Election Day'],
+    electionDay: true,
+  },
+]
+
+export const ENDORSED_HEAD = 'Endorsed candidates'
+
+export const ENDORSED_SUB = 'Candidates LA Forward is backing without reservation.'
+
 export const ORG_HREF = 'https://www.laforward.org'
 
 export const DONATE_HREF = 'https://www.laforward.org/donate'
@@ -38,7 +104,7 @@ export const LANDING_ABOUT_BODY = [
   "If this voter guide has been useful for you, we'd be grateful for a donation of any amount to help cover the costs of making it every election! More than 75% of our budget comes from small-dollar donations from people like you.",
 ]
 
-export const ADDRESS_LABEL = "Find what's on your ballot"
+export const ADDRESS_LABEL = 'Find your ballot'
 
 export const PRIVACY_NOTE =
   "We match this to your district, then don't store it, not in a database, not in analytics, not in a log."

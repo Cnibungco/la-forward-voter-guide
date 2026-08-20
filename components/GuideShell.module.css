@@ -37,6 +37,10 @@
   font-weight: 700;
   font-size: 14.5px;
   color: var(--color-navy);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .body {
@@ -118,12 +122,16 @@
   margin: 0 0 4px;
 }
 
+.titleRow {
+  margin: 0 0 14px;
+}
+
 .title {
   font-family: var(--font-heading), sans-serif;
   font-weight: 800;
   font-size: 26px;
   color: var(--color-navy);
-  margin: 0 0 14px;
+  margin: 0;
 }
 
 @media (min-width: 860px) {
