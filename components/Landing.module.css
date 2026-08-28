@@ -184,9 +184,6 @@
   background: none;
   border: none;
   padding: 14px 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-navy);
   text-align: left;
   cursor: pointer;
   list-style: none;
@@ -254,12 +251,17 @@
   margin: 16px 16px 0;
 }
 
-.addressLabel {
+.addressLabel,
+.noteToggle {
   font-family: var(--font-heading), sans-serif;
   font-weight: 700;
   font-size: 19px;
-  margin: 0 0 10px;
+  line-height: 1.55;
   color: var(--color-navy);
+}
+
+.addressLabel {
+  margin: 0 0 10px;
 }
 
 .status {
