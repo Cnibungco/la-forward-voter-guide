@@ -15,6 +15,16 @@
   padding: 10px 16px;
 }
 
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 24, 36, 0.5);
+  z-index: 30;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
 .burger {
   display: flex;
   flex-direction: column;
@@ -24,6 +34,7 @@
   border: none;
   padding: 6px;
   width: 28px;
+  cursor: pointer;
 }
 
 .burger span {
@@ -53,13 +64,6 @@
 
 .rail {
   display: none;
-}
-
-.scrim {
-  position: fixed;
-  inset: 0;
-  background: rgba(20, 24, 36, 0.5);
-  z-index: 30;
 }
 
 .drawer {
@@ -100,11 +104,22 @@
 }
 
 .drawerClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
   background: none;
   border: none;
+  border-radius: 6px;
   font-size: 16px;
   color: var(--color-ink-2);
-  padding: 4px;
+  cursor: pointer;
+}
+
+.drawer:focus {
+  outline: none;
 }
 
 .main {

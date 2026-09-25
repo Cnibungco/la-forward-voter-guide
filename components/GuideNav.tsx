@@ -2,6 +2,9 @@
 
 import Link from 'next/link'
 
+import {SearchIcon} from '@/components/SearchIcon'
+import {CITIES_EMPTY, FIND_YOUR_CITY_LABEL, NAV_STATE_COUNTY, NAV_STATE_EMPTY} from '@/lib/copy'
+import {TIER_LABELS} from '@/lib/labels'
 import {navCities, navStateCounty} from '@/lib/regions'
 import type {GuideRegion} from '@/lib/types'
 
@@ -27,19 +30,22 @@ export function GuideNav({regions, activeSlug, search, onSearch, onNavigate}: Gu
   return (
     <>
       <label className={styles.searchLabel}>
-        <span className={styles.visuallyHidden}>Find your city</span>
-        <input
-          type="search"
-          className={styles.search}
-          placeholder="Find your city"
-          value={search}
-          onChange={(event) => onSearch(event.target.value)}
-        />
+        <span className={styles.visuallyHidden}>{FIND_YOUR_CITY_LABEL}</span>
+        <span className={styles.searchWrap}>
+          <SearchIcon className={styles.searchIcon} />
+          <input
+            type="search"
+            className={styles.search}
+            placeholder={FIND_YOUR_CITY_LABEL}
+            value={search}
+            onChange={(event) => onSearch(event.target.value)}
+          />
+        </span>
       </label>
 
-      <p className={styles.tier}>State &amp; county</p>
+      <p className={styles.tier}>{NAV_STATE_COUNTY}</p>
       {stateCounty.length === 0 ? (
-        query ? <p className={styles.empty}>No state or county matches that search.</p> : null
+        query ? <p className={styles.empty}>{NAV_STATE_EMPTY}</p> : null
       ) : (
         stateCounty.map((region) => (
           <NavItem
@@ -52,9 +58,9 @@ export function GuideNav({regions, activeSlug, search, onSearch, onNavigate}: Gu
         ))
       )}
 
-      <p className={styles.tier}>Local cities</p>
+      <p className={styles.tier}>{TIER_LABELS.city}</p>
       {cities.length === 0 ? (
-        <p className={styles.empty}>No cities match that search.</p>
+        <p className={styles.empty}>{CITIES_EMPTY}</p>
       ) : (
         cities.map((region) => (
           <NavItem

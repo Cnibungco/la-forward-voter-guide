@@ -1,0 +1,52 @@
+.cta {
+  display: inline-block;
+  font-weight: 700;
+  border-radius: 6px;
+  text-decoration: none;
+  border: none;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.gold {
+  background: var(--color-gold);
+  color: var(--color-navy);
+}
+
+.gold:hover {
+  background: var(--color-gold-hover);
+  color: var(--color-navy);
+}
+
+.donate {
+  background: var(--color-donate);
+  color: #fff;
+}
+
+.donate:hover {
+  background: var(--color-donate-hover);
+  color: #fff;
+}
+
+.secondary {
+  background: var(--color-surface);
+  color: var(--color-navy);
+  border: 1px solid var(--color-line);
+}
+
+.secondary:hover {
+  color: var(--color-navy);
+}
+
+.compact {
+  font-size: 13.5px;
+  padding: 8px 16px;
+}
+
+.regular {
+  font-size: 14px;
+  padding: 12px 16px;
+}

@@ -20,12 +20,6 @@ export const RATING_LABELS: Record<EntryRating, string> = {
   endorsed: 'Endorsed',
 }
 
-export const RATING_SHORT_LABELS: Record<EntryRating, string> = {
-  no_recommendation: 'No rec.',
-  recommended: 'Rec.',
-  endorsed: 'Endorsed',
-}
-
 export const RATING_ICONS: Record<EntryRating, BadgeIcon | null> = {
   no_recommendation: null,
   recommended: 'thumbs_up',
@@ -36,12 +30,6 @@ export const POSITION_LABELS: Record<MeasurePosition, string> = {
   support: 'Support',
   oppose: 'Oppose',
   no_position: 'No position',
-}
-
-export const POSITION_SHORT_LABELS: Record<MeasurePosition, string> = {
-  support: 'Support',
-  oppose: 'Oppose',
-  no_position: 'No pos.',
 }
 
 export const POSITION_ICONS: Record<MeasurePosition, BadgeIcon | null> = {
@@ -56,16 +44,16 @@ export const TIER_LABELS = {
   city: 'Local cities',
 } as const
 
-export const TIER_CRUMBS = TIER_LABELS
+/** Ballot page: one city, so "Local" not "Local cities". */
+export const BALLOT_TIER_LABELS = {
+  state: 'State',
+  county: 'County',
+  city: 'Local',
+} as const
 
 export const BADGE_LABELS: Record<BadgeKind, string> = {
   ...RATING_LABELS,
   ...POSITION_LABELS,
-}
-
-export const BADGE_SHORT_LABELS: Record<BadgeKind, string> = {
-  ...RATING_SHORT_LABELS,
-  ...POSITION_SHORT_LABELS,
 }
 
 export const BADGE_ICONS: Record<BadgeKind, BadgeIcon | null> = {
@@ -91,7 +79,7 @@ export const CANDIDATE_LEGEND: {kind: EntryRating; desc: string}[] = [
 export const MEASURE_LEGEND: {kind: MeasurePosition; desc: string}[] = [
   {
     kind: 'no_position',
-    desc: "We didn't take a side on this one; reasoning is still behind the tap.",
+    desc: "We didn't take a side on this one; tap the measure to read why.",
   },
   {
     kind: 'support',
@@ -101,13 +89,4 @@ export const MEASURE_LEGEND: {kind: MeasurePosition; desc: string}[] = [
     kind: 'oppose',
     desc: "We think this measure shouldn't pass.",
   },
-]
-
-export const COMPACT_LEGEND: BadgeKind[] = [
-  'no_recommendation',
-  'recommended',
-  'endorsed',
-  'no_position',
-  'support',
-  'oppose',
 ]

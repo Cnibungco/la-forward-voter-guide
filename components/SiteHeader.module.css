@@ -7,25 +7,20 @@
   padding: 10px 16px;
 }
 
-.left {
+.brand {
   display: flex;
   align-items: center;
   gap: 12px;
   min-width: 0;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
   text-decoration: none;
   color: inherit;
-  flex-shrink: 0;
 }
 
 .logo {
   height: 26px;
   width: auto;
   display: block;
+  flex-shrink: 0;
 }
 
 .logoFallback {
@@ -67,19 +62,17 @@
   color: #fff;
 }
 
-.donate {
-  background: var(--color-gold);
-  color: var(--color-navy);
-  font-weight: 700;
-  font-size: 13.5px;
-  padding: 8px 16px;
-  border-radius: 6px;
-  text-decoration: none;
-}
+@media (max-width: 859px) {
+  .header {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
 
-.donate:hover {
-  background: var(--color-gold-hover);
-  color: var(--color-navy);
+  .right {
+    flex: 1 1 100%;
+    justify-content: flex-end;
+    min-width: 0;
+  }
 }
 
 @media (min-width: 860px) {

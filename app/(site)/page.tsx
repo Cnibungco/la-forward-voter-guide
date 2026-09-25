@@ -1,5 +1,5 @@
 import {Landing} from '@/components/Landing'
-import {TrustBar} from '@/components/TrustBar'
+import {EMPTY_GUIDE_COPY} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
 import {resolvedDisclaimer, resolvedSampleBallotUrl} from '@/lib/siteSettings'
 
@@ -12,22 +12,14 @@ export default async function LandingPage() {
   const {regions, settings} = await getGuide()
 
   if (regions.length === 0) {
-    return (
-      <p className={styles.empty}>
-        No content has been published yet. Once regions, races, and measures are added in Studio,
-        they&apos;ll show up here.
-      </p>
-    )
+    return <p className={styles.empty}>{EMPTY_GUIDE_COPY}</p>
   }
 
   return (
-    <>
-      <TrustBar />
-      <Landing
-        regions={regions}
-        sampleBallotUrl={resolvedSampleBallotUrl(settings)}
-        disclaimer={resolvedDisclaimer(settings)}
-      />
-    </>
+    <Landing
+      regions={regions}
+      sampleBallotUrl={resolvedSampleBallotUrl(settings)}
+      disclaimer={resolvedDisclaimer(settings)}
+    />
   )
 }

@@ -86,6 +86,25 @@ export const ORG_HREF = 'https://www.laforward.org'
 
 export const DONATE_HREF = 'https://www.laforward.org/donate'
 
+export const MAILING_LIST_LABEL = 'Get on our mailing list'
+
+export const MAILING_LIST_HREF = 'https://www.laforward.org/newsletter'
+
+export const CONTACT_LABEL = 'Contact us'
+
+export const CONTACT_HREF = 'https://www.laforward.org/contact'
+
+export const FACEBOOK_HREF = 'https://www.facebook.com/LosAngelesForward/'
+
+export const INSTAGRAM_HREF = 'https://www.instagram.com/laforward'
+
+export const DONATE_POPUP_TITLE = 'Support LA Forward'
+
+export const DONATE_POPUP_BODY =
+  "If this voter guide has been useful for you, we'd be grateful for a donation of any amount to help cover the costs of making it every election!"
+
+export const DONATE_POPUP_DISMISS = 'Not now'
+
 export const COURAGE_CA_HREF = 'https://couragecalifornia.org'
 
 export const TRUST_STATEMENT =
@@ -98,19 +117,153 @@ export const METHODOLOGY_BODY =
 
 export const LANDING_ABOUT_SUMMARY = 'About this guide and how we arrived at our recommendations'
 
+export const TRANSLATE_NOTE = 'Translations are automatic and may not be perfect.'
+
 export const LANDING_ABOUT_BODY = [
   'LA Forward is dedicated to democracy. We support policies and power-building to make Los Angeles County a fair, flourishing place for everyone.',
-  "We've been publishing detailed voter guides every election since we launched in Fall 2016. Our local candidate endorsements are the result of a multi-step process. For all other candidates and measures, the recommendations here were written by a team of volunteers and staff. Our team consulted publicly available media coverage, candidate and organizational websites, and conducted interviews with people in our networks and on the ground to make our decisions and complete our write-ups. Candidates and ballot measure committees were not given the opportunity to pay for preferential treatment and were not shown these recommendations before they were published.",
+  "We've been publishing detailed voter guides every election since we launched in Fall 2016. Our local candidate endorsements are the result of a multi-step process. For all other candidates and measures, the recommendations here were written by a team of volunteers and staff. Our team consulted publicly available media coverage, candidate and organizational websites, and conducted interviews with people in our networks and on the ground to make our decisions and complete our write-ups.",
   "If this voter guide has been useful for you, we'd be grateful for a donation of any amount to help cover the costs of making it every election! More than 75% of our budget comes from small-dollar donations from people like you.",
+  TRANSLATE_NOTE,
 ]
 
 export const ADDRESS_LABEL = 'Find your ballot'
 
+export const HOME_ADDRESS_LABEL = 'Home address'
+
+export const ADDRESS_PLACEHOLDER = 'Start typing your address'
+
+export const ADDRESS_PICK_HINT = 'Start typing, then tap your address in the list.'
+
+export const ADDRESS_LOOKUP_UNAVAILABLE =
+  "Address lookup isn't available right now. You can still browse the guide by city."
+
 export const PRIVACY_NOTE =
   "We match this to your district, then don't store it, not in a database, not in analytics, not in a log."
 
+export const FIND_YOUR_CITY_LABEL = 'Find your city'
+
+export const STATEWIDE_EYEBROW = 'Statewide'
+
+export const COUNTYWIDE_EYEBROW = 'Countywide'
+
+export const LOCAL_EYEBROW = 'Citywide'
+
+/** Distinct from LOCAL_EYEBROW so the LA card and the city list aren't both "Citywide". */
+export const FIND_YOUR_CITY_EYEBROW = 'LA County Cities'
+
+export const CITIES_TITLE = 'Find your city'
+
+export const CITIES_BODY = 'Search or scroll to your city, then tap it to see that ballot.'
+
+export const CITIES_EMPTY = 'No cities match that search.'
+
+export const NAV_STATE_COUNTY = 'State & county'
+
+export const NAV_STATE_EMPTY = 'No state or county matches that search.'
+
+export const BROWSE_MANUALLY = 'or browse manually'
+
+export const JUMP_TO_LABEL = 'Jump to'
+
+export const RACES_LABEL = 'Races'
+
+export const MEASURES_LABEL = 'Ballot measures'
+
+export const REGION_EMPTY = 'Nothing entered for this region yet.'
+
+export const ENTRY_NO_REASONING = 'No reasoning published yet.'
+
+export const LANDING_LOOKUP_ERROR =
+  'Something went wrong looking up that address. Browse a jurisdiction below. Nothing about it was stored.'
+
+export const CITIES_NONE = 'No city guides have been published yet.'
+
+export const TAP_HINT = 'Tap a name to read why.'
+
+export const TAP_HINT_MEASURE = 'Tap a Ballot Measure to read why.'
+
+export const BALLOT_EMPTY = 'No races or measures match your address in this guide.'
+
+export const SHOW_EVERYTHING_LABEL = 'Show everything'
+
+export const SHOW_ONLY_MY_BALLOT_LABEL = 'Show only my ballot'
+
+export const BALLOT_FILTERING_COPY = 'Showing the races and measures that apply to this address.'
+
+export const BALLOT_FULL_COPY = 'Showing every race and measure in the guide.'
+
+export const OPEN_CITY_LIST_LABEL = 'Find a city'
+
+export const CLOSE_CITY_LIST_LABEL = 'Close city list'
+
+export const DONATE_BUTTON_LABEL = 'Donate'
+
+export const EMPTY_GUIDE_COPY = 'Nothing has been published yet. Please check back soon.'
+
+export const NOT_FOUND_TITLE = "We can't find that page."
+
+export const NOT_FOUND_BODY = 'It may have moved. Head home or find your city.'
+
+export const NOT_FOUND_HOME = 'Back to home'
+
+export const LOAD_ERROR_TITLE = "We couldn't load the guide."
+
+export const LOAD_ERROR_BODY =
+  'The connection dropped while loading recommendations. Try again in a moment.'
+
+export const TRY_AGAIN_LABEL = 'Try again'
+
+export const NO_REC_LEGEND_NOTE =
+  'Gray labels are real ratings, not missing write-ups. “Write-up coming soon” means we have not published yet.'
+
+export function ballotCityImprecision(cityTitle: string): string {
+  return `We matched ${cityTitle}, but not every local district yet, so this city's full local list is included.`
+}
+
+export const BALLOT_ADDRESS_PREFIX = 'For'
+
+export const CHANGE_ADDRESS_LABEL = 'Change address'
+
+export const CANCEL_CHANGE_ADDRESS_LABEL = 'Cancel'
+
+export const BALLOT_CHANGE_ERROR =
+  'Something went wrong looking up that address. Your current ballot is unchanged. Nothing about it was stored.'
+
+export const BALLOT_LOOKUP_STATUS = 'Looking up your ballot…'
+
 export const DONATE_ASK =
   'Over 75% of our budget comes from small-dollar gifts like yours. No corporate money, no strings.'
+
+export const SHARE_HEAD = 'Share this Voter Guide'
+
+/** Header control on narrow screens. The dialog title stays SHARE_HEAD. */
+export const SHARE_HEADER_SHORT = 'Share'
+
+export const SHARE_CLOSE_LABEL = 'Close'
+
+export const SHARE_BODY = 'Download the graphic, or share it with a short line already filled in.'
+
+export const SHARE_TEXT = 'I just used this Voter Guide!'
+
+export const SHARE_TITLE = 'LA Forward Voter Guide'
+
+export const SHARE_BUTTON_LABEL = 'Share'
+
+export const SHARE_COPY_LABEL = 'Copy link'
+
+export const SHARE_COPIED_LABEL = 'Link copied'
+
+export const SHARE_COPY_MANUAL = 'Select and copy this link.'
+
+export const SHARE_DOWNLOAD_LABEL = 'Download graphic'
+
+/**
+ * Designed share graphic. Replace this file in `public/` when the final
+ * artwork is ready, and keep the download filename in sync.
+ */
+export const SHARE_GRAPHIC_SRC = '/share-guide.svg'
+
+export const SHARE_GRAPHIC_DOWNLOAD = 'la-forward-voter-guide.svg'
 
 export const LEGEND_HEAD = 'Our ratings, in full'
 
@@ -119,16 +272,18 @@ export const LEGEND_SUB =
 
 export const LEGEND_TRIGGER = 'What do the ratings mean?'
 
+export const MEASURE_LEGEND_HEAD = 'For ballot measures'
+
 export const OUTSIDE_EYEBROW = 'Outside LA County'
 
 export const OUTSIDE_TITLE = "That address isn't in our coverage area, but you're not stuck."
 
 export const OUTSIDE_BODY =
-  "We only cover LA County races and measures right now, so we couldn't match that address to a ballot. Nothing about it was stored. Browse the full guide below, or jump straight to a jurisdiction."
+  "We only cover LA County races and measures right now, so we couldn't match that address to a ballot. Nothing about it was stored. Statewide, county, and Los Angeles guides are still available."
 
 export const DEFAULT_DISCLAIMER =
   'These are races and measures where LA Forward has made recommendations.'
 
-export const SAMPLE_BALLOT_LABEL = 'Full county sample ballot'
+export const SAMPLE_BALLOT_LABEL = 'Official LA County sample ballot'
 
-export const COMING_SOON_LABEL = 'Recommendation coming soon'
+export const COMING_SOON_LABEL = 'Write-up coming soon'

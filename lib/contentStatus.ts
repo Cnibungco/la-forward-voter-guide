@@ -1,4 +1,4 @@
-import type {ContentStatus, GuideEntry, MeasureLike, RaceLike} from '@/lib/types'
+import type {ContentStatus, GuideEntry, GuideRegion, MeasureLike, RaceLike} from '@/lib/types'
 
 export function isDraftStatus(status: ContentStatus | null | undefined): boolean {
   return status === 'draft'
@@ -28,6 +28,39 @@ export function entryNeedsWriteup(entry: GuideEntry): boolean {
 export function measureNeedsWriteup(measure: MeasureLike): boolean {
   if (isDraftStatus(measure.contentStatus)) return false
   return isPendingStatus(measure.contentStatus) || !measure.position
+}
+
+export function entryIsExpandable(entry: GuideEntry): boolean {
+  return !isDraftStatus(entry.contentStatus) && !entryNeedsWriteup(entry)
+}
+
+export function measureIsExpandable(measure: MeasureLike): boolean {
+  return !isDraftStatus(measure.contentStatus) && !measureNeedsWriteup(measure)
+}
+
+export function raceIsExpandable(race: RaceLike): boolean {
+  if (isDraftStatus(race.contentStatus) || raceNeedsWriteup(race)) return false
+  return visibleEntries(race.entries).some(entryIsExpandable)
+}
+
+/** Which rows can actually open. Coming-soon rows are not tappable. */
+export function expandableContentKind(regions: GuideRegion[]): 'race' | 'measure' | null {
+  let races = false
+  let measures = false
+  for (const region of regions) {
+    const sections = region.sections ?? []
+    if (region.races.some(raceIsExpandable)) races = true
+    if (region.measures.some(measureIsExpandable)) measures = true
+    for (const section of sections) {
+      if (section._type === 'raceGroup' && (section.races ?? []).some(raceIsExpandable)) races = true
+      if (section._type === 'measureGroup' && (section.measures ?? []).some(measureIsExpandable)) {
+        measures = true
+      }
+    }
+  }
+  if (races) return 'race'
+  if (measures) return 'measure'
+  return null
 }
 
 /** Race listed on the ballot but with no candidates/write-up yet. */

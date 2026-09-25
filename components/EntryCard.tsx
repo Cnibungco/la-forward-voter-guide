@@ -4,6 +4,7 @@ import {ComingSoonRow} from '@/components/ComingSoonRow'
 import {PortableText} from '@/components/PortableText'
 import {RatingBadge} from '@/components/RatingBadge'
 import {entryNeedsWriteup, isDraftStatus} from '@/lib/contentStatus'
+import {ENTRY_NO_REASONING} from '@/lib/copy'
 import {urlForImage} from '@/lib/image'
 import type {GuideEntry} from '@/lib/types'
 
@@ -30,12 +31,12 @@ export function EntryCard({entry, label}: EntryCardProps) {
         {entry.rating && <RatingBadge kind={entry.rating} />}
         <span className={styles.chev} aria-hidden="true" />
       </summary>
-      <div className={styles.panel}>
+      <div className={photoUrl ? `${styles.panel} ${styles.withPhoto}` : styles.panel}>
         {photoUrl && (
           <Image
             className={cardStyles.photo}
             src={photoUrl}
-            alt=""
+            alt={entry.name}
             width={64}
             height={64}
           />
@@ -45,7 +46,7 @@ export function EntryCard({entry, label}: EntryCardProps) {
             <PortableText value={entry.reasoning} />
           </div>
         ) : (
-          <p className={styles.empty}>No reasoning published yet.</p>
+          <p className={styles.empty}>{ENTRY_NO_REASONING}</p>
         )}
       </div>
     </details>

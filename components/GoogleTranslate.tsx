@@ -2,6 +2,8 @@
 
 import {useEffect, useState} from 'react'
 
+import {TRANSLATE_NOTE} from '@/lib/copy'
+
 import styles from './GoogleTranslate.module.css'
 
 const ELEMENT_ID = 'google_translate_element'
@@ -130,10 +132,15 @@ export function GoogleTranslate() {
       <label className={styles.visuallyHidden} htmlFor="site-language">
         Translate this page
       </label>
+      <span id="translate-note" className={styles.visuallyHidden}>
+        {TRANSLATE_NOTE}
+      </span>
       <select
         id="site-language"
         className={styles.select}
         value={lang}
+        title={TRANSLATE_NOTE}
+        aria-describedby="translate-note"
         onChange={(event) => {
           const next = event.target.value
           setLang(next)

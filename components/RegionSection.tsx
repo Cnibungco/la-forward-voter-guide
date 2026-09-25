@@ -1,6 +1,7 @@
 import {MeasureAccordion} from '@/components/MeasureAccordion'
 import {RaceAccordion} from '@/components/RaceAccordion'
-import {SectionGroup} from '@/components/SectionGroup'
+import {GroupLabel, SectionGroup} from '@/components/SectionGroup'
+import {MEASURES_LABEL, RACES_LABEL, REGION_EMPTY} from '@/lib/copy'
 import type {GuideRegion} from '@/lib/types'
 
 import styles from './RegionSection.module.css'
@@ -13,6 +14,7 @@ interface RegionSectionProps {
 export function RegionSection({region, headingLevel = 'none'}: RegionSectionProps) {
   const sections = region.sections ?? []
   const hasContent = region.races.length > 0 || region.measures.length > 0 || sections.length > 0
+  const groupTag = headingLevel === 'h3' ? 'h4' : 'h2'
 
   return (
     <section
@@ -29,7 +31,7 @@ export function RegionSection({region, headingLevel = 'none'}: RegionSectionProp
 
       {region.races.length > 0 && (
         <div className={styles.group}>
-          <p className={styles.groupLabel}>Races</p>
+          <GroupLabel as={groupTag}>{RACES_LABEL}</GroupLabel>
           {region.races.map((race) => (
             <RaceAccordion key={race._id} race={race} />
           ))}
@@ -38,7 +40,7 @@ export function RegionSection({region, headingLevel = 'none'}: RegionSectionProp
 
       {region.measures.length > 0 && (
         <div className={styles.group}>
-          <p className={styles.groupLabel}>Ballot measures</p>
+          <GroupLabel as={groupTag}>{MEASURES_LABEL}</GroupLabel>
           {region.measures.map((measure) => (
             <MeasureAccordion key={measure._id} measure={measure} />
           ))}
@@ -46,10 +48,10 @@ export function RegionSection({region, headingLevel = 'none'}: RegionSectionProp
       )}
 
       {sections.map((section) => (
-        <SectionGroup key={section._key} section={section} />
+        <SectionGroup key={section._key} section={section} groupTag={groupTag} />
       ))}
 
-      {!hasContent && <p className={styles.empty}>Nothing entered for this region yet.</p>}
+      {!hasContent && <p className={styles.empty}>{REGION_EMPTY}</p>}
     </section>
   )
 }

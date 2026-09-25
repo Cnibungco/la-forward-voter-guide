@@ -2,16 +2,19 @@
   position: relative;
   display: flex;
   align-items: center;
+  background: #fff;
+  border-radius: 6px;
+  padding-right: 10px;
 }
 
 .select {
   font-family: var(--font-body), system-ui, sans-serif;
   font-size: 12.5px;
   max-width: 148px;
-  padding: 5px 6px;
+  padding: 5px 4px 5px 10px;
   border: none;
   border-radius: 6px;
-  background: #fff;
+  background: transparent;
   color: var(--color-ink);
   cursor: pointer;
 }

@@ -2,13 +2,14 @@ import {describe, expect, it} from 'vitest'
 
 import {
   entryNeedsWriteup,
+  expandableContentKind,
   isDraftStatus,
   isPendingStatus,
   measureNeedsWriteup,
   raceNeedsWriteup,
   visibleEntries,
 } from './contentStatus'
-import type {GuideEntry, MeasureLike, RaceLike} from './types'
+import type {GuideEntry, GuideRegion, MeasureLike, RaceLike} from './types'
 
 const entry = (overrides: Partial<GuideEntry>): GuideEntry => ({
   _id: 'e1',
@@ -96,6 +97,51 @@ describe('measureNeedsWriteup', () => {
 
   it('does not treat No Position as missing data', () => {
     expect(measureNeedsWriteup(measure({contentStatus: 'published', position: 'no_position'}))).toBe(false)
+  })
+})
+
+describe('expandableContentKind', () => {
+  const region = (overrides: Partial<GuideRegion>): GuideRegion => ({
+    _id: 'region',
+    title: 'City',
+    slug: 'city',
+    tier: 'city',
+    order: 1,
+    description: null,
+    races: [],
+    measures: [],
+    sections: [],
+    ...overrides,
+  })
+
+  it('is null when every row is still coming soon', () => {
+    expect(
+      expandableContentKind([
+        region({
+          measures: [{...measure({contentStatus: 'pending', position: null}), _id: 'm1'}],
+        }),
+      ]),
+    ).toBeNull()
+  })
+
+  it('is measure when only measures open, and race when a candidate opens', () => {
+    expect(
+      expandableContentKind([
+        region({measures: [{...measure({contentStatus: 'published', position: 'support'}), _id: 'm1'}]}),
+      ]),
+    ).toBe('measure')
+    expect(
+      expandableContentKind([
+        region({
+          races: [
+            {
+              ...race({contentStatus: 'published', entries: [entry({rating: 'recommended'})]}),
+              _id: 'r1',
+            },
+          ],
+        }),
+      ]),
+    ).toBe('race')
   })
 })
 

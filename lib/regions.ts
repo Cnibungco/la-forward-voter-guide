@@ -71,10 +71,6 @@ export function navCities(regions: GuideRegion[]): LinkedRegion[] {
   return [...la, ...rest]
 }
 
-export function firstOtherCity(regions: GuideRegion[]): GuideRegion | undefined {
-  return navCities(regions).find((region) => !isLosAngelesCity(region))
-}
-
 /** Sidebar order flattened: state & county, then local cities. */
 export function navSequence(regions: GuideRegion[]): LinkedRegion[] {
   return [...navStateCounty(regions), ...navCities(regions)]

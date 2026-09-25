@@ -18,26 +18,34 @@
 
 .heroPlate {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
   padding: 20px;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--color-navy) 0%, transparent) 0%,
-    color-mix(in srgb, var(--color-navy) 55%, transparent) 35%,
-    color-mix(in srgb, var(--color-navy) 92%, transparent) 60%
+    transparent 0%,
+    color-mix(in srgb, var(--color-navy) 18%, transparent) 28%,
+    color-mix(in srgb, var(--color-navy) 62%, transparent) 58%,
+    color-mix(in srgb, var(--color-navy) 86%, transparent) 100%
   );
   pointer-events: none;
 }
 
 .kicker {
-  color: #fff;
+  display: inline-block;
+  color: var(--color-navy);
+  background: var(--color-gold);
   font-weight: 700;
   font-size: 13px;
+  line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin: 0 0 6px;
+  letter-spacing: 0.05em;
+  padding: 5px 9px;
+  border-radius: 4px;
+  margin: 0 0 10px;
 }
 
 .heroTitle {
@@ -92,10 +100,6 @@
 }
 
 .sectionHead {
-  font-family: var(--font-heading), sans-serif;
-  font-weight: 700;
-  font-size: 18px;
-  color: var(--color-navy);
   margin: 0 0 12px;
 }
 
@@ -150,21 +154,7 @@
 }
 
 .dateBtn {
-  display: block;
   min-width: 11.5rem;
-  text-align: center;
-  background: var(--color-gold);
-  color: var(--color-navy);
-  font-weight: 700;
-  font-size: 13.5px;
-  padding: 12px 16px;
-  border-radius: 6px;
-  text-decoration: none;
-}
-
-.dateBtn:hover {
-  background: var(--color-gold-hover);
-  color: var(--color-navy);
 }
 
 .noteCard {
@@ -223,10 +213,10 @@
 }
 
 .courage {
-  font-size: 13px;
-  color: var(--color-ink-2);
-  text-align: center;
-  margin: 6px 16px 0;
+  margin: 16px 0 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--color-ink);
 }
 
 .endorse {
@@ -244,15 +234,17 @@
 }
 
 .addressCard {
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
+  background: color-mix(in srgb, var(--color-navy-2) 14%, white);
+  border: none;
   border-radius: 14px;
-  padding: 18px 16px;
+  padding: 18px 16px 16px;
   margin: 16px 16px 0;
 }
 
 .addressLabel,
-.noteToggle {
+.noteToggle,
+.legendHead,
+.sectionHead {
   font-family: var(--font-heading), sans-serif;
   font-weight: 700;
   font-size: 19px;
@@ -261,6 +253,8 @@
 }
 
 .addressLabel {
+  font-weight: 800;
+  font-size: 26px;
   margin: 0 0 10px;
 }
 
@@ -280,18 +274,19 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 22px 16px 14px;
+  margin: 22px 0 14px;
 }
 
 .orLine {
   flex: 1;
   height: 1px;
-  background: var(--color-line);
+  background: color-mix(in srgb, var(--color-navy) 55%, white);
 }
 
 .orText {
-  font-size: 12px;
-  color: var(--color-ink-3);
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--color-ink);
   white-space: nowrap;
 }
 
@@ -299,28 +294,42 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin: 0 16px;
+  margin: 0;
 }
 
 .card {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   background: var(--color-surface);
-  border: 1px solid var(--color-line);
+  border: 1.5px solid var(--color-navy-2);
   border-radius: 12px;
   padding: 16px 14px;
   font-weight: 700;
   font-size: 15px;
-  color: var(--color-ink);
+  color: var(--color-navy);
   text-align: left;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .card:hover {
-  border-color: var(--color-navy-2);
-  background: var(--color-accent-bg);
-  color: var(--color-ink);
+  border-color: var(--color-navy);
+  background: color-mix(in srgb, var(--color-navy) 16%, white);
+  color: var(--color-navy);
+}
+
+.card:active {
+  background: color-mix(in srgb, var(--color-navy) 22%, white);
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 
 .cardEyebrow {
@@ -329,6 +338,20 @@
   color: var(--color-navy-2);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.cardChev {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--color-navy-2);
+  border-bottom: 2px solid var(--color-navy-2);
+  transform: rotate(-45deg);
+  flex-shrink: 0;
+}
+
+.card:hover .cardChev {
+  border-color: var(--color-navy);
 }
 
 .legend {
@@ -340,46 +363,13 @@
 }
 
 .legendHead {
-  font-family: var(--font-heading), sans-serif;
-  font-weight: 700;
-  font-size: 18px;
   margin: 0 0 4px;
-  color: var(--color-navy);
 }
 
 .legendSub {
   font-size: 13px;
   color: var(--color-ink-2);
   margin: 0 0 14px;
-  max-width: 55ch;
-}
-
-.legendSubHead {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--color-ink-2);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin: 18px 0 10px;
-}
-
-.legendGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-}
-
-.legendItem {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.legendDesc {
-  font-size: 12.5px;
-  color: var(--color-ink-2);
-  margin: 0;
-  line-height: 1.5;
 }
 
 .give {
@@ -394,26 +384,69 @@
 }
 
 .giveText {
+  flex: 1;
+  min-width: 0;
   color: var(--color-on-navy);
   font-size: 13px;
   margin: 0;
-  max-width: 40ch;
 }
 
-.giveBtn {
-  background: var(--color-gold);
+.community {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 40px 16px 8px;
+}
+
+.communityLinks {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.socials {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
   color: var(--color-navy);
-  font-weight: 700;
-  font-size: 13.5px;
-  padding: 8px 16px;
-  border-radius: 6px;
-  white-space: nowrap;
   text-decoration: none;
 }
 
-.giveBtn:hover {
-  background: var(--color-gold-hover);
-  color: var(--color-navy);
+.social:hover {
+  color: var(--color-navy-2);
+}
+
+.socialInstagram {
+  /* Instagram mark from the org site footer, not an LA Forward brand swatch. */
+  color: #c4546a;
+}
+
+.socialInstagram:hover {
+  color: #9a3348;
+}
+
+.socialIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.socialIconFacebook {
+  width: 11px;
+  height: 18px;
 }
 
 @media (min-width: 860px) {
@@ -429,6 +462,11 @@
     padding: 32px;
   }
 
+  .kicker {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+
   .heroTitle {
     font-size: 42px;
   }
@@ -442,7 +480,8 @@
     padding: 28px 28px 24px;
   }
 
-  .datesHead {
+  .datesHead,
+  .addressLabel {
     font-size: 32px;
   }
 
@@ -461,10 +500,6 @@
     padding: 4px 20px;
   }
 
-  .courage {
-    margin: 6px 0 0;
-  }
-
   .endorse {
     padding: 22px;
     margin: 26px 0 0;
@@ -476,12 +511,7 @@
   }
 
   .orRow {
-    margin: 26px 0 16px;
-  }
-
-  .cards {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    margin: 0;
+    margin: 26px 0 28px;
   }
 
   .legend {
@@ -489,12 +519,12 @@
     margin: 22px 0 0;
   }
 
-  .legendGrid {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-
   .give {
     padding: 18px 22px;
     margin: 22px 0 0;
+  }
+
+  .community {
+    margin: 48px 0 8px;
   }
 }

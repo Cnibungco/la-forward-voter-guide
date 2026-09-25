@@ -2,8 +2,9 @@
   /* Neutral base — unchanged. Brand color sits on top as emphasis only. */
   --color-ink: #1a1a1a;
   --color-ink-2: #57584f;
-  --color-ink-3: #8a8b82;
-  --color-muted: #9a9b90;
+  /* Lightest olive grays that still clear 4.5:1. ink-3 also sits on the gray rating wash. */
+  --color-ink-3: #66655e;
+  --color-muted: #6d7167;
   --color-bg: #f5f6f3;
   --color-surface: #ffffff;
   --color-line: #e2e3dd;
@@ -17,7 +18,7 @@
    *   #00285a  dark navy          — header, headings, primary chrome
    *   #003da6  deep royal blue    — links, active states
    *   #0681fc  bright sky blue    — sparse accent only (focus/highlight)
-   *   #ffa400  vibrant gold       — CTAs, donate, selection
+   *   #ffa400  vibrant gold       — CTAs, selection
    *   #ffc845  medium yellow/gold — endorsed star
    *   #ffe8b1  pale creamy yellow — endorsed badge wash
    */
@@ -28,6 +29,9 @@
   --color-gold-mid: #ffc845;
   --color-gold-tint: #ffe8b1;
   --color-gold-hover: color-mix(in srgb, var(--color-gold) 82%, black);
+  /* Donate buttons only. Sampled from the LA Forward donate control. */
+  --color-donate: #94261e;
+  --color-donate-hover: color-mix(in srgb, var(--color-donate) 82%, black);
   --color-on-navy: color-mix(in srgb, white 82%, var(--color-navy));
   --color-accent-bg: color-mix(in srgb, var(--color-navy) 10%, white);
   /* Neutral panel — gold-tint as the full legend wash hid the endorsed star. */

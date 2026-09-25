@@ -3,13 +3,28 @@
 import {useRouter} from 'next/navigation'
 import {useEffect, useMemo} from 'react'
 
+import {ChangeAddress} from '@/components/ChangeAddress'
+import {Cta} from '@/components/Cta'
 import {CompactLegend} from '@/components/CompactLegend'
 import {GuideShell} from '@/components/GuideShell'
 import {Methodology} from '@/components/Methodology'
 import {useMatch} from '@/components/MatchProvider'
 import {RegionSection} from '@/components/RegionSection'
+import {TapHint} from '@/components/TapHint'
 import {filterRegionsByMatch} from '@/lib/districtMatching'
-import {TIER_LABELS} from '@/lib/labels'
+import {expandableContentKind} from '@/lib/contentStatus'
+import {
+  BALLOT_ADDRESS_PREFIX,
+  BALLOT_EMPTY,
+  BALLOT_FILTERING_COPY,
+  BALLOT_FULL_COPY,
+  SHOW_EVERYTHING_LABEL,
+  SHOW_ONLY_MY_BALLOT_LABEL,
+  TAP_HINT,
+  TAP_HINT_MEASURE,
+  ballotCityImprecision,
+} from '@/lib/copy'
+import {BALLOT_TIER_LABELS} from '@/lib/labels'
 import {regionMatchingCitySlug} from '@/lib/regions'
 import type {GuideRegion, RegionTier} from '@/lib/types'
 
@@ -30,16 +45,16 @@ interface GuideBodyProps {
  */
 export function GuideBody({regions}: GuideBodyProps) {
   const router = useRouter()
-  const {match, status, showFullGuide, setShowFullGuide} = useMatch()
+  const {match, enteredAddress, ready, showFullGuide, setShowFullGuide} = useMatch()
 
   useEffect(() => {
-    if (status === 'loading') return
+    if (!ready) return
     if (!match) {
       router.replace('/')
       return
     }
     if (match.precision === 'none') router.replace('/outside')
-  }, [match, status, router])
+  }, [match, ready, router])
 
   const isFiltering = match !== null && match.precision !== 'none' && !showFullGuide
 
@@ -48,6 +63,7 @@ export function GuideBody({regions}: GuideBodyProps) {
     return filterRegionsByMatch(regions, match)
   }, [regions, match, isFiltering])
 
+  const hintKind = expandableContentKind(effectiveRegions)
   const matchedCity = match ? regionMatchingCitySlug(regions, match.citySlug) : undefined
   const matchedCityTitle = matchedCity?.title ?? null
 
@@ -56,7 +72,7 @@ export function GuideBody({regions}: GuideBodyProps) {
     regions: effectiveRegions.filter((region) => region.tier === tier),
   })).filter(({regions: tierRegions}) => tierRegions.length > 0)
 
-  if (!match || match.precision === 'none') return null
+  if (!ready || !match || match.precision === 'none') return null
 
   return (
     <GuideShell
@@ -64,30 +80,48 @@ export function GuideBody({regions}: GuideBodyProps) {
       title="Your ballot"
       crumb="Your ballot"
       activeSlug={matchedCity?.slug ?? match.citySlug}
+      showBackToTop
     >
       <div className={styles.statusBanner}>
-        <p>
-          {isFiltering
-            ? match.precision === 'city' && matchedCityTitle
-              ? `We don't have precise district boundaries for ${matchedCityTitle} yet, so we're showing its full ballot below. Your state and county races are still narrowed to your address.`
-              : 'Showing the races and measures that apply to your address below.'
-            : 'Showing the full guide.'}
-        </p>
-        <button type="button" className={styles.toggle} onClick={() => setShowFullGuide((prev) => !prev)}>
-          {isFiltering ? 'Show full guide' : 'Show my ballot again'}
-        </button>
+        <div className={styles.statusCopy}>
+          {enteredAddress && (
+            <p className={styles.addressLine}>
+              {BALLOT_ADDRESS_PREFIX}{' '}
+              <span className={`${styles.address} notranslate`} translate="no">
+                {enteredAddress}
+              </span>
+            </p>
+          )}
+          <p>
+            {isFiltering
+              ? match.precision === 'city' && matchedCityTitle
+                ? ballotCityImprecision(matchedCityTitle)
+                : BALLOT_FILTERING_COPY
+              : BALLOT_FULL_COPY}
+          </p>
+          <ChangeAddress />
+        </div>
+        <Cta
+          variant="secondary"
+          size="compact"
+          className={styles.filterToggle}
+          onClick={() => setShowFullGuide((prev) => !prev)}
+        >
+          {isFiltering ? SHOW_EVERYTHING_LABEL : SHOW_ONLY_MY_BALLOT_LABEL}
+        </Cta>
       </div>
 
       <Methodology />
       <CompactLegend />
+      {hintKind && <TapHint>{hintKind === 'measure' ? TAP_HINT_MEASURE : TAP_HINT}</TapHint>}
 
       {tiers.length === 0 ? (
-        <p className={styles.empty}>No races or measures match your address in this guide.</p>
+        <p className={styles.empty}>{BALLOT_EMPTY}</p>
       ) : (
         tiers.map(({tier, regions: tierRegions}) => (
           <section key={tier} className={styles.tierSection} aria-labelledby={`${tier}-tier-heading`}>
             <h2 id={`${tier}-tier-heading`} className={styles.tierHeading}>
-              {TIER_LABELS[tier]}
+              {BALLOT_TIER_LABELS[tier]}
             </h2>
             {tierRegions.map((region) => (
               <RegionSection key={region._id} region={region} headingLevel="h3" />

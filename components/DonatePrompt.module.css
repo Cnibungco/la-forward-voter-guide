@@ -1,0 +1,39 @@
+.dialog {
+  width: min(26rem, calc(100vw - 2rem));
+  padding: 32px 28px 28px;
+  text-align: center;
+}
+
+.title {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: 28px;
+  line-height: 1.05;
+  margin: 0 0 20px;
+  color: var(--color-navy);
+}
+
+.body {
+  margin: 0 0 18px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.dismiss {
+  background: none;
+  border: none;
+  color: var(--color-navy-2);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: underline;
+  padding: 12px 8px;
+}

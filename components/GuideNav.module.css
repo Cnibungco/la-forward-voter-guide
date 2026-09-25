@@ -8,15 +8,39 @@
   background: var(--color-surface);
 }
 
+.searchWrap {
+  position: relative;
+  display: block;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  transform: translateY(-50%);
+  color: var(--color-ink-3);
+  pointer-events: none;
+}
+
+.searchWrap:focus-within .searchIcon {
+  color: var(--color-navy);
+}
+
 .search {
   width: 100%;
   height: 36px;
   border: 1.5px solid var(--color-line);
   border-radius: 6px;
-  padding: 0 10px;
+  padding: 0 10px 0 30px;
   font-size: 13.5px;
   background: var(--color-bg);
   color: var(--color-ink);
+}
+
+.search::-webkit-search-decoration {
+  -webkit-appearance: none;
 }
 
 .search:focus {

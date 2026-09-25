@@ -23,7 +23,7 @@ interface RaceAccordionProps {
  * One row per candidate. A single-entry race shows "{title}: {name}"
  * on the row; multi-candidate races keep the race title as a heading.
  * Pending races (on the ballot, write-up not ready) render as
- * "Recommendation coming soon" with no rating.
+ * "Write-up coming soon" with no rating.
  */
 export function RaceAccordion({race}: RaceAccordionProps) {
   if (isDraftStatus(race.contentStatus)) return null

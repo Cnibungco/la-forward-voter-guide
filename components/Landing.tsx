@@ -3,39 +3,55 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import {useRouter} from 'next/navigation'
-import {useState} from 'react'
+import {Fragment, useState} from 'react'
 
 import {AddressLookup} from '@/components/AddressLookup'
+import {Cta} from '@/components/Cta'
 import {EntryCard} from '@/components/EntryCard'
 import {useMatch} from '@/components/MatchProvider'
-import {RatingBadge} from '@/components/RatingBadge'
+import {RatingLegend} from '@/components/RatingLegend'
+import {TrustCallout} from '@/components/TrustCallout'
 import {
   ADDRESS_LABEL,
+  BALLOT_LOOKUP_STATUS,
+  BROWSE_MANUALLY,
   CHECK_REGISTRATION_HREF,
   CHECK_REGISTRATION_LABEL,
+  CONTACT_HREF,
+  CONTACT_LABEL,
+  COUNTYWIDE_EYEBROW,
   COURAGE_CA_HREF,
   DONATE_ASK,
+  DONATE_BUTTON_LABEL,
   DONATE_HREF,
   ELECTION_KICKER,
   ENDORSED_HEAD,
   ENDORSED_SUB,
+  FACEBOOK_HREF,
+  FIND_YOUR_CITY_EYEBROW,
+  FIND_YOUR_CITY_LABEL,
   HERO_IMAGE_ALT,
   HERO_SUB,
   HERO_TITLE,
+  INSTAGRAM_HREF,
   KEY_DATES,
   KEY_DATES_HEAD,
   LANDING_ABOUT_BODY,
   LANDING_ABOUT_SUMMARY,
+  LANDING_LOOKUP_ERROR,
   LEGEND_HEAD,
   LEGEND_SUB,
+  LOCAL_EYEBROW,
+  MAILING_LIST_HREF,
+  MAILING_LIST_LABEL,
   REGISTER_HREF,
   REGISTER_LABEL,
+  STATEWIDE_EYEBROW,
   SAMPLE_BALLOT_LABEL,
   type KeyDatePart,
 } from '@/lib/copy'
 import {endorsedCandidates} from '@/lib/endorsed'
-import {CANDIDATE_LEGEND, MEASURE_LEGEND} from '@/lib/labels'
-import {firstOtherCity, isLosAngelesCity, regionByTier} from '@/lib/regions'
+import {isLosAngelesCity, navCities, regionByTier} from '@/lib/regions'
 import type {GuideRegion} from '@/lib/types'
 
 import styles from './Landing.module.css'
@@ -72,7 +88,7 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
   const stateRegion = regionByTier(regions, 'state')
   const countyRegion = regionByTier(regions, 'county')
   const laCity = regions.find(isLosAngelesCity)
-  const otherCity = firstOtherCity(regions)
+  const hasCities = navCities(regions).length > 0
   const endorsed = endorsedCandidates(regions)
 
   async function handleAddressSelected(address: string) {
@@ -125,17 +141,12 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
           ))}
         </ol>
         <div className={styles.dateActions}>
-          <a
-            href={CHECK_REGISTRATION_HREF}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.dateBtn}
-          >
+          <Cta href={CHECK_REGISTRATION_HREF} external className={styles.dateBtn}>
             {CHECK_REGISTRATION_LABEL}
-          </a>
-          <a href={REGISTER_HREF} target="_blank" rel="noopener noreferrer" className={styles.dateBtn}>
+          </Cta>
+          <Cta href={REGISTER_HREF} external className={styles.dateBtn}>
             {REGISTER_LABEL}
-          </a>
+          </Cta>
         </div>
       </section>
 
@@ -146,8 +157,11 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
         </summary>
         <div className={styles.noteBody}>
           <p>{disclaimer}</p>
-          {LANDING_ABOUT_BODY.map((paragraph) => (
-            <p key={paragraph.slice(0, 32)}>{paragraph}</p>
+          {LANDING_ABOUT_BODY.map((paragraph, index) => (
+            <Fragment key={paragraph.slice(0, 32)}>
+              <p>{paragraph}</p>
+              {index === 1 ? <TrustCallout /> : null}
+            </Fragment>
           ))}
           {sampleBallotUrl && (
             <p>
@@ -162,11 +176,10 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
       <div className={styles.addressCard}>
         <p className={styles.addressLabel}>{ADDRESS_LABEL}</p>
         <AddressLookup onSelect={handleAddressSelected} />
-        {status === 'loading' && <p className={styles.status}>Looking up your ballot…</p>}
+        {status === 'loading' && <p className={styles.status}>{BALLOT_LOOKUP_STATUS}</p>}
         {status === 'error' && (
           <p className={styles.statusError}>
-            Something went wrong looking up that address. Browse a jurisdiction below. Nothing about
-            it was stored.
+            {LANDING_LOOKUP_ERROR}
             {sampleBallotUrl && (
               <>
                 {' '}
@@ -179,48 +192,60 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
             )}
           </p>
         )}
-      </div>
 
-      <div className={styles.orRow}>
-        <span className={styles.orLine} />
-        <span className={styles.orText}>or browse manually</span>
-        <span className={styles.orLine} />
-      </div>
+        <div className={styles.orRow}>
+          <span className={styles.orLine} />
+          <span className={styles.orText}>{BROWSE_MANUALLY}</span>
+          <span className={styles.orLine} />
+        </div>
 
-      <div className={styles.cards}>
+        <div className={styles.cards}>
         {stateRegion?.slug && (
           <Link href={`/guide/${stateRegion.slug}`} className={styles.card}>
-            <span className={styles.cardEyebrow}>Statewide</span>
-            {stateRegion.title}
+            <span className={styles.cardBody}>
+              <span className={styles.cardEyebrow}>{STATEWIDE_EYEBROW}</span>
+              {stateRegion.title}
+            </span>
+            <span className={styles.cardChev} aria-hidden="true" />
           </Link>
         )}
         {countyRegion?.slug && (
           <Link href={`/guide/${countyRegion.slug}`} className={styles.card}>
-            <span className={styles.cardEyebrow}>Countywide</span>
-            {countyRegion.title}
+            <span className={styles.cardBody}>
+              <span className={styles.cardEyebrow}>{COUNTYWIDE_EYEBROW}</span>
+              {countyRegion.title}
+            </span>
+            <span className={styles.cardChev} aria-hidden="true" />
           </Link>
         )}
         {laCity?.slug && (
           <Link href={`/guide/${laCity.slug}`} className={styles.card}>
-            <span className={styles.cardEyebrow}>Local</span>
-            {laCity.title}
+            <span className={styles.cardBody}>
+              <span className={styles.cardEyebrow}>{LOCAL_EYEBROW}</span>
+              {laCity.title}
+            </span>
+            <span className={styles.cardChev} aria-hidden="true" />
           </Link>
         )}
-        {otherCity?.slug && (
-          <Link href={`/guide/${otherCity.slug}`} className={styles.card}>
-            <span className={styles.cardEyebrow}>Local</span>
-            Other cities
+        {hasCities && (
+          <Link href="/cities" className={styles.card}>
+            <span className={styles.cardBody}>
+              <span className={styles.cardEyebrow}>{FIND_YOUR_CITY_EYEBROW}</span>
+              {FIND_YOUR_CITY_LABEL}
+            </span>
+            <span className={styles.cardChev} aria-hidden="true" />
           </Link>
         )}
-      </div>
+        </div>
 
-      <p className={styles.courage}>
-        Looking for a different county? Check out{' '}
-        <a href={COURAGE_CA_HREF} target="_blank" rel="noopener noreferrer">
-          Courage CA&apos;s statewide voter guide
-        </a>
-        .
-      </p>
+        <p className={styles.courage}>
+          Looking for a different county? Check out{' '}
+          <a href={COURAGE_CA_HREF} target="_blank" rel="noopener noreferrer">
+            Courage CA&apos;s statewide voter guide
+          </a>
+          .
+        </p>
+      </div>
 
       {endorsed.length > 0 && (
         <section className={styles.endorse} aria-labelledby="endorsed-heading">
@@ -241,31 +266,55 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
       <div className={styles.legend} id="ratings">
         <p className={styles.legendHead}>{LEGEND_HEAD}</p>
         <p className={styles.legendSub}>{LEGEND_SUB}</p>
-        <div className={styles.legendGrid}>
-          {CANDIDATE_LEGEND.map((item) => (
-            <div key={item.kind} className={styles.legendItem}>
-              <RatingBadge kind={item.kind} alwaysFull />
-              <p className={styles.legendDesc}>{item.desc}</p>
-            </div>
-          ))}
-        </div>
-        <p className={styles.legendSubHead}>For ballot measures</p>
-        <div className={styles.legendGrid}>
-          {MEASURE_LEGEND.map((item) => (
-            <div key={item.kind} className={styles.legendItem}>
-              <RatingBadge kind={item.kind} alwaysFull />
-              <p className={styles.legendDesc}>{item.desc}</p>
-            </div>
-          ))}
-        </div>
+        <RatingLegend />
       </div>
 
       <div id="donate" className={styles.give}>
         <p className={styles.giveText}>{DONATE_ASK}</p>
-        <a href={DONATE_HREF} target="_blank" rel="noopener noreferrer" className={styles.giveBtn}>
-          Chip in →
-        </a>
+        <Cta href={DONATE_HREF} external variant="donate" size="compact">
+          {DONATE_BUTTON_LABEL}
+        </Cta>
       </div>
+
+      <footer className={styles.community}>
+        <div className={styles.communityLinks}>
+          <Cta href={MAILING_LIST_HREF} external className={styles.dateBtn}>
+            {MAILING_LIST_LABEL}
+          </Cta>
+          <Cta href={CONTACT_HREF} external className={styles.dateBtn}>
+            {CONTACT_LABEL}
+          </Cta>
+        </div>
+        <div className={styles.socials}>
+          <a
+            href={FACEBOOK_HREF}
+            className={styles.social}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LA Forward on Facebook"
+          >
+            <svg viewBox="0 0 320 512" aria-hidden="true" className={styles.socialIconFacebook}>
+              <path
+                fill="currentColor"
+                d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"
+              />
+            </svg>
+          </a>
+          <a
+            href={INSTAGRAM_HREF}
+            className={`${styles.social} ${styles.socialInstagram}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LA Forward on Instagram"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" className={styles.socialIcon}>
+              <rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="currentColor" strokeWidth="1.8" />
+              <circle cx="12" cy="12" r="3.6" fill="none" stroke="currentColor" strokeWidth="1.8" />
+              <circle cx="17.2" cy="6.8" r="1" fill="currentColor" />
+            </svg>
+          </a>
+        </div>
+      </footer>
     </main>
   )
 }

@@ -1,4 +1,4 @@
-import {BADGE_ICONS, BADGE_LABELS, BADGE_SHORT_LABELS, type BadgeIcon, type BadgeKind} from '@/lib/labels'
+import {BADGE_ICONS, BADGE_LABELS, type BadgeIcon, type BadgeKind} from '@/lib/labels'
 
 import styles from './RatingBadge.module.css'
 
@@ -60,8 +60,8 @@ function BadgeGlyph({icon}: {icon: BadgeIcon}) {
  * Endorsed) and measure positions (Support / Oppose / No Position).
  *
  * Icons follow the 8/19 pattern review: thumbs up, yellow star, green
- * check, red X. No Recommendation / No Position render as gray text
- * with no icon — a minus/dash reads too much like "vote no".
+ * check, red X. No Recommendation / No Position use a grey pill with
+ * no icon — a minus/dash reads too much like "vote no".
  */
 export function RatingBadge({kind, alwaysFull = false}: RatingBadgeProps) {
   const icon = BADGE_ICONS[kind]
@@ -69,7 +69,6 @@ export function RatingBadge({kind, alwaysFull = false}: RatingBadgeProps) {
     styles.badge,
     styles[KIND_CLASS[kind]],
     alwaysFull ? styles.alwaysFull : '',
-    icon ? '' : styles.textOnly,
   ]
     .filter(Boolean)
     .join(' ')
@@ -77,8 +76,7 @@ export function RatingBadge({kind, alwaysFull = false}: RatingBadgeProps) {
   return (
     <span className={className}>
       {icon ? <BadgeGlyph icon={icon} /> : null}
-      <span className={styles.full}>{BADGE_LABELS[kind]}</span>
-      <span className={styles.short}>{BADGE_SHORT_LABELS[kind]}</span>
+      {BADGE_LABELS[kind]}
     </span>
   )
 }

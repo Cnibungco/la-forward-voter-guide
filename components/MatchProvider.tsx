@@ -1,8 +1,9 @@
 'use client'
 
-import {createContext, useCallback, useContext, useMemo, useState, type ReactNode} from 'react'
+import {createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode} from 'react'
 
 import {isMatchBallotResult} from '@/lib/districtMatching'
+import {readStoredMatch, writeStoredMatch} from '@/lib/matchStorage'
 import type {MatchBallotResult} from '@/lib/types'
 
 export type LookupStatus = 'idle' | 'loading' | 'error'
@@ -11,7 +12,9 @@ export type LookupDestination = 'ballot' | 'outside' | 'error'
 
 interface MatchContextValue {
   match: MatchBallotResult | null
+  enteredAddress: string | null
   status: LookupStatus
+  ready: boolean
   showFullGuide: boolean
   setShowFullGuide: (value: boolean | ((prev: boolean) => boolean)) => void
   lookupAddress: (address: string) => Promise<LookupDestination>
@@ -20,18 +23,26 @@ interface MatchContextValue {
 const MatchContext = createContext<MatchContextValue | null>(null)
 
 /**
- * Holds the address-match result in memory only — never the address
- * itself, and never sessionStorage/localStorage. A refresh clears it.
+ * Holds the typed address in memory only. The district match (never the
+ * street) is also mirrored to sessionStorage so a refresh keeps Your
+ * ballot. Never localStorage, cookies, logs, or a database.
  * See docs/address-matching-strategy.md.
  */
 export function MatchProvider({children}: {children: ReactNode}) {
   const [match, setMatch] = useState<MatchBallotResult | null>(null)
+  const [enteredAddress, setEnteredAddress] = useState<string | null>(null)
   const [status, setStatus] = useState<LookupStatus>('idle')
   const [showFullGuide, setShowFullGuide] = useState(false)
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    const stored = readStoredMatch()
+    if (stored) setMatch(stored)
+    setReady(true)
+  }, [])
 
   const lookupAddress = useCallback(async (address: string): Promise<LookupDestination> => {
     setStatus('loading')
-    setMatch(null)
     setShowFullGuide(false)
 
     try {
@@ -44,6 +55,8 @@ export function MatchProvider({children}: {children: ReactNode}) {
       const result: unknown = await response.json()
       if (!isMatchBallotResult(result)) throw new Error('match-ballot response was malformed')
       setMatch(result)
+      setEnteredAddress(address)
+      writeStoredMatch(result)
       setStatus('idle')
       return result.precision === 'none' ? 'outside' : 'ballot'
     } catch {
@@ -53,8 +66,8 @@ export function MatchProvider({children}: {children: ReactNode}) {
   }, [])
 
   const value = useMemo(
-    () => ({match, status, showFullGuide, setShowFullGuide, lookupAddress}),
-    [match, status, showFullGuide, lookupAddress],
+    () => ({match, enteredAddress, status, ready, showFullGuide, setShowFullGuide, lookupAddress}),
+    [match, enteredAddress, status, ready, showFullGuide, lookupAddress],
   )
 
   return <MatchContext.Provider value={value}>{children}</MatchContext.Provider>

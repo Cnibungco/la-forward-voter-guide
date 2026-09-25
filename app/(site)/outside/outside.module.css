@@ -19,14 +19,19 @@
 .body {
   font-size: 14.5px;
   color: var(--color-ink-2);
-  margin: 0 0 20px;
+  margin: 0 0 12px;
   max-width: 62ch;
+}
+
+.change {
+  margin: 0 0 20px;
 }
 
 .links {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  margin-bottom: 32px;
 }
 
 .link {
@@ -48,5 +53,18 @@
 @media (min-width: 860px) {
   .title {
     font-size: 32px;
+  }
+
+  /* The left rail lists these same guides once it is on screen. */
+  .jurisdiction {
+    display: none;
+  }
+
+  .links {
+    margin-bottom: 0;
+  }
+
+  .links:has(.link:not(.jurisdiction)) {
+    margin-bottom: 32px;
   }
 }

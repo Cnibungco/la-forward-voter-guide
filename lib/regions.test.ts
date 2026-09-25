@@ -4,7 +4,6 @@ import {
   adjacentRegions,
   canonicalCitySlug,
   citySlugsMatch,
-  firstOtherCity,
   hasSlug,
   isLosAngelesCity,
   navCities,
@@ -136,17 +135,6 @@ describe('navCities', () => {
 
   it('omits cities without a slug', () => {
     expect(navCities([city('Draft', null), city('Burbank', 'burbank')]).map((item) => item.slug)).toEqual(['burbank'])
-  })
-})
-
-describe('firstOtherCity', () => {
-  it('picks the first non-LA city for the Other cities card', () => {
-    const other = firstOtherCity([city('Los Angeles', 'los-angeles'), city('Alhambra', 'alhambra')])
-    expect(other?.slug).toBe('alhambra')
-  })
-
-  it('returns undefined when only LA is published', () => {
-    expect(firstOtherCity([city('Los Angeles', 'los-angeles')])).toBeUndefined()
   })
 })
 

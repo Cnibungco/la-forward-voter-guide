@@ -1,10 +1,11 @@
 'use client'
 
-import {useState, type ReactNode} from 'react'
+import {useEffect, useRef, useState, type ReactNode} from 'react'
 
 import {BackToTop, GUIDE_TOP_ID} from '@/components/BackToTop'
 import {GuideNav} from '@/components/GuideNav'
 import {PageNav} from '@/components/PageNav'
+import {CLOSE_CITY_LIST_LABEL, JUMP_TO_LABEL, OPEN_CITY_LIST_LABEL} from '@/lib/copy'
 import {adjacentRegions} from '@/lib/regions'
 import type {GuideRegion} from '@/lib/types'
 
@@ -19,6 +20,8 @@ interface GuideShellProps {
   children: ReactNode
   /** Previous/next jurisdiction bar. Off on ballot and outside coverage. */
   showPageNav?: boolean
+  /** Jump-to-top on long pages. On with page nav; also on the ballot. */
+  showBackToTop?: boolean
 }
 
 export function GuideShell({
@@ -29,22 +32,51 @@ export function GuideShell({
   heading,
   children,
   showPageNav = false,
+  showBackToTop = false,
 }: GuideShellProps) {
   const [search, setSearch] = useState('')
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const burgerRef = useRef<HTMLButtonElement>(null)
+  const drawerRef = useRef<HTMLElement>(null)
+  const drawerWasOpen = useRef(false)
   const {prev, next} = adjacentRegions(regions, showPageNav ? activeSlug : null)
 
   function closeDrawer() {
     setDrawerOpen(false)
   }
 
+  useEffect(() => {
+    const header = document.querySelector('header')
+    if (!drawerOpen) {
+      if (drawerWasOpen.current) {
+        drawerWasOpen.current = false
+        burgerRef.current?.focus()
+      }
+      return
+    }
+
+    drawerWasOpen.current = true
+    header?.setAttribute('inert', '')
+    drawerRef.current?.focus()
+
+    function onKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') setDrawerOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      header?.removeAttribute('inert')
+    }
+  }, [drawerOpen])
+
   return (
     <div className={styles.shell} id={GUIDE_TOP_ID}>
-      <div className={styles.triggerBar}>
+      <div className={styles.triggerBar} role="region" aria-label={title} inert={drawerOpen}>
         <button
+          ref={burgerRef}
           type="button"
           className={styles.burger}
-          aria-label={drawerOpen ? 'Close navigation' : 'Open navigation'}
+          aria-label={drawerOpen ? CLOSE_CITY_LIST_LABEL : OPEN_CITY_LIST_LABEL}
           aria-expanded={drawerOpen}
           onClick={() => setDrawerOpen((open) => !open)}
         >
@@ -68,10 +100,15 @@ export function GuideShell({
         {drawerOpen && (
           <>
             <div className={styles.scrim} onClick={closeDrawer} />
-            <nav className={styles.drawer} aria-label="Jurisdictions">
+            <nav ref={drawerRef} className={styles.drawer} aria-label="Jurisdictions" tabIndex={-1}>
               <div className={styles.drawerHead}>
-                <span className={styles.drawerTitle}>Jump to</span>
-                <button type="button" className={styles.drawerClose} onClick={closeDrawer} aria-label="Close navigation">
+                <span className={styles.drawerTitle}>{JUMP_TO_LABEL}</span>
+                <button
+                  type="button"
+                  className={styles.drawerClose}
+                  onClick={closeDrawer}
+                  aria-label={CLOSE_CITY_LIST_LABEL}
+                >
                   ✕
                 </button>
               </div>
@@ -88,18 +125,14 @@ export function GuideShell({
           </>
         )}
 
-        <main className={styles.main}>
+        <main className={styles.main} inert={drawerOpen}>
           {crumb && <p className={styles.crumb}>{crumb}</p>}
           <div className={styles.titleRow}>
             {heading ?? <h1 className={styles.title}>{title}</h1>}
           </div>
           {children}
-          {showPageNav && (
-            <>
-              <PageNav prev={prev} next={next} />
-              <BackToTop />
-            </>
-          )}
+          {showPageNav && <PageNav prev={prev} next={next} />}
+          {(showPageNav || showBackToTop) && <BackToTop />}
         </main>
       </div>
     </div>

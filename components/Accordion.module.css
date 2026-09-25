@@ -49,7 +49,12 @@
   flex-wrap: wrap;
   width: 100%;
   gap: 10px;
-  padding: 14px 4px;
+  padding: 12px 10px;
+  margin: 6px 0;
+  border: 1.5px dashed var(--color-ink-3);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--color-line) 40%, white);
+  cursor: default;
 }
 
 .comingSoon {
@@ -57,9 +62,9 @@
   font-size: 12.5px;
   font-weight: 700;
   color: var(--color-ink-2);
-  background: #ecece8;
-  padding: 4px 10px;
-  border-radius: 20px;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
   white-space: nowrap;
 }
 
@@ -75,10 +80,10 @@
 
 .chev {
   display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-right: 1.5px solid var(--color-ink-2);
-  border-bottom: 1.5px solid var(--color-ink-2);
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--color-navy-2);
+  border-bottom: 2px solid var(--color-navy-2);
   transform: rotate(45deg);
   margin-left: 8px;
   flex-shrink: 0;
@@ -93,6 +98,11 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.withPhoto {
+  flex-direction: row;
+  align-items: flex-start;
 }
 
 .context {

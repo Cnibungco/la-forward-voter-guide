@@ -1,0 +1,39 @@
+.wrap {
+  max-width: 36rem;
+  margin: 3rem auto;
+  padding: 0 1.5rem 4rem;
+}
+
+.title {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--color-navy);
+  margin: 0 0 10px;
+}
+
+.body {
+  margin: 0 0 18px;
+  font-size: 15px;
+  color: var(--color-ink-2);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 0;
+}
+
+.links a,
+.links button {
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

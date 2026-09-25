@@ -1,7 +1,7 @@
 .statusBanner {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
   margin: 0 0 18px;
@@ -12,25 +12,33 @@
   color: var(--color-ink-2);
 }
 
-.statusBanner p {
+.statusCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.statusCopy > p {
   margin: 0;
   max-width: 42rem;
   font-size: 13.5px;
 }
 
-.toggle {
-  flex-shrink: 0;
-  padding: 8px 14px;
-  border: 1.5px solid var(--color-line);
-  border-radius: 8px;
-  background: var(--color-bg);
-  color: var(--color-navy-2);
-  font-size: 13.5px;
-  font-weight: 600;
+.statusCopy > .addressLine {
+  color: var(--color-navy);
+  font-size: 14.5px;
 }
 
-.toggle:hover {
-  border-color: var(--color-navy-2);
+.address {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.filterToggle {
+  flex-shrink: 0;
 }
 
 .tierSection + .tierSection {

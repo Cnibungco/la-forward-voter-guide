@@ -1,9 +1,14 @@
+import {GoogleAnalytics} from '@next/third-parties/google'
 import {Barlow_Condensed, Work_Sans} from 'next/font/google'
 
+import {DonatePrompt} from '@/components/DonatePrompt'
 import {MatchProvider} from '@/components/MatchProvider'
 import {SiteHeader} from '@/components/SiteHeader'
+import {VercelAnalytics} from '@/components/VercelAnalytics'
 
 import './globals.css'
+
+const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim()
 
 const headingFont = Barlow_Condensed({
   subsets: ['latin'],
@@ -24,13 +29,18 @@ export const metadata = {
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="en" className={`${headingFont.variable} ${bodyFont.variable}`}>
-      <body>
+    <html lang="en" className={`${headingFont.variable} ${bodyFont.variable}`} suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <MatchProvider>
           <SiteHeader />
           {children}
+          <DonatePrompt />
         </MatchProvider>
+        <VercelAnalytics />
       </body>
+      {gaId && process.env.NODE_ENV === 'production' && (
+        <GoogleAnalytics gaId={gaId} />
+      )}
     </html>
   )
 }

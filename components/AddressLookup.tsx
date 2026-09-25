@@ -3,9 +3,16 @@
 import '@geoapify/geocoder-autocomplete/styles/minimal.css'
 
 import {GeocoderAutocomplete} from '@geoapify/geocoder-autocomplete'
-import {useEffect, useRef} from 'react'
+import {useEffect, useId, useRef, useState} from 'react'
 
-import {PRIVACY_NOTE} from '@/lib/copy'
+import {SearchIcon} from '@/components/SearchIcon'
+import {
+  ADDRESS_LOOKUP_UNAVAILABLE,
+  ADDRESS_PICK_HINT,
+  ADDRESS_PLACEHOLDER,
+  HOME_ADDRESS_LABEL,
+  PRIVACY_NOTE,
+} from '@/lib/copy'
 import {censusAddressFromFeature} from '@/lib/geoapifyAddress'
 
 import styles from './AddressLookup.module.css'
@@ -38,6 +45,10 @@ export function AddressLookup({onSelect}: AddressLookupProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const onSelectRef = useRef(onSelect)
   onSelectRef.current = onSelect
+  const inputId = useId()
+  const hintId = useId()
+  const privacyId = useId()
+  const [emphasizeHint, setEmphasizeHint] = useState(false)
 
   const apiKey = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY
 
@@ -49,34 +60,60 @@ export function AddressLookup({onSelect}: AddressLookupProps) {
     // Louisiana outranks "Dore Street" in West Covina. Unset type so
     // buildings come back; the county rect keeps results in LA County.
     const autocomplete = new GeocoderAutocomplete(containerRef.current, apiKey, {
-      placeholder: 'Enter your home address',
+      placeholder: ADDRESS_PLACEHOLDER,
       skipIcons: true,
       allowNonVerifiedHouseNumber: true,
       filter: {countrycode: ['us'], rect: LA_COUNTY_RECT},
       bias: {proximity: LA_PROXIMITY},
     })
 
+    const input = containerRef.current.querySelector<HTMLInputElement>('input')
+    if (input) {
+      input.id = inputId
+      input.setAttribute('aria-describedby', `${hintId} ${privacyId}`)
+      input.setAttribute('autocomplete', 'off')
+    }
+
+    function onEnter(event: KeyboardEvent) {
+      if (event.key === 'Enter') setEmphasizeHint(true)
+    }
+    input?.addEventListener('keydown', onEnter)
+
     autocomplete.on('select', (feature) => {
       const address = censusAddressFromFeature(feature?.properties)
-      if (address) onSelectRef.current(address)
+      if (address) {
+        setEmphasizeHint(false)
+        onSelectRef.current(address)
+      } else {
+        setEmphasizeHint(true)
+      }
     })
 
-    return () => autocomplete.destroy()
-  }, [apiKey])
+    return () => {
+      input?.removeEventListener('keydown', onEnter)
+      autocomplete.destroy()
+    }
+  }, [apiKey, hintId, inputId, privacyId])
 
   if (!apiKey) {
-    return (
-      <p className={styles.missingKey}>
-        Address lookup isn&apos;t configured yet (missing <code>NEXT_PUBLIC_GEOAPIFY_API_KEY</code>). You
-        can still browse the guide by jurisdiction.
-      </p>
-    )
+    return <p className={styles.missingKey}>{ADDRESS_LOOKUP_UNAVAILABLE}</p>
   }
 
   return (
     <div className={`${styles.wrapper} notranslate`} translate="no">
-      <div ref={containerRef} className={styles.autocomplete} />
-      <p className={styles.privacyNote}>{PRIVACY_NOTE}</p>
+      <label className={styles.fieldLabel} htmlFor={inputId}>
+        {HOME_ADDRESS_LABEL}
+      </label>
+      <div className={styles.inputWrap}>
+        <SearchIcon className={styles.searchIcon} />
+        <div ref={containerRef} className={styles.autocomplete} />
+      </div>
+      <p id={hintId} className={emphasizeHint ? `${styles.hint} ${styles.hintEmphasized}` : styles.hint}>
+        {ADDRESS_PICK_HINT}
+      </p>
+      <p id={privacyId} className={styles.privacyNote}>
+        {PRIVACY_NOTE}
+      </p>
     </div>
   )
 }

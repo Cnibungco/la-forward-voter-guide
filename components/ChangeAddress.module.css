@@ -1,0 +1,32 @@
+.changeAddress {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-navy-2);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.changeAddress:hover {
+  color: var(--color-navy);
+}
+
+.changePanel {
+  width: 100%;
+  max-width: 32rem;
+  margin-top: 4px;
+}
+
+.changeStatus {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--color-ink-2);
+}
+
+.changeError {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--color-red);
+}

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import {ChangeAddress} from '@/components/ChangeAddress'
 import {GuideShell} from '@/components/GuideShell'
 import {Methodology} from '@/components/Methodology'
 import {OUTSIDE_BODY, OUTSIDE_EYEBROW, OUTSIDE_TITLE, SAMPLE_BALLOT_LABEL} from '@/lib/copy'
@@ -34,19 +35,22 @@ export default async function OutsidePage() {
       }
     >
       <p className={styles.body}>{OUTSIDE_BODY}</p>
+      <div className={styles.change}>
+        <ChangeAddress appearance="gold" />
+      </div>
       <div className={styles.links}>
         {stateRegion?.slug && (
-          <Link href={`/guide/${stateRegion.slug}`} className={styles.link}>
+          <Link href={`/guide/${stateRegion.slug}`} className={`${styles.link} ${styles.jurisdiction}`}>
             {stateRegion.title}
           </Link>
         )}
         {countyRegion?.slug && (
-          <Link href={`/guide/${countyRegion.slug}`} className={styles.link}>
+          <Link href={`/guide/${countyRegion.slug}`} className={`${styles.link} ${styles.jurisdiction}`}>
             {countyRegion.title}
           </Link>
         )}
         {laCity?.slug && (
-          <Link href={`/guide/${laCity.slug}`} className={styles.link}>
+          <Link href={`/guide/${laCity.slug}`} className={`${styles.link} ${styles.jurisdiction}`}>
             {laCity.title}
           </Link>
         )}

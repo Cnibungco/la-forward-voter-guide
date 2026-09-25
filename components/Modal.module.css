@@ -1,0 +1,11 @@
+.dialog {
+  border: none;
+  border-radius: 12px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--color-navy) 28%, transparent);
+}
+
+.dialog::backdrop {
+  background: color-mix(in srgb, var(--color-navy) 62%, transparent);
+}

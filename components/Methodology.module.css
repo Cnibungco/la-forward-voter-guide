@@ -54,19 +54,3 @@
 .para {
   margin: 0;
 }
-
-.trust {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin: 0;
-  color: var(--color-navy-2);
-}
-
-.trustIcon {
-  color: var(--color-support);
-  font-weight: 800;
-  font-size: 14px;
-  margin-top: 2px;
-  flex-shrink: 0;
-}
