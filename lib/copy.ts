@@ -84,7 +84,7 @@ export const ENDORSED_SUB = 'Candidates LA Forward is backing without reservatio
 
 export const ORG_HREF = 'https://www.laforward.org'
 
-export const DONATE_HREF = 'https://www.laforward.org/donate'
+export const DONATE_HREF = 'https://secure.actblue.com/donate/lafvg'
 
 export const MAILING_LIST_LABEL = 'Get on our mailing list'
 
@@ -94,9 +94,14 @@ export const CONTACT_LABEL = 'Contact us'
 
 export const CONTACT_HREF = 'https://www.laforward.org/contact'
 
-export const FACEBOOK_HREF = 'https://www.facebook.com/LosAngelesForward/'
-
 export const INSTAGRAM_HREF = 'https://www.instagram.com/laforward'
+
+export const BLUESKY_HREF = 'https://bsky.app/profile/laforward.org'
+
+export const TIKTOK_HREF = 'https://www.tiktok.com/@laforward'
+
+export const LINKEDIN_HREF =
+  'https://www.linkedin.com/company/la-forward/posts/?feedView=all'
 
 export const DONATE_POPUP_TITLE = 'Support LA Forward'
 

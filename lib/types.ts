@@ -75,8 +75,7 @@ export interface MeasureLike {
   slug: string | null
   summary: string | null
   position: MeasurePosition | null
-  pros: PortableTextBlock[] | null
-  cons: PortableTextBlock[] | null
+  reasoning: PortableTextBlock[] | null
   contentStatus?: ContentStatus | null
 }
 

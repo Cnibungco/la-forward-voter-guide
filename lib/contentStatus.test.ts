@@ -26,8 +26,7 @@ const measure = (overrides: Partial<MeasureLike>): MeasureLike => ({
   slug: 'a',
   summary: null,
   position: null,
-  pros: null,
-  cons: null,
+  reasoning: null,
   ...overrides,
 })
 

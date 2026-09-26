@@ -14,6 +14,7 @@ import {TrustCallout} from '@/components/TrustCallout'
 import {
   ADDRESS_LABEL,
   BALLOT_LOOKUP_STATUS,
+  BLUESKY_HREF,
   BROWSE_MANUALLY,
   CHECK_REGISTRATION_HREF,
   CHECK_REGISTRATION_LABEL,
@@ -27,7 +28,6 @@ import {
   ELECTION_KICKER,
   ENDORSED_HEAD,
   ENDORSED_SUB,
-  FACEBOOK_HREF,
   FIND_YOUR_CITY_EYEBROW,
   FIND_YOUR_CITY_LABEL,
   HERO_IMAGE_ALT,
@@ -41,13 +41,15 @@ import {
   LANDING_LOOKUP_ERROR,
   LEGEND_HEAD,
   LEGEND_SUB,
+  LINKEDIN_HREF,
   LOCAL_EYEBROW,
   MAILING_LIST_HREF,
   MAILING_LIST_LABEL,
   REGISTER_HREF,
   REGISTER_LABEL,
-  STATEWIDE_EYEBROW,
   SAMPLE_BALLOT_LABEL,
+  STATEWIDE_EYEBROW,
+  TIKTOK_HREF,
   type KeyDatePart,
 } from '@/lib/copy'
 import {endorsedCandidates} from '@/lib/endorsed'
@@ -61,6 +63,38 @@ interface LandingProps {
   sampleBallotUrl: string | null
   disclaimer: string
 }
+
+function SocialIcon({name}: {name: 'instagram' | 'bluesky' | 'tiktok' | 'linkedin'}) {
+  if (name === 'instagram') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className={styles.socialIcon}>
+        <rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="currentColor" strokeWidth="1.8" />
+        <circle cx="12" cy="12" r="3.6" fill="none" stroke="currentColor" strokeWidth="1.8" />
+        <circle cx="17.2" cy="6.8" r="1" fill="currentColor" />
+      </svg>
+    )
+  }
+
+  const path =
+    name === 'bluesky'
+      ? 'M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.658 7.078 5.076 5.445 6.794-1.469 7.651-4.876.857 3.407 2.575 10.321 7.651 4.876 4.729-5.073 1.254-6.498-2.658-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.206-.659-.298-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8Z'
+      : name === 'tiktok'
+        ? 'M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z'
+        : 'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z'
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={styles.socialIcon}>
+      <path fill="currentColor" d={path} />
+    </svg>
+  )
+}
+
+const SOCIAL_LINKS = [
+  {href: INSTAGRAM_HREF, label: 'LA Forward on Instagram', name: 'instagram' as const, brand: styles.socialInstagram},
+  {href: BLUESKY_HREF, label: 'LA Forward on Bluesky', name: 'bluesky' as const, brand: styles.socialBluesky},
+  {href: TIKTOK_HREF, label: 'LA Forward on TikTok', name: 'tiktok' as const, brand: styles.socialTiktok},
+  {href: LINKEDIN_HREF, label: 'LA Forward on LinkedIn', name: 'linkedin' as const, brand: styles.socialLinkedin},
+]
 
 function KeyDateEvent({parts}: {parts: KeyDatePart[]}) {
   return (
@@ -286,33 +320,18 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
           </Cta>
         </div>
         <div className={styles.socials}>
-          <a
-            href={FACEBOOK_HREF}
-            className={styles.social}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LA Forward on Facebook"
-          >
-            <svg viewBox="0 0 320 512" aria-hidden="true" className={styles.socialIconFacebook}>
-              <path
-                fill="currentColor"
-                d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"
-              />
-            </svg>
-          </a>
-          <a
-            href={INSTAGRAM_HREF}
-            className={`${styles.social} ${styles.socialInstagram}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LA Forward on Instagram"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true" className={styles.socialIcon}>
-              <rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="currentColor" strokeWidth="1.8" />
-              <circle cx="12" cy="12" r="3.6" fill="none" stroke="currentColor" strokeWidth="1.8" />
-              <circle cx="17.2" cy="6.8" r="1" fill="currentColor" />
-            </svg>
-          </a>
+          {SOCIAL_LINKS.map((link) => (
+            <a
+              key={link.name}
+              href={link.href}
+              className={`${styles.social} ${link.brand}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={link.label}
+            >
+              <SocialIcon name={link.name} />
+            </a>
+          ))}
         </div>
       </footer>
     </main>

@@ -5,7 +5,8 @@ races and measures in Los Angeles County for the **November 3, 2026 General
 Election**. This Next.js app fetches published content from a **standalone**
 Sanity Studio. The Studio lives in a sibling repo/folder,
 `studio-la-forward-voter-guide`, next to this app — not embedded here, not a
-route in this repo.
+route in this repo. The hosted Studio is
+[la-forward-voter-guide.sanity.studio](https://la-forward-voter-guide.sanity.studio).
 
 **Opening this in Cursor:** `.cursor/rules/` has project context that loads
 automatically in Agent mode — stack, locked decisions, and conventions, so you
@@ -29,7 +30,8 @@ don't need to re-explain the project each session. Full decision history:
 Every page has the site header: LA Forward wordmark (not translated) plus a
 "Voter Guide" tagline, a language picker (Google Translate), a link to
 laforward.org, Share this Voter Guide (opens the graphic dialog; the header
-says Share on a narrow screen), and Donate (opens laforward.org/donate in a new tab).
+says Share on a narrow screen), and Donate (opens
+https://secure.actblue.com/donate/lafvg in a new tab).
 
 | Route | What it is |
 |---|---|
@@ -58,18 +60,29 @@ In order:
    your city (`/cities`), plus a link to Courage CA for other counties
 6. Endorsed candidates (omitted when none are published)
 7. Ratings legend (full static copy; see Ratings below)
-8. Donate
+8. Donate (same ActBlue URL as the header)
 9. Mailing list and contact (Get on our mailing list, Contact us), then
-   Facebook and Instagram. Each opens in a new tab. No self-service portal
-   and no org disclaimer in this footer.
+   Instagram, Bluesky, TikTok, and LinkedIn. Each opens in a new tab.
+   No self-service portal and no org disclaimer in this footer.
 
 A donate dialog appears 30 seconds into a browser's first visit, then
-stays dismissed. The header Donate link opens laforward.org/donate in a new tab.
+stays dismissed. The header, the landing donate block, and that dialog
+all open https://secure.actblue.com/donate/lafvg in a new tab.
+
+Footer profiles, also in `lib/copy.ts`:
+
+| Network | URL |
+|---|---|
+| Instagram | https://www.instagram.com/laforward |
+| Bluesky | https://bsky.app/profile/laforward.org |
+| TikTok | https://www.tiktok.com/@laforward |
+| LinkedIn | https://www.linkedin.com/company/la-forward/posts/?feedView=all |
 
 Staff-editable chrome (disclaimer, county sample-ballot URL) lives in the
 Studio **Site Settings** singleton, not in this repo. Election-cycle copy —
-hero, key dates, about paragraphs, register/check-registration URLs, donate
-ask, donate dialog, mailing list, contact, and share text — is in `lib/copy.ts`. The share graphic
+hero, key dates, about paragraphs, register/check-registration URLs, the
+donate URL, donate ask, donate dialog, mailing list, contact, social
+profiles, and share text — is in `lib/copy.ts`. The share graphic
 is `public/share-guide.svg`; replace that file when the designed artwork
 is ready.
 
@@ -127,7 +140,7 @@ independent of Sanity's own draft documents:
 
 - `draft` — hidden from the public guide
 - `pending` — shown as "Write-up coming soon"
-- `published` — rating/position and reasoning are required and shown
+- `published` — rating/position and the write-up are required and shown. A measure write-up is one text field, not separate pros and cons.
 
 New items default to `pending`. Flip to `published` in Studio when the
 write-up is ready. The public site can take up to 5 minutes to catch up
@@ -158,7 +171,8 @@ at a real Sanity project.
    Environment Variables (Production and Preview). For Google Analytics,
    add `NEXT_PUBLIC_GA_MEASUREMENT_ID` on **Production only** (not Preview).
    Deploy the Studio separately (`npx sanity deploy` from the Studio
-   folder) — the two have independent deploy pipelines.
+   folder) — the two have independent deploy pipelines. The hosted Studio
+   is [la-forward-voter-guide.sanity.studio](https://la-forward-voter-guide.sanity.studio).
 
    After the first production deploy, enable Web Analytics in the Vercel
    dashboard (project → Analytics → Enable). Hobby includes 50,000 events

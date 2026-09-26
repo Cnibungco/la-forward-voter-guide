@@ -20,9 +20,6 @@ export function MeasureAccordion({measure}: MeasureAccordionProps) {
     return <ComingSoonRow title={measure.title} id={measure.slug} />
   }
 
-  const hasPros = Boolean(measure.pros && measure.pros.length > 0)
-  const hasCons = Boolean(measure.cons && measure.cons.length > 0)
-
   return (
     <details className={styles.row} id={measure.slug ?? undefined}>
       <summary className={styles.summary}>
@@ -32,22 +29,7 @@ export function MeasureAccordion({measure}: MeasureAccordionProps) {
       </summary>
       <div className={styles.panel}>
         {measure.summary && <p className={styles.summaryText}>{measure.summary}</p>}
-        {(hasPros || hasCons) && (
-          <div className={styles.proCon}>
-            {hasPros && (
-              <div>
-                <p className={styles.proConHeading}>What it would do</p>
-                <PortableText value={measure.pros} />
-              </div>
-            )}
-            {hasCons && (
-              <div>
-                <p className={styles.proConHeading}>The concern</p>
-                <PortableText value={measure.cons} />
-              </div>
-            )}
-          </div>
-        )}
+        <PortableText value={measure.reasoning} />
       </div>
     </details>
   )

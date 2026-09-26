@@ -10,7 +10,7 @@ const notDraft = `contentStatus != "draft"`
  *
  * `contentStatus == "draft"` items are dropped here so they never reach
  * the public guide. Pending items are included and rendered as
- * "Recommendation coming soon".
+ * "Write-up coming soon".
  */
 const sectionFields = `
   _key,
@@ -43,8 +43,7 @@ const sectionFields = `
       "slug": slug.current,
       summary,
       position,
-      pros,
-      cons,
+      reasoning,
       contentStatus,
     }
   }
@@ -93,8 +92,7 @@ export const GUIDE_QUERY = defineQuery(`{
       title,
       "slug": slug.current,
       summary,
-      pros,
-      cons,
+      reasoning,
       position,
       contentStatus,
     },

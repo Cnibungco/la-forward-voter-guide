@@ -394,6 +394,7 @@
 .community {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -411,7 +412,8 @@
   display: flex;
   flex-shrink: 0;
   justify-content: flex-end;
-  gap: 16px;
+  gap: 12px;
+  margin-left: auto;
 }
 
 .social {
@@ -431,22 +433,44 @@
 }
 
 .socialInstagram {
-  /* Instagram mark from the org site footer, not an LA Forward brand swatch. */
-  color: #c4546a;
+  /* Instagram brand pink, not an LA Forward swatch. */
+  color: #e1306c;
 }
 
 .socialInstagram:hover {
-  color: #9a3348;
+  color: #c13584;
+}
+
+.socialBluesky {
+  /* Bluesky brand blue, not an LA Forward swatch. */
+  color: #1185fe;
+}
+
+.socialBluesky:hover {
+  color: #0b6ad4;
+}
+
+.socialTiktok {
+  /* TikTok brand pink, not an LA Forward swatch. */
+  color: #fe2c55;
+}
+
+.socialTiktok:hover {
+  color: #d81b45;
+}
+
+.socialLinkedin {
+  /* LinkedIn brand blue, not an LA Forward swatch. */
+  color: #0a66c2;
+}
+
+.socialLinkedin:hover {
+  color: #004182;
 }
 
 .socialIcon {
   width: 20px;
   height: 20px;
-}
-
-.socialIconFacebook {
-  width: 11px;
-  height: 18px;
 }
 
 @media (min-width: 860px) {

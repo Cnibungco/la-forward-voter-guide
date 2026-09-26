@@ -179,7 +179,7 @@ describe('filterRegionsByMatch', () => {
         {_id: 'r2', title: 'Council D3', slug: 'r2', office: null, district: 'CC3', context: null, entries: null},
         {_id: 'r3', title: 'Mayor', slug: 'r3', office: null, district: null, context: null, entries: null},
       ],
-      measures: [{_id: 'm1', title: 'Measure A', slug: 'm1', summary: null, position: null, pros: null, cons: null}],
+      measures: [{_id: 'm1', title: 'Measure A', slug: 'm1', summary: null, position: null, reasoning: null}],
     })
     const [result] = filterRegionsByMatch([region], LA_CITY_PRECISE)
     expect(result.races.map((r) => r._id)).toEqual(['r1', 'r3'])
@@ -205,7 +205,7 @@ describe('filterRegionsByMatch', () => {
           _key: 'mg1',
           _type: 'measureGroup',
           label: 'City Measures',
-          measures: [{_key: 'c', title: 'Measure Z', slug: null, summary: null, position: null, pros: null, cons: null}],
+          measures: [{_key: 'c', title: 'Measure Z', slug: null, summary: null, position: null, reasoning: null}],
         },
       ],
     })

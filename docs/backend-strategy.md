@@ -220,7 +220,8 @@ What changed in this app:
 
 The schema (Region/Race/Measure/Entry) and desk `structure.ts` now live
 in `studio-la-forward-voter-guide`, pointed at the same `wcogcahu` /
-`production` project and dataset. §1–§9 above otherwise still stand.
+`production` project and dataset. The hosted Studio is
+`https://la-forward-voter-guide.sanity.studio`. §1–§9 above otherwise still stand.
 
 ## 11. City ballot content model: raceGroup / measureGroup / specialDistrict
 
@@ -319,6 +320,10 @@ operator and its flat-map behavior on `arrayOfDocs.sections[]`):
 Frontend follow-up (not part of this schema-only pass): `voter-guide-app`'s
 `lib/types.ts`, `sanity/lib/queries.ts`, and rendering components need
 matching updates once this schema is deployed.
+
+September 2026 update: measure `pros` and `cons` were replaced by one
+`reasoning` write-up (normal paragraphs only). The GROQ sample above is
+the shape from this pass; the live query is `sanity/lib/queries.ts`.
 
 ## 12. Address-based ballot matching — how it was built
 

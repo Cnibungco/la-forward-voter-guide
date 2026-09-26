@@ -49,7 +49,7 @@ interface PortableTextProps {
 /**
  * Thin wrapper around @portabletext/react for the rich-text fields
  * editors fill in Studio (race context, entry reasoning, measure
- * pros/cons). Renders nothing for empty/missing content rather than an
+ * write-ups). Renders nothing for empty/missing content rather than an
  * empty wrapper element. Bold (`strong`) and link annotations render as
  * `<strong>` and `<a href>` — not raw markup.
  */
