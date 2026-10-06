@@ -13,7 +13,9 @@ import {
   SHARE_COPY_MANUAL,
   SHARE_DOWNLOAD_LABEL,
   SHARE_GRAPHIC_DOWNLOAD,
+  SHARE_GRAPHIC_HEIGHT,
   SHARE_GRAPHIC_SRC,
+  SHARE_GRAPHIC_WIDTH,
   SHARE_HEAD,
   SHARE_HEADER_SHORT,
   SHARE_TEXT,
@@ -77,14 +79,14 @@ export function ShareGuide() {
         <p className={styles.line}>{SHARE_TEXT}</p>
         {graphicReady && (
           // The download link must serve this file as-is. next/image rewrites
-          // the URL, and it will not render an SVG without extra config.
+          // the URL.
           // eslint-disable-next-line @next/next/no-img-element
           <img
             className={styles.graphic}
             src={SHARE_GRAPHIC_SRC}
             alt=""
-            width={1200}
-            height={630}
+            width={SHARE_GRAPHIC_WIDTH}
+            height={SHARE_GRAPHIC_HEIGHT}
             onError={() => setGraphicReady(false)}
           />
         )}

@@ -9,6 +9,7 @@ import {
   navCities,
   navSequence,
   navStateCounty,
+  preferredGuideHref,
   regionBySlug,
   regionByTier,
   regionMatchingCitySlug,
@@ -174,6 +175,31 @@ describe('navSequence / adjacentRegions', () => {
   it('returns nulls for an unknown or empty slug', () => {
     expect(adjacentRegions([statewide], 'missing')).toEqual({prev: null, next: null})
     expect(adjacentRegions([statewide], null)).toEqual({prev: null, next: null})
+  })
+})
+
+describe('preferredGuideHref', () => {
+  const statewide = region('Statewide Ballot Measures', 'props', 'state', 1)
+  const county = region('LA County Ballot Measures', 'county-measures', 'county', 1)
+  const la = city('Los Angeles', 'los-angeles')
+  const laAlt = city('Los Angeles City', 'los-angeles-city')
+  const burbank = city('Burbank', 'burbank')
+
+  it('opens the published LA City guide, using the CMS slug', () => {
+    expect(preferredGuideHref([statewide, county, laAlt, burbank])).toBe('/guide/los-angeles-city')
+    expect(preferredGuideHref([burbank, la, statewide])).toBe('/guide/los-angeles')
+  })
+
+  it('falls back to the first sidebar region when LA City is unpublished', () => {
+    expect(preferredGuideHref([burbank, county, statewide])).toBe('/guide/props')
+    expect(preferredGuideHref([burbank, county])).toBe('/guide/county-measures')
+    expect(preferredGuideHref([city('Whittier', 'whittier'), burbank])).toBe('/guide/burbank')
+  })
+
+  it('skips slugless rows and falls back to the city list when nothing is linkable', () => {
+    expect(preferredGuideHref([region('Draft statewide', null, 'state', 0), statewide])).toBe('/guide/props')
+    expect(preferredGuideHref([city('Draft', null), city('Empty', '')])).toBe('/cities')
+    expect(preferredGuideHref([])).toBe('/cities')
   })
 })
 

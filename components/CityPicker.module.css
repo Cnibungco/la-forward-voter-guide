@@ -50,17 +50,17 @@
   font-size: 15px;
   font-family: inherit;
   color: var(--color-ink);
-  background: var(--color-bg);
+  background: var(--color-surface);
 }
 
 .search::-webkit-search-decoration {
   -webkit-appearance: none;
 }
 
-.search:focus {
-  border-color: var(--color-sky);
-  outline: var(--focus-ring);
-  outline-offset: 2px;
+.search:focus,
+.search:focus-visible {
+  border-color: var(--color-navy);
+  outline: none;
 }
 
 .list {

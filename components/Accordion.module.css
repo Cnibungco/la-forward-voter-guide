@@ -40,7 +40,7 @@
 }
 
 .summary:hover {
-  background: #fafbf8;
+  background: color-mix(in srgb, var(--color-sky) 8%, white);
 }
 
 .pendingRow {

@@ -28,9 +28,16 @@ import {
   ELECTION_KICKER,
   ENDORSED_HEAD,
   ENDORSED_SUB,
+  ENDORSEMENTS_BANNER_ALT,
+  ENDORSEMENTS_BANNER_HEIGHT,
+  ENDORSEMENTS_BANNER_SRC,
+  ENDORSEMENTS_BANNER_WIDTH,
   FIND_YOUR_CITY_EYEBROW,
   FIND_YOUR_CITY_LABEL,
   HERO_IMAGE_ALT,
+  HERO_IMAGE_HEIGHT,
+  HERO_IMAGE_SRC,
+  HERO_IMAGE_WIDTH,
   HERO_SUB,
   HERO_TITLE,
   INSTAGRAM_HREF,
@@ -50,10 +57,11 @@ import {
   SAMPLE_BALLOT_LABEL,
   STATEWIDE_EYEBROW,
   TIKTOK_HREF,
+  VIEW_GUIDE_LABEL,
   type KeyDatePart,
 } from '@/lib/copy'
 import {endorsedCandidates} from '@/lib/endorsed'
-import {isLosAngelesCity, navCities, regionByTier} from '@/lib/regions'
+import {isLosAngelesCity, navCities, preferredGuideHref, regionByTier} from '@/lib/regions'
 import type {GuideRegion} from '@/lib/types'
 
 import styles from './Landing.module.css'
@@ -123,6 +131,7 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
   const countyRegion = regionByTier(regions, 'county')
   const laCity = regions.find(isLosAngelesCity)
   const hasCities = navCities(regions).length > 0
+  const guideHref = preferredGuideHref(regions)
   const endorsed = endorsedCandidates(regions)
 
   async function handleAddressSelected(address: string) {
@@ -133,23 +142,31 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
 
   return (
     <main className={styles.wrap}>
-      <section className={styles.hero} aria-label="Voter guide">
-        {!heroFailed && (
-          <Image
-            src="/hero.webp"
-            alt={HERO_IMAGE_ALT}
-            fill
-            priority
-            className={styles.heroImage}
-            sizes="(max-width: 720px) 100vw, 720px"
-            onError={() => setHeroFailed(true)}
-            unoptimized
-          />
-        )}
-        <div className={styles.heroPlate}>
-          <p className={styles.kicker}>{ELECTION_KICKER}</p>
-          <h1 className={styles.heroTitle}>{HERO_TITLE}</h1>
-          <p className={styles.heroSub}>{HERO_SUB}</p>
+      <section aria-label="Voter guide">
+        <div className={styles.heroMedia}>
+          {!heroFailed && (
+            <Image
+              src={HERO_IMAGE_SRC}
+              alt={HERO_IMAGE_ALT}
+              width={HERO_IMAGE_WIDTH}
+              height={HERO_IMAGE_HEIGHT}
+              priority
+              className={styles.heroImage}
+              sizes="(max-width: 720px) 100vw, 720px"
+              onError={() => setHeroFailed(true)}
+            />
+          )}
+          <div className={styles.heroPlate}>
+            <p className={styles.kicker}>{ELECTION_KICKER}</p>
+            <h1 className={styles.heroTitle}>{HERO_TITLE}</h1>
+            <p className={styles.heroSub}>{HERO_SUB}</p>
+            <Cta href={guideHref} className={styles.heroCta}>
+              {VIEW_GUIDE_LABEL}
+              <span className={styles.heroCtaArrow} aria-hidden="true">
+                →
+              </span>
+            </Cta>
+          </div>
         </div>
       </section>
 
@@ -206,6 +223,15 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
           )}
         </div>
       </details>
+
+      <Image
+        src={ENDORSEMENTS_BANNER_SRC}
+        alt={ENDORSEMENTS_BANNER_ALT}
+        width={ENDORSEMENTS_BANNER_WIDTH}
+        height={ENDORSEMENTS_BANNER_HEIGHT}
+        className={styles.endorsementsBanner}
+        sizes="(max-width: 720px) 100vw, 720px"
+      />
 
       <div className={styles.addressCard}>
         <p className={styles.addressLabel}>{ADDRESS_LABEL}</p>

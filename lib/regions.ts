@@ -76,6 +76,18 @@ export function navSequence(regions: GuideRegion[]): LinkedRegion[] {
   return [...navStateCounty(regions), ...navCities(regions)]
 }
 
+/**
+ * Landing "View the Guide" target. Prefer the published LA City guide.
+ * Otherwise the first region in sidebar order. `/cities` is the fallback
+ * when nothing with a slug is published.
+ */
+export function preferredGuideHref(regions: GuideRegion[]): string {
+  const la = regions.find(isLosAngelesCity)
+  if (la?.slug) return `/guide/${la.slug}`
+  const entry = navSequence(regions)[0]
+  return entry ? `/guide/${entry.slug}` : '/cities'
+}
+
 /** Previous and next jurisdictions around `slug` in sidebar order. */
 export function adjacentRegions(
   regions: GuideRegion[],

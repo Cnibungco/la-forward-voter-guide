@@ -42,18 +42,52 @@ declare global {
 }
 
 /**
- * Google Translate wraps text nodes in <font> tags, which React doesn't
- * know about. Without this, client navigations throw removeChild /
- * insertBefore errors and blank the page. See facebook/react#11538.
+ * Two DOM cases crash React with "Cannot read properties of null (reading
+ * 'removeChild')":
+ * - Google Translate wraps text in <font> tags React doesn't know about
+ *   (facebook/react#11538).
+ * - React 19 removes preloads and stylesheets by calling
+ *   node.parentNode.removeChild(node). If that node was already detached,
+ *   parentNode is null.
+ * A detached link, style, or script reports a no-op parent. Real elements
+ * still report null when they are not in the document.
  */
+const detachedParent = {
+  removeChild<T extends Node>(child: T): T {
+    return child
+  },
+  insertBefore<T extends Node>(node: T): T {
+    return node
+  },
+  appendChild<T extends Node>(node: T): T {
+    return node
+  },
+}
+
 function patchReactTranslateConflicts() {
-  const flagged = window as Window & {__gtDomPatch?: boolean}
-  if (flagged.__gtDomPatch) return
-  flagged.__gtDomPatch = true
+  const flagged = window as Window & {__gtDomPatch?: number}
+  if (flagged.__gtDomPatch === 2) return
+  flagged.__gtDomPatch = 2
+
+  const parentNode = Object.getOwnPropertyDescriptor(Node.prototype, 'parentNode')
+  if (parentNode?.get) {
+    const readParent = parentNode.get
+    Object.defineProperty(Node.prototype, 'parentNode', {
+      configurable: true,
+      enumerable: parentNode.enumerable,
+      get() {
+        const parent = readParent.call(this) as ParentNode | null
+        if (parent) return parent
+        const name = (this as Node).nodeName
+        if (name === 'LINK' || name === 'STYLE' || name === 'SCRIPT') return detachedParent
+        return null
+      },
+    })
+  }
 
   const originalRemoveChild = Node.prototype.removeChild
   Node.prototype.removeChild = function <T extends Node>(child: T): T {
-    if (child.parentNode !== this) return child
+    if (!(this instanceof Node) || child.parentNode !== this) return child
     return originalRemoveChild.call(this, child) as T
   }
 
@@ -62,10 +96,12 @@ function patchReactTranslateConflicts() {
     newNode: T,
     referenceNode: Node | null,
   ): T {
-    if (referenceNode && referenceNode.parentNode !== this) return newNode
+    if (!(this instanceof Node) || (referenceNode && referenceNode.parentNode !== this)) return newNode
     return originalInsertBefore.call(this, newNode, referenceNode) as T
   }
 }
+
+if (typeof window !== 'undefined') patchReactTranslateConflicts()
 
 function initTranslate() {
   const mount = document.getElementById(ELEMENT_ID)

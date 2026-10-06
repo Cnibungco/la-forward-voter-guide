@@ -11,8 +11,16 @@ export const HERO_TITLE = 'Know your ballot before you walk in.'
 export const HERO_SUB =
   'Every race and measure across LA, rated in plain language by your neighbors at LA Forward.'
 
+export const VIEW_GUIDE_LABEL = 'View the Guide'
+
+export const HERO_IMAGE_SRC = '/banner.jpg'
+
+export const HERO_IMAGE_WIDTH = 1920
+
+export const HERO_IMAGE_HEIGHT = 960
+
 export const HERO_IMAGE_ALT =
-  'LA Forward volunteers and community members at an organizing event'
+  'Illustrated banner for the 2026 General Election LA Forward Voter Guide, showing neighbors carrying ballots'
 
 export const LAVOTE_HREF = 'https://www.lavote.gov'
 
@@ -81,6 +89,15 @@ export const KEY_DATES: KeyDate[] = [
 export const ENDORSED_HEAD = 'Endorsed candidates'
 
 export const ENDORSED_SUB = 'Candidates LA Forward is backing without reservation.'
+
+export const ENDORSEMENTS_BANNER_SRC = '/endorsements.jpg'
+
+export const ENDORSEMENTS_BANNER_WIDTH = 1920
+
+export const ENDORSEMENTS_BANNER_HEIGHT = 960
+
+export const ENDORSEMENTS_BANNER_ALT =
+  'LA Forward endorses Barri Worth Girvan for LA City Council District 3, Marissa Roy for LA City Attorney, Nithya Raman for Mayor of LA City, and Estuardo Mazariegos for LA City Council District 9.'
 
 export const ORG_HREF = 'https://www.laforward.org'
 
@@ -263,12 +280,37 @@ export const SHARE_COPY_MANUAL = 'Select and copy this link.'
 export const SHARE_DOWNLOAD_LABEL = 'Download graphic'
 
 /**
- * Designed share graphic. Replace this file in `public/` when the final
- * artwork is ready, and keep the download filename in sync.
+ * Designed share graphic (2:1 banner). Keep the download filename extension
+ * in sync with this file. Width and height match the file's pixel size so
+ * the share dialog doesn't reserve the wrong box.
  */
-export const SHARE_GRAPHIC_SRC = '/share-guide.svg'
+export const SHARE_GRAPHIC_SRC = '/banner.jpg'
 
-export const SHARE_GRAPHIC_DOWNLOAD = 'la-forward-voter-guide.svg'
+export const SHARE_GRAPHIC_WIDTH = 1920
+
+export const SHARE_GRAPHIC_HEIGHT = 960
+
+export const SHARE_GRAPHIC_DOWNLOAD = 'la-forward-voter-guide.jpg'
+
+/**
+ * Legally required campaign footer, rendered once from the root layout.
+ * Wording must match counsel's copy. Donor name and amount are the fields
+ * most likely to change. The address link is a Google Maps search until a
+ * confirmed maps URL replaces it. The `#` in the street address is
+ * percent-encoded so it stays in the query string.
+ */
+export const CAMPAIGN_DISCLAIMER = {
+  paidForPrefix: 'Paid for LA Forward Action Fund, ',
+  address: '2012 Business Center Dr #130 Irvine, CA 92612',
+  addressHref:
+    'https://www.google.com/maps/search/?api=1&query=2012%20Business%20Center%20Dr%20%23130%20Irvine%2C%20CA%2092612',
+  majorFundingBy: 'Major Funding by:',
+  donor: 'Elizabeth Thomas in the amount of $5,000',
+  notAuthorized: 'Not Authorized by any candidate or a committee controlled by a candidate.',
+  fundingDetailsPrefix: 'Funding details at ',
+  ethicsLabel: 'ethics.lacity.gov',
+  ethicsHref: 'https://ethics.lacity.gov',
+} as const
 
 export const LEGEND_HEAD = 'Our ratings, in full'
 

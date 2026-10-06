@@ -1,6 +1,7 @@
 import {GoogleAnalytics} from '@next/third-parties/google'
 import {Barlow_Condensed, Work_Sans} from 'next/font/google'
 
+import {CampaignDisclaimer} from '@/components/CampaignDisclaimer'
 import {DonatePrompt} from '@/components/DonatePrompt'
 import {MatchProvider} from '@/components/MatchProvider'
 import {SiteHeader} from '@/components/SiteHeader'
@@ -36,6 +37,9 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
           {children}
           <DonatePrompt />
         </MatchProvider>
+        <footer>
+          <CampaignDisclaimer />
+        </footer>
         <VercelAnalytics />
       </body>
       {gaId && process.env.NODE_ENV === 'production' && (
