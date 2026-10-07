@@ -7,7 +7,6 @@ import {Fragment, useState} from 'react'
 
 import {AddressLookup} from '@/components/AddressLookup'
 import {Cta} from '@/components/Cta'
-import {EntryCard} from '@/components/EntryCard'
 import {useMatch} from '@/components/MatchProvider'
 import {RatingLegend} from '@/components/RatingLegend'
 import {TrustCallout} from '@/components/TrustCallout'
@@ -26,8 +25,6 @@ import {
   DONATE_BUTTON_LABEL,
   DONATE_HREF,
   ELECTION_KICKER,
-  ENDORSED_HEAD,
-  ENDORSED_SUB,
   ENDORSEMENTS_BANNER_ALT,
   ENDORSEMENTS_BANNER_HEIGHT,
   ENDORSEMENTS_BANNER_SRC,
@@ -60,7 +57,6 @@ import {
   VIEW_GUIDE_LABEL,
   type KeyDatePart,
 } from '@/lib/copy'
-import {endorsedCandidates} from '@/lib/endorsed'
 import {isLosAngelesCity, navCities, preferredGuideHref, regionByTier} from '@/lib/regions'
 import type {GuideRegion} from '@/lib/types'
 
@@ -132,7 +128,6 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
   const laCity = regions.find(isLosAngelesCity)
   const hasCities = navCities(regions).length > 0
   const guideHref = preferredGuideHref(regions)
-  const endorsed = endorsedCandidates(regions)
 
   async function handleAddressSelected(address: string) {
     const destination = await lookupAddress(address)
@@ -306,22 +301,6 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
           .
         </p>
       </div>
-
-      {endorsed.length > 0 && (
-        <section className={styles.endorse} aria-labelledby="endorsed-heading">
-          <h2 id="endorsed-heading" className={styles.sectionHead}>
-            {ENDORSED_HEAD}
-          </h2>
-          <p className={styles.endorseSub}>{ENDORSED_SUB}</p>
-          {endorsed.map((item) => (
-            <EntryCard
-              key={item.entry._id}
-              entry={item.entry}
-              label={`${item.entry.name} · ${item.raceTitle}`}
-            />
-          ))}
-        </section>
-      )}
 
       <div className={styles.legend} id="ratings">
         <p className={styles.legendHead}>{LEGEND_HEAD}</p>

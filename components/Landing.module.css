@@ -168,10 +168,6 @@ a.heroCta {
   margin: 0 0 18px;
 }
 
-.sectionHead {
-  margin: 0 0 12px;
-}
-
 .dates {
   list-style: none;
   margin: 0;
@@ -288,20 +284,6 @@ a.heroCta {
   color: var(--color-ink);
 }
 
-.endorse {
-  background: var(--color-surface);
-  border: 1.5px solid var(--color-gold-mid);
-  border-radius: 18px;
-  padding: 18px 16px;
-  margin: 22px 16px 0;
-}
-
-.endorseSub {
-  font-size: 13px;
-  color: var(--color-ink-2);
-  margin: 0 0 12px;
-}
-
 .addressCard {
   background: var(--color-surface);
   border: 1.5px solid color-mix(in srgb, var(--color-sky) 45%, white);
@@ -321,8 +303,7 @@ a.heroCta {
 
 .addressLabel,
 .noteToggle,
-.legendHead,
-.sectionHead {
+.legendHead {
   font-family: var(--font-heading), sans-serif;
   font-weight: 700;
   font-size: 19px;
@@ -600,11 +581,6 @@ a.heroCta {
   .noteCard {
     margin: 22px 0 0;
     padding: 4px 20px;
-  }
-
-  .endorse {
-    padding: 22px;
-    margin: 26px 0 0;
   }
 
   .addressCard {

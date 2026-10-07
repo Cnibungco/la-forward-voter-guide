@@ -61,10 +61,9 @@ In order:
    stored)
 6. Browse manually — statewide, countywide, City of Los Angeles, and Find
    your city (`/cities`), plus a link to Courage CA for other counties
-7. Endorsed candidates (omitted when none are published)
-8. Ratings legend (full static copy; see Ratings below)
-9. Donate (same ActBlue URL as the header)
-10. Mailing list and contact (Get on our mailing list, Contact us), then
+7. Ratings legend (full static copy; see Ratings below)
+8. Donate (same ActBlue URL as the header)
+9. Mailing list and contact (Get on our mailing list, Contact us), then
    Instagram, Bluesky, TikTok, and LinkedIn. Each opens in a new tab.
    No self-service portal and no org disclaimer in this footer.
 
@@ -280,8 +279,7 @@ boundary-file edit fails a test. District matches may be kept in this
 tab's session storage; the street address is not.
 
 Other suites: sidebar order and previous/next helpers (`lib/regions.test.ts`);
-the landing Endorsed section (`lib/endorsed.test.ts`); when Back to top
-appears (`lib/contentLength.test.ts`); analytics URL redaction
+when Back to top appears (`lib/contentLength.test.ts`); analytics URL redaction
 (`lib/analytics.test.ts`); rating copy and icons, pending vs
 published display, address widget wrapper, payload defaults, Site Settings
 fallbacks, and transient fetch retries.

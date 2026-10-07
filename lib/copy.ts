@@ -86,10 +86,6 @@ export const KEY_DATES: KeyDate[] = [
   },
 ]
 
-export const ENDORSED_HEAD = 'Endorsed candidates'
-
-export const ENDORSED_SUB = 'Candidates LA Forward is backing without reservation.'
-
 export const ENDORSEMENTS_BANNER_SRC = '/endorsements.jpg'
 
 export const ENDORSEMENTS_BANNER_WIDTH = 1920
