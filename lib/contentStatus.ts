@@ -40,7 +40,7 @@ export function measureIsExpandable(measure: MeasureLike): boolean {
 
 export function raceIsExpandable(race: RaceLike): boolean {
   if (isDraftStatus(race.contentStatus) || raceNeedsWriteup(race)) return false
-  return visibleEntries(race.entries).some(entryIsExpandable)
+  return raceCandidates(race).some(entryIsExpandable)
 }
 
 /** Which rows can actually open. Coming-soon rows are not tappable. */
@@ -63,9 +63,30 @@ export function expandableContentKind(regions: GuideRegion[]): 'race' | 'measure
   return null
 }
 
+/**
+ * Candidates to show for a race. Separate entry documents win. A state or
+ * county race with no entries can still carry one rating on the race itself.
+ */
+export function raceCandidates(race: RaceLike): GuideEntry[] {
+  const entries = visibleEntries(race.entries)
+  if (entries.length > 0) return entries
+  if (isDraftStatus(race.contentStatus) || isPendingStatus(race.contentStatus) || !race.rating) return []
+  return [
+    {
+      _id: `race:${race.slug ?? race.title}`,
+      name: race.candidateName?.trim() || race.title,
+      slug: race.slug,
+      photo: null,
+      rating: race.rating,
+      reasoning: race.reasoning ?? null,
+      contentStatus: race.contentStatus ?? null,
+    },
+  ]
+}
+
 /** Race listed on the ballot but with no candidates/write-up yet. */
 export function raceNeedsWriteup(race: RaceLike): boolean {
   if (isDraftStatus(race.contentStatus)) return false
   if (isPendingStatus(race.contentStatus)) return true
-  return visibleEntries(race.entries).length === 0
+  return raceCandidates(race).length === 0
 }

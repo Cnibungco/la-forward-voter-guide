@@ -4,7 +4,8 @@
   padding: 20px 16px 32px;
   border-top: 1px solid var(--color-line);
   background: var(--color-bg);
-  color: var(--color-ink);
+  /* Pure black, including the links. 14px is 10.5pt, above the 8pt floor. */
+  color: #000;
   font-size: 14px;
   line-height: 1.45;
   text-align: center;
@@ -25,14 +26,10 @@
   text-underline-offset: 2px;
 }
 
-/* Same tokens as the global link rule, so the address and ethics
-   links stay the site link color on the footer background. */
-.disclaimer a {
-  color: var(--color-navy-2);
+.disclaimer a,
+.disclaimer a:visited,
+.disclaimer a:hover {
+  color: #000;
   text-decoration: underline;
   text-underline-offset: 2px;
-}
-
-.disclaimer a:hover {
-  color: var(--color-navy);
 }

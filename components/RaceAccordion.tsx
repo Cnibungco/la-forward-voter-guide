@@ -1,7 +1,7 @@
 import {ComingSoonRow} from '@/components/ComingSoonRow'
 import {EntryCard} from '@/components/EntryCard'
 import {PortableText} from '@/components/PortableText'
-import {isDraftStatus, raceNeedsWriteup, visibleEntries} from '@/lib/contentStatus'
+import {isDraftStatus, raceCandidates, raceNeedsWriteup} from '@/lib/contentStatus'
 import {raceRowLabel} from '@/lib/raceLabel'
 import type {RaceLike} from '@/lib/types'
 
@@ -28,7 +28,7 @@ interface RaceAccordionProps {
 export function RaceAccordion({race}: RaceAccordionProps) {
   if (isDraftStatus(race.contentStatus)) return null
 
-  const entries = visibleEntries(race.entries)
+  const entries = raceCandidates(race)
 
   if (raceNeedsWriteup(race)) {
     return <ComingSoonRow title={race.title} id={race.slug} />

@@ -83,6 +83,9 @@ export const GUIDE_QUERY = defineQuery(`{
       district,
       context,
       contentStatus,
+      candidateName,
+      rating,
+      reasoning,
       "entries": *[_type == "entry" && references(^._id) && ${notDraft}] | order(order asc) {
         _id,
         name,

@@ -64,6 +64,13 @@ export interface RaceLike {
   context: PortableTextBlock[] | null
   entries: GuideEntry[] | null
   contentStatus?: ContentStatus | null
+  /**
+   * State/County races can rate one candidate on the race itself.
+   * City ballot races leave these empty and use `entries`.
+   */
+  candidateName?: string | null
+  rating?: EntryRating | null
+  reasoning?: PortableTextBlock[] | null
 }
 
 /**

@@ -1,4 +1,4 @@
-import {isDraftStatus, visibleEntries} from '@/lib/contentStatus'
+import {isDraftStatus, raceCandidates, visibleEntries} from '@/lib/contentStatus'
 import {hasSlug} from '@/lib/regions'
 import type {GuideRegion, MeasureLike, RaceLike} from '@/lib/types'
 
@@ -101,7 +101,7 @@ export function searchGuide(regions: GuideRegion[], rawQuery: string): GuideSear
     }
 
     for (const race of racesIn(region)) {
-      if (matches(query, race.title, race.office, race.sectionLabel)) {
+      if (matches(query, race.title, race.office, race.candidateName, race.sectionLabel)) {
         hits.push({
           kind: 'race',
           key: `race:${region._id}:${race.key}`,
@@ -111,8 +111,9 @@ export function searchGuide(regions: GuideRegion[], rawQuery: string): GuideSear
         })
       }
 
-      for (const entry of visibleEntries(race.entries)) {
+      for (const entry of raceCandidates(race)) {
         if (!matches(query, entry.name)) continue
+        if (visibleEntries(race.entries).length === 0 && entry.name === race.title) continue
         hits.push({
           kind: 'name',
           key: `entry:${entry._id}`,

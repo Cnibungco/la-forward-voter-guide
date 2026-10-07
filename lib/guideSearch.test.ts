@@ -98,6 +98,21 @@ describe('searchGuide', () => {
       ],
     }),
     region({
+      _id: 'offices',
+      title: 'Statewide Offices',
+      slug: 'statewide-offices',
+      tier: 'state',
+      races: [
+        race({
+          _id: 'governor',
+          title: 'Governor',
+          candidateName: 'Xavier Becerra',
+          rating: 'endorsed',
+          entries: [],
+        }),
+      ],
+    }),
+    region({
       _id: 'hidden',
       title: 'Hidden draft',
       slug: 'hidden',
@@ -123,6 +138,12 @@ describe('searchGuide', () => {
       href: '/guide/los-angeles#nithya-raman',
       context: 'Mayor · City of Los Angeles',
     })
+  })
+
+  it('matches a candidate named on a state race', () => {
+    const hits = searchGuide(regions, 'becerra')
+    expect(hits.map((hit) => hit.label)).toEqual(['Xavier Becerra', 'Governor'])
+    expect(hits[0]).toMatchObject({href: '/guide/statewide-offices#governor'})
   })
 
   it('matches a race title and its office', () => {

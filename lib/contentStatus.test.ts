@@ -6,6 +6,7 @@ import {
   isDraftStatus,
   isPendingStatus,
   measureNeedsWriteup,
+  raceCandidates,
   raceNeedsWriteup,
   visibleEntries,
 } from './contentStatus'
@@ -153,6 +154,47 @@ describe('raceNeedsWriteup', () => {
 
   it('is not coming soon when it has visible candidates', () => {
     expect(raceNeedsWriteup(race({contentStatus: 'published', entries: [entry({rating: 'endorsed'})]}))).toBe(false)
+  })
+
+  it('treats a rating stored on the race as the one candidate', () => {
+    const governor = race({
+      title: 'Governor',
+      slug: 'governor',
+      contentStatus: 'published',
+      entries: [],
+      candidateName: 'Xavier Becerra',
+      rating: 'endorsed',
+    })
+    expect(raceNeedsWriteup(governor)).toBe(false)
+    expect(raceCandidates(governor)).toEqual([
+      {
+        _id: 'race:governor',
+        name: 'Xavier Becerra',
+        slug: 'governor',
+        photo: null,
+        rating: 'endorsed',
+        reasoning: null,
+        contentStatus: 'published',
+      },
+    ])
+  })
+
+  it('keeps a pending race as coming soon even when a rating is filled in', () => {
+    expect(
+      raceNeedsWriteup(race({contentStatus: 'pending', entries: [], rating: 'recommended', candidateName: 'Fiona Ma'})),
+    ).toBe(true)
+  })
+
+  it('prefers candidate entries over a rating stored on the race', () => {
+    const shown = raceCandidates(
+      race({
+        contentStatus: 'published',
+        rating: 'endorsed',
+        candidateName: 'On the race',
+        entries: [entry({_id: 'real', name: 'From the entry', rating: 'recommended'})],
+      }),
+    )
+    expect(shown.map((item) => item.name)).toEqual(['From the entry'])
   })
 
   it('treats a race whose only candidates are drafts as empty', () => {
