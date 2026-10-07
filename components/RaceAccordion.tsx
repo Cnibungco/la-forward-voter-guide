@@ -35,7 +35,7 @@ export function RaceAccordion({race}: RaceAccordionProps) {
   }
 
   return (
-    <div className={styles.raceBlock}>
+    <div className={styles.raceBlock} id={race.slug ?? undefined}>
       {entries.length !== 1 && race.title && <p className={styles.raceTitle}>{race.title}</p>}
       {race.office && entries.length !== 1 && <p className={styles.subtitle}>{race.office}</p>}
       {race.context && (

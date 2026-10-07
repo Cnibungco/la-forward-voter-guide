@@ -5,7 +5,7 @@ import {resolvedDisclaimer, resolvedSampleBallotUrl} from '@/lib/siteSettings'
 
 import styles from './page.module.css'
 
-// Time-based revalidation per confirmed decision — no webhook to maintain.
+// 5-minute ISR fallback. The Sanity webhook also revalidates this page on publish.
 export const revalidate = 300
 
 export default async function LandingPage() {

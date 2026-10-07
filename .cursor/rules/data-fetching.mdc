@@ -13,12 +13,14 @@ alwaysApply: false
   returns `{regions, settings}` and is wrapped in React `cache()` so
   multiple calls on the same request share one fetch.
 - Use `export const revalidate = 300` (ISR) on pages that fetch guide
-  content — not `force-dynamic`, and not a webhook-triggered
-  revalidation route. This is a deliberate "fewer moving parts" choice
-  for volunteer/pro-bono maintenance, not an oversight.
-- `useCdn: true` on the Sanity client is intentional — Studio uses
-  `liveEdit` (no draft/publish copies) and Content status is the
-  editorial control. There's no preview-of-unpublished-content requirement.
+  content — not `force-dynamic`. That timer is the fallback.
+  `app/api/revalidate/route.ts` refreshes the guide when Studio content
+  is saved. Keep both. See docs/backend-strategy.md §13.
+- `useCdn: true` on the shared Sanity client is intentional. `getGuide()`
+  passes `useCdn: false` so a webhook refetch does not read a stale CDN
+  response. Studio uses `liveEdit` (no draft/publish copies) and Content
+  status is the editorial control. There's no preview-of-unpublished-content
+  requirement.
 - `sanity/lib/client.ts` throws if `NEXT_PUBLIC_SANITY_PROJECT_ID` is
   missing. Keep this — fail loudly at build time rather than silently
   rendering an empty guide.

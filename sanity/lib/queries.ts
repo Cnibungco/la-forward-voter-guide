@@ -60,6 +60,12 @@ const sectionFields = `
  * ordered raceGroup/measureGroup blocks, concatenated with every
  * specialDistrict's blocks that lists this Region in `citiesServed` (own
  * content first, districts in title order). See §11.
+ *
+ * The district half cannot be `(*[...]).sections[]`. That attribute
+ * access is null even when a district exists, and GROQ's `array + null`
+ * is null — `coalesce` then turns the whole merge into `[]`, so a city
+ * with its own ballot renders as "Nothing entered." Map the district
+ * sections, flatten, and coalesce that half to `[]`.
  */
 export const GUIDE_QUERY = defineQuery(`{
   "regions": *[_type == "region"] | order(tier asc, order asc) {
@@ -97,11 +103,13 @@ export const GUIDE_QUERY = defineQuery(`{
       contentStatus,
     },
     "sections":
-      coalesce(
-        coalesce(sections, [])[]{${sectionFields}}
-        + (*[_type == "specialDistrict" && references(^._id)] | order(title asc)).sections[]{${sectionFields}},
-        []
-      )
+      coalesce(sections, [])[]{${sectionFields}}
+      + coalesce(
+          *[_type == "specialDistrict" && references(^._id)] | order(title asc) {
+            "sections": sections[]{${sectionFields}}
+          }.sections[],
+          []
+        )
   },
   "settings": *[_id == "siteSettings"][0]{
     disclaimer,

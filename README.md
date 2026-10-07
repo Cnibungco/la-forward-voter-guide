@@ -20,7 +20,7 @@ don't need to re-explain the project each session. Full decision history:
 - Studio is standalone (`studio-la-forward-voter-guide`), not embedded
 - One nested GROQ query fetches the whole guide (`sanity/lib/queries.ts`)
 - Single `production` dataset — no separate testing dataset
-- Time-based ISR, 5 min, no revalidation webhook to maintain
+- Time-based ISR, 5 min, plus a Sanity webhook so a publish updates the live guide immediately (`SANITY_REVALIDATE_SECRET`; see docs/backend-strategy.md §13)
 - Address lookup never stores, logs, or sends the user's address except the
   one server-side Census Geocoder call needed to match it (see
   `docs/address-matching-strategy.md`)

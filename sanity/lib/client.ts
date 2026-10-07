@@ -41,7 +41,7 @@ export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  // Single production dataset, no draft/review workflow (PRD §4) — CDN reads
-  // are fine since there's no preview-of-unpublished-content requirement.
+  // Shared client stays on the CDN. `getGuide()` opts out (`useCdn: false`)
+  // so a webhook refetch is not served a stale CDN copy of the guide.
   useCdn: true,
 })

@@ -121,6 +121,9 @@ real requirement here — a few minutes' lag between Sea publishing and it
 appearing live is fine for a voter guide. Fewer moving parts survives
 volunteer/pro-bono maintenance better than "instant but fragile."
 
+**Overridden in §13.** The 5-minute ISR stays as the fallback. A Sanity
+webhook now refreshes the guide when an editor publishes.
+
 ---
 
 ## 6. Proposed repo structure (for Cursor)
@@ -173,7 +176,9 @@ this.
    overriding my earlier recommendation. Real cost: Sea/David's first
    hands-on Studio session creates content directly in the live dataset.
    See handoff README for how to handle that.
-4. **Time-based revalidation, 5 min** — confirmed
+4. **Time-based revalidation, 5 min** — confirmed, then overridden in §13.
+   The 5-minute ISR remains the fallback; a publish webhook refreshes the
+   guide immediately. Do not remove the webhook to get back to the timer only.
 
 Explicit optimization target going forward, per Camille: **longevity and
 low maintenance burden over short-term convenience.** This should keep
@@ -273,14 +278,18 @@ problem (sorting *independent top-level documents* returned by a filter,
 which has no inherent order), not duplicated by this.
 
 **Confirmed GROQ merge pattern** for a city page (own sections first, then
-special districts in title order, using GROQ's `+` array-concatenation
-operator and its flat-map behavior on `arrayOfDocs.sections[]`):
+special districts in title order). Do not write this as
+`ownSections + (*[_type == "specialDistrict" && ...]).sections[]`.
+Attribute access on that parenthesized query is null even when a
+district exists, and GROQ's `array + null` is null, which wipes the
+city's own ballot. Map the district sections, flatten with `.sections[]`,
+and coalesce that half to `[]`:
 
 ```groq
 *[_type == "region" && tier == "city"] | order(order) {
   title, slug, tier, description,
   "sections":
-    sections[]{
+    coalesce(sections, [])[]{
       _key, _type, label,
       _type == "raceGroup" => {
         races[]{
@@ -292,19 +301,23 @@ operator and its flat-map behavior on `arrayOfDocs.sections[]`):
         measures[]{_key, title, "slug": slug.current, summary, position, pros, cons}
       }
     }
-    +
-    (*[_type == "specialDistrict" && references(^._id)] | order(title asc)).sections[]{
-      _key, _type, label,
-      _type == "raceGroup" => {
-        races[]{
-          _key, title, "slug": slug.current, office, context,
-          "entries": entries[]->{_id, name, "slug": slug.current, photo, rating, reasoning}
-        }
-      },
-      _type == "measureGroup" => {
-        measures[]{_key, title, "slug": slug.current, summary, position, pros, cons}
-      }
-    }
+    + coalesce(
+        *[_type == "specialDistrict" && references(^._id)] | order(title asc) {
+          "sections": sections[]{
+            _key, _type, label,
+            _type == "raceGroup" => {
+              races[]{
+                _key, title, "slug": slug.current, office, context,
+                "entries": entries[]->{_id, name, "slug": slug.current, photo, rating, reasoning}
+              }
+            },
+            _type == "measureGroup" => {
+              measures[]{_key, title, "slug": slug.current, summary, position, pros, cons}
+            }
+          }
+        }.sections[],
+        []
+      )
 }
 ```
 
@@ -455,3 +468,16 @@ on the graceful unfiltered fallback until someone sources a file for them
 real, referrer-restricted Geoapify key is configured
 (`NEXT_PUBLIC_GEOAPIFY_API_KEY` in `.env.local`); nothing further is
 needed to bring this feature live.
+
+## 13. Amendment: publish refreshes the public guide
+
+**Superseding §5 and §8.4** (user request, October 2026). Time-based ISR
+alone was not enough: the public guide must update when an editor sets
+Content status to Published and saves. Studio is `liveEdit`, so that save
+is the publish — there may be no separate Sanity Publish button.
+
+`export const revalidate = 300` stays as the fallback if the webhook is
+down. `app/api/revalidate/route.ts` checks `SANITY_REVALIDATE_SECRET` and
+revalidates the guide pages. `getGuide()` reads the Content Lake API
+(`useCdn: false`) so that refresh is not stuck on a stale CDN response.
+Do not remove the webhook and go back to the timer only.

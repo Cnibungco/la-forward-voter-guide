@@ -164,6 +164,10 @@ export const PRIVACY_NOTE =
 
 export const FIND_YOUR_CITY_LABEL = 'Find your city'
 
+export const GUIDE_SEARCH_LABEL = 'Search the guide'
+
+export const GUIDE_SEARCH_EMPTY = 'Nothing matches that search.'
+
 export const STATEWIDE_EYEBROW = 'Statewide'
 
 export const COUNTYWIDE_EYEBROW = 'Countywide'
@@ -214,9 +218,9 @@ export const BALLOT_FILTERING_COPY = 'Showing the races and measures that apply 
 
 export const BALLOT_FULL_COPY = 'Showing every race and measure in the guide.'
 
-export const OPEN_CITY_LIST_LABEL = 'Find a city'
+export const OPEN_CITY_LIST_LABEL = 'Search the guide'
 
-export const CLOSE_CITY_LIST_LABEL = 'Close city list'
+export const CLOSE_CITY_LIST_LABEL = 'Close search'
 
 export const DONATE_BUTTON_LABEL = 'Donate'
 

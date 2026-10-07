@@ -26,7 +26,9 @@ only fetches published content; it has no `sanity.config.ts`, no
   it in or move it into this app
 - One nested GROQ query for the whole guide, not per-section queries
 - Single `production` dataset, no separate testing dataset
-- Time-based ISR (5 min), not a revalidation webhook
+- Time-based ISR (5 min) as a fallback, plus a Sanity revalidation webhook
+  so a publish shows up immediately (docs/backend-strategy.md §13). Do not
+  remove the webhook.
 - Entry rating: No Recommendation / Recommended / Endorsed (fixed 3 values)
 - Measure position: Support / Oppose / No Position
 - Address-based ballot matching (see `docs/address-matching-strategy.md`)

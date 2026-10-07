@@ -5,7 +5,7 @@ import {PortableText} from '@/components/PortableText'
 import {RatingBadge} from '@/components/RatingBadge'
 import {entryNeedsWriteup, isDraftStatus} from '@/lib/contentStatus'
 import {ENTRY_NO_REASONING} from '@/lib/copy'
-import {urlForImage} from '@/lib/image'
+import {entryPhotoUrl, imageAssetDimensions} from '@/lib/image'
 import type {GuideEntry} from '@/lib/types'
 
 import styles from './Accordion.module.css'
@@ -22,7 +22,8 @@ export function EntryCard({entry, label}: EntryCardProps) {
     return <ComingSoonRow title={label} id={entry.slug} />
   }
 
-  const photoUrl = entry.photo ? urlForImage(entry.photo).width(160).height(160).fit('crop').url() : null
+  const photoUrl = entry.photo ? entryPhotoUrl(entry.photo) : null
+  const photoSize = entry.photo ? imageAssetDimensions(entry.photo) : null
 
   return (
     <details className={styles.row} id={entry.slug ?? undefined}>
@@ -37,8 +38,9 @@ export function EntryCard({entry, label}: EntryCardProps) {
             className={cardStyles.photo}
             src={photoUrl}
             alt={entry.name}
-            width={64}
-            height={64}
+            width={photoSize?.width ?? 819}
+            height={photoSize?.height ?? 1024}
+            sizes="(max-width: 480px) 100vw, 249px"
           />
         )}
         {entry.reasoning ? (

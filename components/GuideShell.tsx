@@ -6,6 +6,7 @@ import {BackToTop, GUIDE_TOP_ID} from '@/components/BackToTop'
 import {GuideNav} from '@/components/GuideNav'
 import {PageNav} from '@/components/PageNav'
 import {CLOSE_CITY_LIST_LABEL, JUMP_TO_LABEL, OPEN_CITY_LIST_LABEL} from '@/lib/copy'
+import {revealGuideAnchor} from '@/lib/guideSearch'
 import {adjacentRegions} from '@/lib/regions'
 import type {GuideRegion} from '@/lib/types'
 
@@ -44,6 +45,13 @@ export function GuideShell({
   function closeDrawer() {
     setDrawerOpen(false)
   }
+
+  useEffect(() => {
+    const id = decodeURIComponent(window.location.hash.replace(/^#/, ''))
+    if (!id) return
+    const frame = requestAnimationFrame(() => revealGuideAnchor(id))
+    return () => cancelAnimationFrame(frame)
+  }, [activeSlug])
 
   useEffect(() => {
     const header = document.querySelector('header')

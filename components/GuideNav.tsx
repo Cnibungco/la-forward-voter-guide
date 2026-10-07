@@ -3,7 +3,8 @@
 import Link from 'next/link'
 
 import {SearchIcon} from '@/components/SearchIcon'
-import {CITIES_EMPTY, FIND_YOUR_CITY_LABEL, NAV_STATE_COUNTY, NAV_STATE_EMPTY} from '@/lib/copy'
+import {CITIES_EMPTY, GUIDE_SEARCH_EMPTY, GUIDE_SEARCH_LABEL, NAV_STATE_COUNTY} from '@/lib/copy'
+import {revealGuideAnchor, searchGuide} from '@/lib/guideSearch'
 import {TIER_LABELS} from '@/lib/labels'
 import {navCities, navStateCounty} from '@/lib/regions'
 import type {GuideRegion} from '@/lib/types'
@@ -20,33 +21,68 @@ interface GuideNavProps {
 
 export function GuideNav({regions, activeSlug, search, onSearch, onNavigate}: GuideNavProps) {
   const query = search.trim().toLowerCase()
-  const stateCounty = navStateCounty(regions).filter(
-    (region) => !query || region.title.toLowerCase().includes(query),
-  )
-  const cities = navCities(regions).filter(
-    (region) => !query || region.title.toLowerCase().includes(query),
-  )
+  const hits = query ? searchGuide(regions, query) : []
+  const stateCounty = navStateCounty(regions)
+  const cities = navCities(regions)
 
   return (
     <>
       <label className={styles.searchLabel}>
-        <span className={styles.visuallyHidden}>{FIND_YOUR_CITY_LABEL}</span>
+        <span className={styles.visuallyHidden}>{GUIDE_SEARCH_LABEL}</span>
         <span className={styles.searchWrap}>
           <SearchIcon className={styles.searchIcon} />
           <input
             type="search"
             className={styles.search}
-            placeholder={FIND_YOUR_CITY_LABEL}
+            placeholder={GUIDE_SEARCH_LABEL}
             value={search}
             onChange={(event) => onSearch(event.target.value)}
           />
         </span>
       </label>
 
-      <p className={styles.tier}>{NAV_STATE_COUNTY}</p>
-      {stateCounty.length === 0 ? (
-        query ? <p className={styles.empty}>{NAV_STATE_EMPTY}</p> : null
+      {query ? (
+        hits.length === 0 ? (
+          <p className={styles.empty}>{GUIDE_SEARCH_EMPTY}</p>
+        ) : (
+          hits.map((hit) => (
+            <NavItem
+              key={hit.key}
+              href={hit.href}
+              label={hit.label}
+              context={hit.context}
+              active={false}
+              onNavigate={onNavigate}
+            />
+          ))
+        )
       ) : (
+        <JurisdictionList
+          stateCounty={stateCounty}
+          cities={cities}
+          activeSlug={activeSlug}
+          onNavigate={onNavigate}
+        />
+      )}
+    </>
+  )
+}
+
+function JurisdictionList({
+  stateCounty,
+  cities,
+  activeSlug,
+  onNavigate,
+}: {
+  stateCounty: ReturnType<typeof navStateCounty>
+  cities: ReturnType<typeof navCities>
+  activeSlug?: string | null
+  onNavigate?: () => void
+}) {
+  return (
+    <>
+      <p className={styles.tier}>{NAV_STATE_COUNTY}</p>
+      {stateCounty.length > 0 && (
         stateCounty.map((region) => (
           <NavItem
             key={region._id}
@@ -79,11 +115,13 @@ export function GuideNav({regions, activeSlug, search, onSearch, onNavigate}: Gu
 function NavItem({
   href,
   label,
+  context,
   active,
   onNavigate,
 }: {
   href: string
   label: string
+  context?: string
   active: boolean
   onNavigate?: () => void
 }) {
@@ -91,10 +129,25 @@ function NavItem({
     <Link
       href={href}
       className={active ? `${styles.item} ${styles.itemActive}` : styles.item}
-      onClick={onNavigate}
+      onClick={(event) => {
+        const url = new URL(href, window.location.href)
+        const id = decodeURIComponent(url.hash.replace(/^#/, ''))
+        if (url.pathname === window.location.pathname && id && revealGuideAnchor(id)) {
+          event.preventDefault()
+          window.history.pushState(null, '', `${url.pathname}${url.hash}`)
+        }
+        onNavigate?.()
+      }}
       aria-current={active ? 'page' : undefined}
     >
-      {label}
+      {context ? (
+        <>
+          <span className={styles.hitLabel}>{label}</span>
+          <span className={styles.hitContext}>{context}</span>
+        </>
+      ) : (
+        label
+      )}
     </Link>
   )
 }

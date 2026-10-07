@@ -76,6 +76,18 @@
   color: var(--color-navy);
 }
 
+.hitLabel {
+  display: block;
+}
+
+.hitContext {
+  display: block;
+  margin-top: 1px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-ink-3);
+}
+
 .itemActive {
   background: var(--color-accent-bg);
   color: var(--color-navy-2);
