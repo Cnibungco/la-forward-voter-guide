@@ -48,22 +48,20 @@ connection while loading recommendations shows a try-again page.
 
 In order:
 
-1. Hero (kicker: November 3, 2026 General Election). View the Guide opens
-   the City of Los Angeles guide, or the first published jurisdiction when
-   that city guide is absent.
-2. Key dates (cream card; Check registration / Register to vote)
-3. About this guide (one accordion, same heading type as Find your ballot).
+1. Hero. View the Guide opens the City of Los Angeles guide, or the first
+   published jurisdiction when that city guide is absent.
+2. Find your ballot (address lookup; privacy note that the address is not
+   stored)
+3. Browse manually — statewide, countywide, City of Los Angeles, and Find
+   your city (`/cities`), plus a link to Courage CA for other counties
+4. Ratings legend (full static copy; see Ratings below)
+5. Key dates (cream card; Check registration / Register to vote)
+6. About this guide (one accordion, same heading type as Find your ballot).
    The trust statement — candidates and committees were not offered paid
    placement and did not see recommendations before publication — is
    highlighted inside this accordion. There is no site-wide trust banner.
-4. Endorsements banner (`public/endorsements.jpg`)
-5. Find your ballot (address lookup; privacy note that the address is not
-   stored)
-6. Browse manually — statewide, countywide, City of Los Angeles, and Find
-   your city (`/cities`), plus a link to Courage CA for other counties
-7. Ratings legend (full static copy; see Ratings below)
-8. Donate (same ActBlue URL as the header)
-9. Mailing list and contact (Get on our mailing list, Contact us), then
+7. Donate (same ActBlue URL as the header)
+8. Mailing list and contact (Get on our mailing list, Contact us), then
    Instagram, Bluesky, TikTok, and LinkedIn. Each opens in a new tab.
    No self-service portal and no org disclaimer in this footer.
 
@@ -86,7 +84,9 @@ hero, key dates, about paragraphs, register/check-registration URLs, the
 donate URL, donate ask, donate dialog, mailing list, contact, social
 profiles, share text, and the legally required campaign footer
 (`CAMPAIGN_DISCLAIMER`) — is in `lib/copy.ts`. The share graphic and the
-hero illustration are `public/banner.jpg`. The campaign footer is rendered
+hero illustration are `public/banner.jpg`. That illustration is the visible
+hero title; `HERO_TITLE` is the landing page heading for assistive
+technology. The campaign footer is rendered
 once from the root layout, on every public page.
 
 ### Guide, ballot, cities, outside

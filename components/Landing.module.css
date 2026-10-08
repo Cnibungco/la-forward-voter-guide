@@ -27,64 +27,25 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  padding: 2.25rem 16px 12px;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    transparent 18%,
-    color-mix(in srgb, var(--color-navy) 38%, transparent) 38%,
-    color-mix(in srgb, var(--color-navy) 82%, transparent) 52%,
-    color-mix(in srgb, var(--color-navy) 92%, transparent) 72%
-  );
+  align-items: flex-end;
+  padding: 16px;
 }
 
 .heroMedia:not(:has(img)) .heroPlate {
   position: relative;
-  padding-top: 22px;
   background: var(--color-navy);
 }
 
-.kicker {
-  display: inline-block;
-  max-width: 100%;
-  color: var(--color-navy);
-  background: var(--color-gold);
-  font-weight: 700;
-  font-size: 13px;
-  line-height: 1.2;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  text-wrap: balance;
-  padding: 5px 9px;
-  border-radius: 999px;
-  margin: 0 0 10px;
-}
-
-.heroTitle {
-  color: #fff;
-  font-family: var(--font-heading), sans-serif;
-  font-weight: 800;
-  font-size: 30px;
-  line-height: 1.05;
-  margin: 0 0 8px;
-  max-width: 20ch;
-  text-shadow: 0 1px 8px color-mix(in srgb, var(--color-navy) 55%, transparent);
-}
-
-.heroSub {
-  color: var(--color-on-navy);
-  font-size: 14px;
-  line-height: 1.45;
-  margin: 0;
-  max-width: 42ch;
-  text-shadow:
-    0 1px 1px color-mix(in srgb, var(--color-navy) 80%, transparent),
-    0 0 8px color-mix(in srgb, var(--color-navy) 65%, transparent);
-}
-
-.heroCta {
-  margin-top: 14px;
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 a.heroCta {
@@ -100,35 +61,11 @@ a.heroCta {
     margin: 12px 12px 0;
   }
 
-  .heroImage {
-    aspect-ratio: 5 / 4;
-    object-fit: cover;
-    object-position: center 18%;
-  }
-
   .heroPlate {
-    padding: 1.35rem 12px 10px;
-  }
-
-  .kicker {
-    font-size: 11px;
-    letter-spacing: 0.03em;
-    padding: 4px 8px;
-    margin-bottom: 6px;
-  }
-
-  .heroTitle {
-    font-size: 22px;
-    margin-bottom: 4px;
-  }
-
-  .heroSub {
-    font-size: 13px;
-    line-height: 1.35;
+    padding: 12px;
   }
 
   a.heroCta {
-    margin-top: 8px;
     padding: 8px 14px;
     font-size: 13.5px;
   }
@@ -290,15 +227,6 @@ a.heroCta {
   border-radius: 18px;
   padding: 18px 16px 16px;
   margin: 16px 16px 0;
-}
-
-.endorsementsBanner {
-  display: block;
-  width: calc(100% - 32px);
-  height: auto;
-  margin: 16px 16px 0;
-  border-radius: 18px;
-  box-shadow: 0 12px 28px color-mix(in srgb, var(--color-navy) 16%, transparent);
 }
 
 .addressLabel,
@@ -542,20 +470,7 @@ a.heroCta {
   }
 
   .heroPlate {
-    padding: 2.75rem 28px 16px;
-  }
-
-  .kicker {
-    font-size: 14px;
-    padding: 6px 10px;
-  }
-
-  .heroTitle {
-    font-size: 42px;
-  }
-
-  .heroSub {
-    font-size: 16px;
+    padding: 20px 28px;
   }
 
   .datesCard {
@@ -585,11 +500,6 @@ a.heroCta {
 
   .addressCard {
     padding: 24px;
-    margin: 20px 0 0;
-  }
-
-  .endorsementsBanner {
-    width: 100%;
     margin: 20px 0 0;
   }
 

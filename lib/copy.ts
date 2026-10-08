@@ -4,12 +4,11 @@
  * components. Visual/layout chrome stays in CSS.
  */
 
-export const ELECTION_KICKER = 'November 3, 2026 General Election'
-
+/**
+ * Page heading for assistive tech. The visible title is painted into
+ * `public/banner.jpg`, so this string is not shown on the hero.
+ */
 export const HERO_TITLE = 'Know your ballot before you walk in.'
-
-export const HERO_SUB =
-  'Every race and measure across LA, rated in plain language by your neighbors at LA Forward.'
 
 export const VIEW_GUIDE_LABEL = 'View the Guide'
 
@@ -85,15 +84,6 @@ export const KEY_DATES: KeyDate[] = [
     electionDay: true,
   },
 ]
-
-export const ENDORSEMENTS_BANNER_SRC = '/endorsements.jpg'
-
-export const ENDORSEMENTS_BANNER_WIDTH = 1920
-
-export const ENDORSEMENTS_BANNER_HEIGHT = 960
-
-export const ENDORSEMENTS_BANNER_ALT =
-  'LA Forward endorses Barri Worth Girvan for LA City Council District 3, Marissa Roy for LA City Attorney, Nithya Raman for Mayor of LA City, and Estuardo Mazariegos for LA City Council District 9.'
 
 export const ORG_HREF = 'https://www.laforward.org'
 

@@ -24,18 +24,12 @@ import {
   DONATE_ASK,
   DONATE_BUTTON_LABEL,
   DONATE_HREF,
-  ELECTION_KICKER,
-  ENDORSEMENTS_BANNER_ALT,
-  ENDORSEMENTS_BANNER_HEIGHT,
-  ENDORSEMENTS_BANNER_SRC,
-  ENDORSEMENTS_BANNER_WIDTH,
   FIND_YOUR_CITY_EYEBROW,
   FIND_YOUR_CITY_LABEL,
   HERO_IMAGE_ALT,
   HERO_IMAGE_HEIGHT,
   HERO_IMAGE_SRC,
   HERO_IMAGE_WIDTH,
-  HERO_SUB,
   HERO_TITLE,
   INSTAGRAM_HREF,
   KEY_DATES,
@@ -138,6 +132,7 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
   return (
     <main className={styles.wrap}>
       <section aria-label="Voter guide">
+        <h1 className={styles.visuallyHidden}>{HERO_TITLE}</h1>
         <div className={styles.heroMedia}>
           {!heroFailed && (
             <Image
@@ -152,9 +147,6 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
             />
           )}
           <div className={styles.heroPlate}>
-            <p className={styles.kicker}>{ELECTION_KICKER}</p>
-            <h1 className={styles.heroTitle}>{HERO_TITLE}</h1>
-            <p className={styles.heroSub}>{HERO_SUB}</p>
             <Cta href={guideHref} className={styles.heroCta}>
               {VIEW_GUIDE_LABEL}
               <span className={styles.heroCtaArrow} aria-hidden="true">
@@ -164,69 +156,6 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
           </div>
         </div>
       </section>
-
-      <section className={styles.datesCard} aria-labelledby="key-dates-heading">
-        <div className={styles.datesAccent} aria-hidden="true">
-          <span />
-          <span />
-        </div>
-        <h2 id="key-dates-heading" className={styles.datesHead}>
-          {KEY_DATES_HEAD}
-        </h2>
-        <ol className={styles.dates}>
-          {KEY_DATES.map((item) => (
-            <li
-              key={item.date}
-              className={item.electionDay ? `${styles.dateRow} ${styles.electionDay}` : styles.dateRow}
-            >
-              <span className={styles.dateWhen}>{item.date}</span>
-              <span className={styles.dateEvent}>
-                <KeyDateEvent parts={item.event} />
-              </span>
-            </li>
-          ))}
-        </ol>
-        <div className={styles.dateActions}>
-          <Cta href={CHECK_REGISTRATION_HREF} external className={styles.dateBtn}>
-            {CHECK_REGISTRATION_LABEL}
-          </Cta>
-          <Cta href={REGISTER_HREF} external className={styles.dateBtn}>
-            {REGISTER_LABEL}
-          </Cta>
-        </div>
-      </section>
-
-      <details className={styles.noteCard}>
-        <summary className={styles.noteToggle}>
-          <span>{LANDING_ABOUT_SUMMARY}</span>
-          <span className={styles.noteChev} aria-hidden="true" />
-        </summary>
-        <div className={styles.noteBody}>
-          <p>{disclaimer}</p>
-          {LANDING_ABOUT_BODY.map((paragraph, index) => (
-            <Fragment key={paragraph.slice(0, 32)}>
-              <p>{paragraph}</p>
-              {index === 1 ? <TrustCallout /> : null}
-            </Fragment>
-          ))}
-          {sampleBallotUrl && (
-            <p>
-              <a href={sampleBallotUrl} target="_blank" rel="noopener noreferrer">
-                {SAMPLE_BALLOT_LABEL} ↗
-              </a>
-            </p>
-          )}
-        </div>
-      </details>
-
-      <Image
-        src={ENDORSEMENTS_BANNER_SRC}
-        alt={ENDORSEMENTS_BANNER_ALT}
-        width={ENDORSEMENTS_BANNER_WIDTH}
-        height={ENDORSEMENTS_BANNER_HEIGHT}
-        className={styles.endorsementsBanner}
-        sizes="(max-width: 720px) 100vw, 720px"
-      />
 
       <div className={styles.addressCard}>
         <p className={styles.addressLabel}>{ADDRESS_LABEL}</p>
@@ -307,6 +236,60 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
         <p className={styles.legendSub}>{LEGEND_SUB}</p>
         <RatingLegend />
       </div>
+
+      <section className={styles.datesCard} aria-labelledby="key-dates-heading">
+        <div className={styles.datesAccent} aria-hidden="true">
+          <span />
+          <span />
+        </div>
+        <h2 id="key-dates-heading" className={styles.datesHead}>
+          {KEY_DATES_HEAD}
+        </h2>
+        <ol className={styles.dates}>
+          {KEY_DATES.map((item) => (
+            <li
+              key={item.date}
+              className={item.electionDay ? `${styles.dateRow} ${styles.electionDay}` : styles.dateRow}
+            >
+              <span className={styles.dateWhen}>{item.date}</span>
+              <span className={styles.dateEvent}>
+                <KeyDateEvent parts={item.event} />
+              </span>
+            </li>
+          ))}
+        </ol>
+        <div className={styles.dateActions}>
+          <Cta href={CHECK_REGISTRATION_HREF} external className={styles.dateBtn}>
+            {CHECK_REGISTRATION_LABEL}
+          </Cta>
+          <Cta href={REGISTER_HREF} external className={styles.dateBtn}>
+            {REGISTER_LABEL}
+          </Cta>
+        </div>
+      </section>
+
+      <details className={styles.noteCard}>
+        <summary className={styles.noteToggle}>
+          <span>{LANDING_ABOUT_SUMMARY}</span>
+          <span className={styles.noteChev} aria-hidden="true" />
+        </summary>
+        <div className={styles.noteBody}>
+          <p>{disclaimer}</p>
+          {LANDING_ABOUT_BODY.map((paragraph, index) => (
+            <Fragment key={paragraph.slice(0, 32)}>
+              <p>{paragraph}</p>
+              {index === 1 ? <TrustCallout /> : null}
+            </Fragment>
+          ))}
+          {sampleBallotUrl && (
+            <p>
+              <a href={sampleBallotUrl} target="_blank" rel="noopener noreferrer">
+                {SAMPLE_BALLOT_LABEL} ↗
+              </a>
+            </p>
+          )}
+        </div>
+      </details>
 
       <div id="donate" className={styles.give}>
         <p className={styles.giveText}>{DONATE_ASK}</p>
