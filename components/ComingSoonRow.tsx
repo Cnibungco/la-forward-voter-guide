@@ -12,7 +12,7 @@ export function ComingSoonRow({title, id}: ComingSoonRowProps) {
   return (
     <div className={styles.row} id={id ?? undefined}>
       <div className={styles.pendingRow}>
-        <span className={styles.label}>{title}</span>
+        {title ? <span className={styles.label}>{title}</span> : null}
         <span className={styles.comingSoon}>{COMING_SOON_LABEL}</span>
       </div>
     </div>

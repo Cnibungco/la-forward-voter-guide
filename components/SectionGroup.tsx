@@ -27,7 +27,7 @@ export function SectionGroup({section, groupTag}: SectionGroupProps) {
       <div className={styles.group}>
         <GroupLabel as={groupTag}>{section.label}</GroupLabel>
         {races.map((race, index) => (
-          <RaceAccordion key={race._key ?? index} race={race} />
+          <RaceAccordion key={race._key ?? index} race={race} groupLabel={section.label} />
         ))}
       </div>
     )

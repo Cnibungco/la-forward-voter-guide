@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {raceRowLabel} from '@/lib/raceLabel'
+import {displayedRaceTitle, raceRowLabel, raceTitleRepeatsGroup} from '@/lib/raceLabel'
 
 describe('raceRowLabel', () => {
   it('uses the race title when it already includes the only candidate name', () => {
@@ -21,5 +21,27 @@ describe('raceRowLabel', () => {
     const entries = [{name: 'Alex'}, {name: 'Blair'}]
     expect(raceRowLabel({title: 'City Council District 1'}, entries[0], entries)).toBe('Alex')
     expect(raceRowLabel({title: 'City Council District 1'}, entries[1], entries)).toBe('Blair')
+  })
+})
+
+describe('raceTitleRepeatsGroup', () => {
+  it('treats an exact group repeat as redundant', () => {
+    expect(raceTitleRepeatsGroup('City Council', 'City Council')).toBe(true)
+  })
+
+  it('treats an at-large qualifier as redundant', () => {
+    expect(raceTitleRepeatsGroup('City Council (At-Large)', 'City Council')).toBe(true)
+    expect(raceTitleRepeatsGroup('City Council - At Large', 'CITY COUNCIL')).toBe(true)
+  })
+
+  it('keeps a district title under the same group', () => {
+    expect(raceTitleRepeatsGroup('City Council District 4', 'City Council')).toBe(false)
+    expect(raceTitleRepeatsGroup('Council District 4', 'City Council')).toBe(false)
+  })
+
+  it('keeps a title that has no group to compare with', () => {
+    expect(raceTitleRepeatsGroup('Mayor', undefined)).toBe(false)
+    expect(displayedRaceTitle('City Council (At-Large)', 'City Council')).toBe('')
+    expect(displayedRaceTitle('Council District 4', 'City Council')).toBe('Council District 4')
   })
 })
