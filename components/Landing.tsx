@@ -8,6 +8,7 @@ import {Fragment, useState} from 'react'
 import {AddressLookup} from '@/components/AddressLookup'
 import {Cta} from '@/components/Cta'
 import {useMatch} from '@/components/MatchProvider'
+import {PortableText} from '@/components/PortableText'
 import {RatingLegend} from '@/components/RatingLegend'
 import {TrustCallout} from '@/components/TrustCallout'
 import {
@@ -21,7 +22,6 @@ import {
   CONTACT_LABEL,
   COUNTYWIDE_EYEBROW,
   COURAGE_CA_HREF,
-  DONATE_ASK,
   DONATE_BUTTON_LABEL,
   DONATE_HREF,
   FIND_YOUR_CITY_EYEBROW,
@@ -32,10 +32,7 @@ import {
   HERO_IMAGE_WIDTH,
   HERO_TITLE,
   INSTAGRAM_HREF,
-  KEY_DATES,
   KEY_DATES_HEAD,
-  LANDING_ABOUT_BODY,
-  LANDING_ABOUT_SUMMARY,
   LANDING_LOOKUP_ERROR,
   LEGEND_HEAD,
   LEGEND_SUB,
@@ -49,9 +46,9 @@ import {
   STATEWIDE_EYEBROW,
   TIKTOK_HREF,
   VIEW_GUIDE_LABEL,
-  type KeyDatePart,
 } from '@/lib/copy'
 import {isLosAngelesCity, navCities, preferredGuideHref, regionByTier} from '@/lib/regions'
+import type {ResolvedHomeCopy} from '@/lib/siteSettings'
 import type {GuideRegion} from '@/lib/types'
 
 import styles from './Landing.module.css'
@@ -60,6 +57,7 @@ interface LandingProps {
   regions: GuideRegion[]
   sampleBallotUrl: string | null
   disclaimer: string
+  home: ResolvedHomeCopy
 }
 
 function SocialIcon({name}: {name: 'instagram' | 'bluesky' | 'tiktok' | 'linkedin'}) {
@@ -94,25 +92,7 @@ const SOCIAL_LINKS = [
   {href: LINKEDIN_HREF, label: 'LA Forward on LinkedIn', name: 'linkedin' as const, brand: styles.socialLinkedin},
 ]
 
-function KeyDateEvent({parts}: {parts: KeyDatePart[]}) {
-  return (
-    <>
-      {parts.map((part, index) => {
-        if (typeof part === 'string') return <span key={index}>{part}</span>
-        if ('href' in part) {
-          return (
-            <a key={index} href={part.href} target="_blank" rel="noopener noreferrer">
-              {part.label}
-            </a>
-          )
-        }
-        return <strong key={index}>{part.strong}</strong>
-      })}
-    </>
-  )
-}
-
-export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
+export function Landing({regions, sampleBallotUrl, disclaimer, home}: LandingProps) {
   const router = useRouter()
   const {lookupAddress, status} = useMatch()
   const [heroFailed, setHeroFailed] = useState(false)
@@ -156,6 +136,22 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
           </div>
         </div>
       </section>
+
+      {home.announcement && (
+        <aside className={styles.announcement} aria-label="Announcement">
+          <p>
+            {home.announcement.text}
+            {home.announcement.label && home.announcement.href ? (
+              <>
+                {' '}
+                <a href={home.announcement.href} target="_blank" rel="noopener noreferrer">
+                  {home.announcement.label}
+                </a>
+              </>
+            ) : null}
+          </p>
+        </aside>
+      )}
 
       <div className={styles.addressCard}>
         <p className={styles.addressLabel}>{ADDRESS_LABEL}</p>
@@ -246,14 +242,14 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
           {KEY_DATES_HEAD}
         </h2>
         <ol className={styles.dates}>
-          {KEY_DATES.map((item) => (
+          {home.keyDates.map((item) => (
             <li
-              key={item.date}
+              key={item.key}
               className={item.electionDay ? `${styles.dateRow} ${styles.electionDay}` : styles.dateRow}
             >
               <span className={styles.dateWhen}>{item.date}</span>
               <span className={styles.dateEvent}>
-                <KeyDateEvent parts={item.event} />
+                <PortableText value={item.event} inline />
               </span>
             </li>
           ))}
@@ -270,17 +266,18 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
 
       <details className={styles.noteCard}>
         <summary className={styles.noteToggle}>
-          <span>{LANDING_ABOUT_SUMMARY}</span>
+          <span>{home.aboutSummary}</span>
           <span className={styles.noteChev} aria-hidden="true" />
         </summary>
         <div className={styles.noteBody}>
           <p>{disclaimer}</p>
-          {LANDING_ABOUT_BODY.map((paragraph, index) => (
-            <Fragment key={paragraph.slice(0, 32)}>
+          {home.aboutParagraphs.map((paragraph, index) => (
+            <Fragment key={`${index}-${paragraph.slice(0, 32)}`}>
               <p>{paragraph}</p>
-              {index === 1 ? <TrustCallout /> : null}
+              {index === home.trustAfter ? <TrustCallout statement={home.trustStatement} /> : null}
             </Fragment>
           ))}
+          {home.aboutParagraphs.length === 0 ? <TrustCallout statement={home.trustStatement} /> : null}
           {sampleBallotUrl && (
             <p>
               <a href={sampleBallotUrl} target="_blank" rel="noopener noreferrer">
@@ -292,7 +289,7 @@ export function Landing({regions, sampleBallotUrl, disclaimer}: LandingProps) {
       </details>
 
       <div id="donate" className={styles.give}>
-        <p className={styles.giveText}>{DONATE_ASK}</p>
+        <p className={styles.giveText}>{home.donateAsk}</p>
         <Cta href={DONATE_HREF} external variant="donate" size="compact">
           {DONATE_BUTTON_LABEL}
         </Cta>

@@ -71,6 +71,25 @@ a.heroCta {
   }
 }
 
+.announcement {
+  margin: 16px 16px 0;
+  padding: 14px 16px;
+  background: var(--color-surface);
+  border: 1.5px solid color-mix(in srgb, var(--color-gold) 70%, white);
+  border-radius: 18px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
+.announcement p {
+  margin: 0;
+}
+
+.announcement a {
+  font-weight: 600;
+}
+
 .datesCard {
   background: color-mix(in srgb, var(--color-gold-tint) 78%, white);
   border-radius: 18px;
@@ -496,6 +515,11 @@ a.heroCta {
   .noteCard {
     margin: 22px 0 0;
     padding: 4px 20px;
+  }
+
+  .announcement {
+    margin: 20px 0 0;
+    padding: 16px 22px;
   }
 
   .addressCard {

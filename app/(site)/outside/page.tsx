@@ -6,7 +6,7 @@ import {Methodology} from '@/components/Methodology'
 import {OUTSIDE_BODY, OUTSIDE_EYEBROW, OUTSIDE_TITLE, SAMPLE_BALLOT_LABEL} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
 import {isLosAngelesCity, regionByTier} from '@/lib/regions'
-import {resolvedSampleBallotUrl} from '@/lib/siteSettings'
+import {resolvedSampleBallotUrl, resolvedTrustStatement} from '@/lib/siteSettings'
 
 import styles from './outside.module.css'
 
@@ -60,7 +60,7 @@ export default async function OutsidePage() {
           </a>
         )}
       </div>
-      <Methodology />
+      <Methodology trustStatement={resolvedTrustStatement(settings)} />
     </GuideShell>
   )
 }

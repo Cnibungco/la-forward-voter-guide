@@ -1,9 +1,12 @@
 import {CAMPAIGN_DISCLAIMER} from '@/lib/copy'
+import {getGuide} from '@/lib/guide'
+import {resolvedCampaignDonor} from '@/lib/siteSettings'
 
 import styles from './CampaignDisclaimer.module.css'
 
-export function CampaignDisclaimer() {
-  const copy = CAMPAIGN_DISCLAIMER
+export async function CampaignDisclaimer() {
+  const {settings} = await getGuide()
+  const copy = {...CAMPAIGN_DISCLAIMER, donor: resolvedCampaignDonor(settings)}
 
   return (
     <div className={styles.disclaimer}>

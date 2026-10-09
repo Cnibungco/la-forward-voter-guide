@@ -34,6 +34,7 @@ const TIER_ORDER: RegionTier[] = ['state', 'county', 'city']
 
 interface GuideBodyProps {
   regions: GuideRegion[]
+  trustStatement?: string
 }
 
 /**
@@ -43,7 +44,7 @@ interface GuideBodyProps {
  * "no second Sanity query" promise gets kept for this feature. See
  * docs/address-matching-strategy.md.
  */
-export function GuideBody({regions}: GuideBodyProps) {
+export function GuideBody({regions, trustStatement}: GuideBodyProps) {
   const router = useRouter()
   const {match, enteredAddress, ready, showFullGuide, setShowFullGuide} = useMatch()
 
@@ -111,7 +112,7 @@ export function GuideBody({regions}: GuideBodyProps) {
         </Cta>
       </div>
 
-      <Methodology />
+      <Methodology trustStatement={trustStatement} />
       <CompactLegend />
       {hintKind && <TapHint>{hintKind === 'measure' ? TAP_HINT_MEASURE : TAP_HINT}</TapHint>}
 

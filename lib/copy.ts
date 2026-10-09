@@ -1,7 +1,10 @@
 /**
- * Staff-editable strings for the public guide. Keep election-cycle copy
- * here so a non-engineer can change one line without hunting through
- * components. Visual/layout chrome stays in CSS.
+ * Fallback strings for the public guide. Election-cycle copy — key dates,
+ * the home announcement, about text, the donate line, and the campaign
+ * donor line — is edited in Studio under Site Settings. These constants
+ * are what the site shows when those fields are empty. The announcement
+ * has no fallback: a blank field stays hidden. Visual/layout chrome stays
+ * in CSS.
  */
 
 /**
@@ -43,7 +46,7 @@ export interface KeyDate {
   electionDay?: boolean
 }
 
-/** Voter-facing dates for the Nov 3, 2026 general. Edit here each cycle. */
+/** Fallback dates for the Nov 3, 2026 general. Live dates are edited in Studio. */
 export const KEY_DATES: KeyDate[] = [
   {
     date: 'OCT 5',

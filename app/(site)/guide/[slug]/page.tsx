@@ -10,6 +10,7 @@ import {TAP_HINT, TAP_HINT_MEASURE} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
 import {TIER_LABELS} from '@/lib/labels'
 import {hasSlug, regionBySlug} from '@/lib/regions'
+import {resolvedTrustStatement} from '@/lib/siteSettings'
 
 export const revalidate = 300
 
@@ -33,7 +34,7 @@ export async function generateMetadata({params}: RegionPageProps) {
 
 export default async function RegionPage({params}: RegionPageProps) {
   const {slug} = await params
-  const {regions} = await getGuide()
+  const {regions, settings} = await getGuide()
   const region = regionBySlug(regions, slug)
   if (!region) notFound()
   const hintKind = expandableContentKind([region])
@@ -46,7 +47,7 @@ export default async function RegionPage({params}: RegionPageProps) {
       activeSlug={slug}
       showPageNav
     >
-      <Methodology />
+      <Methodology trustStatement={resolvedTrustStatement(settings)} />
       <CompactLegend />
       {hintKind && (
         <TapHint>{hintKind === 'measure' ? TAP_HINT_MEASURE : TAP_HINT}</TapHint>

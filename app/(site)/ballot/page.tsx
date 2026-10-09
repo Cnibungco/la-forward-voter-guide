@@ -1,5 +1,6 @@
 import {GuideBody} from '@/components/GuideBody'
 import {getGuide} from '@/lib/guide'
+import {resolvedTrustStatement} from '@/lib/siteSettings'
 
 export const revalidate = 300
 
@@ -8,6 +9,6 @@ export const metadata = {
 }
 
 export default async function BallotPage() {
-  const {regions} = await getGuide()
-  return <GuideBody regions={regions} />
+  const {regions, settings} = await getGuide()
+  return <GuideBody regions={regions} trustStatement={resolvedTrustStatement(settings)} />
 }

@@ -29,9 +29,35 @@ export type ContentStatus = 'draft' | 'pending' | 'published'
 
 export type RegionTier = 'state' | 'county' | 'city'
 
+export interface SiteKeyDate {
+  _key: string
+  date: string | null
+  event: PortableTextBlock[] | null
+  electionDay?: boolean | null
+}
+
+export interface SiteAboutParagraph {
+  _key: string
+  text: string | null
+}
+
+/**
+ * New home-page fields are optional so a payload from before they
+ * existed still type-checks. Resolvers treat missing and blank as
+ * "use the copy.ts fallback," except the announcement, which hides.
+ */
 export interface SiteSettings {
   disclaimer: string | null
   sampleBallotUrl: string | null
+  announcement?: string | null
+  announcementLinkLabel?: string | null
+  announcementLinkUrl?: string | null
+  keyDates?: SiteKeyDate[] | null
+  aboutSummary?: string | null
+  aboutParagraphs?: SiteAboutParagraph[] | null
+  trustStatement?: string | null
+  donateAsk?: string | null
+  campaignDonor?: string | null
 }
 
 export interface GuideEntry {

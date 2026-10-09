@@ -116,6 +116,23 @@ export const GUIDE_QUERY = defineQuery(`{
   },
   "settings": *[_id == "siteSettings"][0]{
     disclaimer,
-    sampleBallotUrl
+    sampleBallotUrl,
+    announcement,
+    announcementLinkLabel,
+    announcementLinkUrl,
+    keyDates[]{
+      _key,
+      date,
+      event,
+      electionDay
+    },
+    aboutSummary,
+    aboutParagraphs[]{
+      _key,
+      text
+    },
+    trustStatement,
+    donateAsk,
+    campaignDonor
   }
 }`)
