@@ -114,7 +114,7 @@ export function filterRegionsByMatch(regions: GuideRegion[], match: MatchBallotR
 }
 
 function trimSections(sections: GuideSection[], match: MatchBallotResult): GuideSection[] {
-  return sections.flatMap((section) => {
+  return sections.flatMap((section): GuideSection[] => {
     if (section._type !== 'raceGroup') return sectionHasContent(section) ? [section] : []
     const races = (section.races ?? []).filter((race) => passesDistrictFilter(race.district, match))
     if (races.length === 0) return []

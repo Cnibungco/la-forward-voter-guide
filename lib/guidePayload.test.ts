@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
 import {normalizeGuidePayload} from '@/lib/guidePayload'
-import type {GuideDistrict, GuideRegion} from '@/lib/types'
+import type {GuideDistrict, GuideRegion, GuideSection} from '@/lib/types'
 
 function region(overrides: Partial<GuideRegion> = {}): GuideRegion {
   return {
@@ -37,11 +37,14 @@ describe('normalizeGuidePayload', () => {
   })
 
   it('drops city references without a slug and sorts districts by title', () => {
-    const district = (overrides: Partial<GuideDistrict> & Pick<GuideDistrict, '_id' | 'title'>): GuideDistrict => ({
+    const district = (
+      overrides: Partial<Omit<GuideDistrict, 'sections'>> &
+        Pick<GuideDistrict, '_id' | 'title'> & {sections?: GuideSection[] | null},
+    ) => ({
       slug: overrides._id,
       description: null,
-      citiesServed: [],
-      sections: [],
+      citiesServed: [] as GuideDistrict['citiesServed'],
+      sections: [] as GuideSection[] | null,
       ...overrides,
     })
 

@@ -44,4 +44,11 @@ describe('raceTitleRepeatsGroup', () => {
     expect(displayedRaceTitle('City Council (At-Large)', 'City Council')).toBe('')
     expect(displayedRaceTitle('Council District 4', 'City Council')).toBe('Council District 4')
   })
+
+  it('treats a missing Sanity title as blank instead of throwing', () => {
+    expect(raceTitleRepeatsGroup(null, 'City Council')).toBe(false)
+    expect(raceTitleRepeatsGroup(undefined, null)).toBe(false)
+    expect(displayedRaceTitle(null, 'City Council')).toBe('')
+    expect(displayedRaceTitle(undefined, undefined)).toBe('')
+  })
 })

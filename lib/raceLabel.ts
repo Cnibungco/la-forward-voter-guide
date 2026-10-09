@@ -12,15 +12,25 @@ function normalizeWords(value: string): string {
  * "City Council" and "City Council (At-Large)" repeat a "City Council" group.
  * "City Council District 4" does not — the district is a separate heading.
  */
-export function raceTitleRepeatsGroup(title: string, groupLabel: string | undefined): boolean {
-  if (!groupLabel?.trim() || !title.trim()) return false
+export function raceTitleRepeatsGroup(
+  title: string | null | undefined,
+  groupLabel: string | null | undefined,
+): boolean {
+  // Sanity leaves an empty race title as null. Trimming that throws during
+  // static generation and fails the whole production build.
+  if (typeof title !== 'string' || typeof groupLabel !== 'string') return false
+  if (!groupLabel.trim() || !title.trim()) return false
   const race = normalizeWords(title)
   const group = normalizeWords(groupLabel)
   return race === group || race === `${group} at large`
 }
 
-/** Title to print under a group. Blank when the group heading already says it. */
-export function displayedRaceTitle(title: string, groupLabel?: string): string {
+/** Title to print under a group. Blank when the group heading already says it, or the title is missing. */
+export function displayedRaceTitle(
+  title: string | null | undefined,
+  groupLabel?: string | null,
+): string {
+  if (typeof title !== 'string') return ''
   return raceTitleRepeatsGroup(title, groupLabel) ? '' : title
 }
 
