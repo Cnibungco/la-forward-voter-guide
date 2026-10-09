@@ -9,6 +9,12 @@ export const metadata = {
 }
 
 export default async function BallotPage() {
-  const {regions, settings} = await getGuide()
-  return <GuideBody regions={regions} trustStatement={resolvedTrustStatement(settings)} />
+  const {regions, specialDistricts, settings} = await getGuide()
+  return (
+    <GuideBody
+      regions={regions}
+      districts={specialDistricts}
+      trustStatement={resolvedTrustStatement(settings)}
+    />
+  )
 }

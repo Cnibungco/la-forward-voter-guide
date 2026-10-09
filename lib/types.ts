@@ -180,9 +180,29 @@ export interface GuideRegion {
   /** State/County only — city ballots use `sections` instead. */
   measures: GuideMeasure[]
   /**
-   * City-tier only. Already merged with every `specialDistrict` that
-   * lists this Region in `citiesServed` — own content first, districts
-   * in title order. See the GROQ pattern in docs/backend-strategy.md §11.
+   * City-tier only: this city's own race and measure groups.
+   * School and special districts are a separate `specialDistricts` list
+   * and are joined onto a city by `citiesServed`.
    */
+  sections: GuideSection[]
+}
+
+/** A city listed on a special district's `citiesServed` reference. */
+export interface GuideDistrictCity {
+  _id: string
+  title: string
+  slug: string
+}
+
+/**
+ * A school board or other district that covers more than one city.
+ * Rendered on its own page and, by name, on each city it serves.
+ */
+export interface GuideDistrict {
+  _id: string
+  title: string
+  slug: string | null
+  description: string | null
+  citiesServed: GuideDistrictCity[]
   sections: GuideSection[]
 }

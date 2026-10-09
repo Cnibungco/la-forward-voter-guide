@@ -1,12 +1,14 @@
 import {notFound} from 'next/navigation'
 
 import {CompactLegend} from '@/components/CompactLegend'
+import {DistrictBlock} from '@/components/DistrictBlock'
 import {GuideShell} from '@/components/GuideShell'
 import {Methodology} from '@/components/Methodology'
 import {RegionSection} from '@/components/RegionSection'
 import {TapHint} from '@/components/TapHint'
 import {expandableContentKind} from '@/lib/contentStatus'
 import {TAP_HINT, TAP_HINT_MEASURE} from '@/lib/copy'
+import {districtHasContent, districtsServingCity} from '@/lib/districts'
 import {getGuide} from '@/lib/guide'
 import {TIER_LABELS} from '@/lib/labels'
 import {hasSlug, regionBySlug} from '@/lib/regions'
@@ -34,14 +36,17 @@ export async function generateMetadata({params}: RegionPageProps) {
 
 export default async function RegionPage({params}: RegionPageProps) {
   const {slug} = await params
-  const {regions, settings} = await getGuide()
+  const {regions, specialDistricts, settings} = await getGuide()
   const region = regionBySlug(regions, slug)
   if (!region) notFound()
-  const hintKind = expandableContentKind([region])
+  const serving =
+    region.tier === 'city' ? districtsServingCity(specialDistricts, region.slug).filter(districtHasContent) : []
+  const hintKind = expandableContentKind([region, ...serving])
 
   return (
     <GuideShell
       regions={regions}
+      districts={specialDistricts}
       title={region.title}
       crumb={TIER_LABELS[region.tier]}
       activeSlug={slug}
@@ -52,7 +57,10 @@ export default async function RegionPage({params}: RegionPageProps) {
       {hintKind && (
         <TapHint>{hintKind === 'measure' ? TAP_HINT_MEASURE : TAP_HINT}</TapHint>
       )}
-      <RegionSection region={region} />
+      <RegionSection region={region} suppressEmpty={serving.length > 0} />
+      {serving.map((district) => (
+        <DistrictBlock key={district._id} district={district} linkTitle />
+      ))}
     </GuideShell>
   )
 }

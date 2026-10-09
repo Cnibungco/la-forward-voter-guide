@@ -1,21 +1,25 @@
 import Link from 'next/link'
 
-import type {LinkedRegion} from '@/lib/regions'
-
 import styles from './PageNav.module.css'
 
-interface PageNavProps {
-  prev: LinkedRegion | null
-  next: LinkedRegion | null
+interface PageTarget {
+  title: string
+  slug: string
 }
 
-export function PageNav({prev, next}: PageNavProps) {
+interface PageNavProps {
+  prev: PageTarget | null
+  next: PageTarget | null
+  hrefBase?: string
+}
+
+export function PageNav({prev, next, hrefBase = '/guide'}: PageNavProps) {
   if (!prev && !next) return null
 
   return (
     <nav className={styles.nav} aria-label="Previous and next jurisdictions">
       {prev ? (
-        <Link href={`/guide/${prev.slug}`} className={styles.btn} aria-label={`Previous: ${prev.title}`}>
+        <Link href={`${hrefBase}/${prev.slug}`} className={styles.btn} aria-label={`Previous: ${prev.title}`}>
           <span className={styles.arrow} aria-hidden="true">
             ←
           </span>
@@ -24,7 +28,7 @@ export function PageNav({prev, next}: PageNavProps) {
       ) : null}
       {next ? (
         <Link
-          href={`/guide/${next.slug}`}
+          href={`${hrefBase}/${next.slug}`}
           className={`${styles.btn} ${styles.next}`}
           aria-label={`Next: ${next.title}`}
         >

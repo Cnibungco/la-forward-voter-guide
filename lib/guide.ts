@@ -28,6 +28,7 @@ export const getGuide = cache(async (): Promise<GuidePayload> => {
     client.fetch(GUIDE_QUERY, {}, {useCdn: false, next: {revalidate: 300, tags: [GUIDE_CACHE_TAG]}}),
   )) as {
     regions: GuidePayload['regions'] | null
+    specialDistricts: GuidePayload['specialDistricts'] | null
     settings: GuidePayload['settings']
   } | null
 

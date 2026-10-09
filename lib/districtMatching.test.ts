@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
-import {coverablePrefixesFor, filterRegionsByMatch, isMatchBallotResult, passesDistrictFilter, slugifyPlaceName} from './districtMatching'
-import type {GuideRegion, MatchBallotResult} from './types'
+import {coverablePrefixesFor, filterDistrictsByMatch, filterRegionsByMatch, isMatchBallotResult, passesDistrictFilter, slugifyPlaceName} from './districtMatching'
+import type {GuideDistrict, GuideRegion, MatchBallotResult} from './types'
 
 const NONE: MatchBallotResult = {precision: 'none', citySlug: null, districtCodes: []}
 const UNINCORPORATED: MatchBallotResult = {
@@ -230,6 +230,80 @@ describe('filterRegionsByMatch', () => {
     const other = makeRegion({_id: 'sm', tier: 'city', slug: 'santa-monica'})
     const result = filterRegionsByMatch([matched, other], LA_CITY_PRECISE)
     expect(result.map((r) => r._id)).toEqual(['la'])
+  })
+})
+
+function makeDistrict(overrides: Partial<GuideDistrict> & Pick<GuideDistrict, '_id' | 'title'>): GuideDistrict {
+  return {
+    slug: overrides._id,
+    description: null,
+    citiesServed: [],
+    sections: [],
+    ...overrides,
+  }
+}
+
+describe('filterDistrictsByMatch', () => {
+  const lausd = makeDistrict({
+    _id: 'lausd',
+    title: 'Los Angeles Unified',
+    citiesServed: [{_id: 'la', title: 'Los Angeles', slug: 'los-angeles'}],
+    sections: [
+      {
+        _key: 'board',
+        _type: 'raceGroup',
+        label: 'School board',
+        races: [
+          {_key: 'sb', title: 'Board District 4', slug: null, office: null, district: 'SB4', context: null, entries: null},
+          {_key: 'cc', title: 'Wrong council', slug: null, office: null, district: 'CC3', context: null, entries: null},
+        ],
+      },
+    ],
+  })
+  const abc = makeDistrict({
+    _id: 'abc',
+    title: 'ABC Unified',
+    citiesServed: [{_id: 'cerritos', title: 'Cerritos', slug: 'cerritos'}],
+    sections: [
+      {
+        _key: 'board',
+        _type: 'raceGroup',
+        label: 'School board',
+        races: [{_key: 'a', title: 'Trustee', slug: null, office: null, district: null, context: null, entries: null}],
+      },
+    ],
+  })
+
+  it('keeps a school-board race for the matched city and drops a known non-matching code', () => {
+    const [result] = filterDistrictsByMatch([abc, lausd], LA_CITY_PRECISE)
+    expect(result._id).toBe('lausd')
+    const group = result.sections[0]
+    expect(group?._type === 'raceGroup' && group.races?.map((race) => race._key)).toEqual(['sb'])
+  })
+
+  it('lists every district with content when the match failed', () => {
+    expect(filterDistrictsByMatch([abc, lausd], NONE).map((item) => item._id)).toEqual(['abc', 'lausd'])
+  })
+
+  it('shows nothing for an unincorporated address', () => {
+    expect(filterDistrictsByMatch([lausd], UNINCORPORATED)).toEqual([])
+  })
+
+  it('drops a district when every race is filtered out', () => {
+    const councilOnly = makeDistrict({
+      _id: 'council',
+      title: 'Council-coded district',
+      citiesServed: [{_id: 'la', title: 'Los Angeles', slug: 'los-angeles'}],
+      sections: [
+        {
+          _key: 'board',
+          _type: 'raceGroup',
+          label: 'Board',
+          races: [{_key: 'cc', title: 'District 3', slug: null, office: null, district: 'CC3', context: null, entries: null}],
+        },
+      ],
+    })
+    expect(filterDistrictsByMatch([councilOnly], LA_CITY_PRECISE)).toEqual([])
   })
 })
 

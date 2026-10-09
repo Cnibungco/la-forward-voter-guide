@@ -68,6 +68,15 @@ test.describe('accessibility (axe, WCAG 2.2 AA)', () => {
     await expectNoBlocking(page)
   })
 
+  test('school district', async ({page}) => {
+    await openPage(page, '/cities')
+    const href = await page.locator('a[href^="/districts/"]').first().getAttribute('href')
+    test.skip(!href, 'no special districts published')
+    await openPage(page, href!)
+    await revealGuideContent(page)
+    await expectNoBlocking(page)
+  })
+
   test('guide jurisdiction', async ({page}) => {
     await openPage(page, '/')
     const href = await page.locator('a[href^="/guide/"]').first().getAttribute('href')

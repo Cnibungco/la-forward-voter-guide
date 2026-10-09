@@ -44,6 +44,9 @@ export const TIER_LABELS = {
   city: 'Local cities',
 } as const
 
+/** Sidebar group under Local cities. Sentence case, like the other group labels. */
+export const SCHOOL_DISTRICTS_LABEL = 'School & special districts'
+
 /** Ballot page: one city, so "Local" not "Local cities". */
 export const BALLOT_TIER_LABELS = {
   state: 'State',

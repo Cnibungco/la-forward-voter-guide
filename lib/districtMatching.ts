@@ -1,5 +1,6 @@
+import {districtHasContent, districtsServingCity, sectionHasContent} from '@/lib/districts'
 import {citySlugsMatch} from '@/lib/regions'
-import type {GuideRegion, MatchBallotResult} from '@/lib/types'
+import type {GuideDistrict, GuideRegion, GuideSection, MatchBallotResult} from '@/lib/types'
 
 export function isMatchBallotResult(value: unknown): value is MatchBallotResult {
   if (!value || typeof value !== 'object') return false
@@ -108,13 +109,32 @@ export function filterRegionsByMatch(regions: GuideRegion[], match: MatchBallotR
     .map((region) => ({
       ...region,
       races: region.races.filter((race) => passesDistrictFilter(race.district, match)),
-      sections: region.sections.map((section) =>
-        section._type === 'raceGroup'
-          ? {
-              ...section,
-              races: (section.races ?? []).filter((race) => passesDistrictFilter(race.district, match)),
-            }
-          : section,
-      ),
+      sections: trimSections(region.sections, match),
     }))
+}
+
+function trimSections(sections: GuideSection[], match: MatchBallotResult): GuideSection[] {
+  return sections.flatMap((section) => {
+    if (section._type !== 'raceGroup') return sectionHasContent(section) ? [section] : []
+    const races = (section.races ?? []).filter((race) => passesDistrictFilter(race.district, match))
+    if (races.length === 0) return []
+    return [{...section, races}]
+  })
+}
+
+/**
+ * Districts to show on a matched ballot. An unincorporated address has no
+ * city to join on, so no district is shown. Races trim by the same district
+ * codes as city races; a school-board code stays visible while that boundary
+ * is unsourced.
+ */
+export function filterDistrictsByMatch(districts: GuideDistrict[], match: MatchBallotResult): GuideDistrict[] {
+  if (match.precision === 'none') return districts.filter(districtHasContent)
+  if (!match.citySlug) return []
+
+  return districtsServingCity(districts, match.citySlug).flatMap((district) => {
+    const sections = trimSections(district.sections, match)
+    if (!sections.some(sectionHasContent)) return []
+    return [{...district, sections}]
+  })
 }

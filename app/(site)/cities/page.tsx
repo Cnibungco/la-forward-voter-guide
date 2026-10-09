@@ -11,10 +11,10 @@ export const metadata = {
 }
 
 export default async function CitiesPage() {
-  const {regions} = await getGuide()
+  const {regions, specialDistricts} = await getGuide()
 
   return (
-    <GuideShell regions={regions} title={CITIES_TITLE} crumb={TIER_LABELS.city}>
+    <GuideShell regions={regions} districts={specialDistricts} title={CITIES_TITLE} crumb={TIER_LABELS.city}>
       <CityPicker regions={regions} />
     </GuideShell>
   )

@@ -4,26 +4,30 @@ import Link from 'next/link'
 
 import {SearchIcon} from '@/components/SearchIcon'
 import {CITIES_EMPTY, GUIDE_SEARCH_EMPTY, GUIDE_SEARCH_LABEL, NAV_STATE_COUNTY} from '@/lib/copy'
+import {navDistricts} from '@/lib/districts'
 import {revealGuideAnchor, searchGuide} from '@/lib/guideSearch'
-import {TIER_LABELS} from '@/lib/labels'
+import {SCHOOL_DISTRICTS_LABEL, TIER_LABELS} from '@/lib/labels'
 import {navCities, navStateCounty} from '@/lib/regions'
-import type {GuideRegion} from '@/lib/types'
+import type {GuideDistrict, GuideRegion} from '@/lib/types'
 
 import styles from './GuideNav.module.css'
 
 interface GuideNavProps {
   regions: GuideRegion[]
-  activeSlug?: string | null
+  districts?: GuideDistrict[]
+  /** Path of the row to highlight, such as `/guide/burbank` or `/districts/lausd`. */
+  activeHref?: string | null
   search: string
   onSearch: (value: string) => void
   onNavigate?: () => void
 }
 
-export function GuideNav({regions, activeSlug, search, onSearch, onNavigate}: GuideNavProps) {
+export function GuideNav({regions, districts = [], activeHref, search, onSearch, onNavigate}: GuideNavProps) {
   const query = search.trim().toLowerCase()
-  const hits = query ? searchGuide(regions, query) : []
+  const hits = query ? searchGuide(regions, query, districts) : []
   const stateCounty = navStateCounty(regions)
   const cities = navCities(regions)
+  const schoolDistricts = navDistricts(districts)
 
   return (
     <>
@@ -60,7 +64,8 @@ export function GuideNav({regions, activeSlug, search, onSearch, onNavigate}: Gu
         <JurisdictionList
           stateCounty={stateCounty}
           cities={cities}
-          activeSlug={activeSlug}
+          districts={schoolDistricts}
+          activeHref={activeHref}
           onNavigate={onNavigate}
         />
       )}
@@ -68,15 +73,22 @@ export function GuideNav({regions, activeSlug, search, onSearch, onNavigate}: Gu
   )
 }
 
+function isCurrent(href: string, activeHref?: string | null): boolean {
+  if (!activeHref) return false
+  return href.split('#')[0] === activeHref
+}
+
 function JurisdictionList({
   stateCounty,
   cities,
-  activeSlug,
+  districts,
+  activeHref,
   onNavigate,
 }: {
   stateCounty: ReturnType<typeof navStateCounty>
   cities: ReturnType<typeof navCities>
-  activeSlug?: string | null
+  districts: ReturnType<typeof navDistricts>
+  activeHref?: string | null
   onNavigate?: () => void
 }) {
   return (
@@ -88,7 +100,7 @@ function JurisdictionList({
             key={region._id}
             href={`/guide/${region.slug}`}
             label={region.title}
-            active={activeSlug === region.slug}
+            active={isCurrent(`/guide/${region.slug}`, activeHref)}
             onNavigate={onNavigate}
           />
         ))
@@ -103,10 +115,25 @@ function JurisdictionList({
             key={region._id}
             href={`/guide/${region.slug}`}
             label={region.title}
-            active={activeSlug === region.slug}
+            active={isCurrent(`/guide/${region.slug}`, activeHref)}
             onNavigate={onNavigate}
           />
         ))
+      )}
+
+      {districts.length > 0 && (
+        <>
+          <p className={styles.tier}>{SCHOOL_DISTRICTS_LABEL}</p>
+          {districts.map((district) => (
+            <NavItem
+              key={district._id}
+              href={`/districts/${district.slug}`}
+              label={district.title}
+              active={isCurrent(`/districts/${district.slug}`, activeHref)}
+              onNavigate={onNavigate}
+            />
+          ))}
+        </>
       )}
     </>
   )

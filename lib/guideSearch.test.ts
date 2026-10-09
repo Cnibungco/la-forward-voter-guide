@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
 import {searchGuide} from '@/lib/guideSearch'
-import type {GuideEntry, GuideRegion, GuideRace} from '@/lib/types'
+import type {GuideDistrict, GuideEntry, GuideRegion, GuideRace} from '@/lib/types'
 
 function entry(overrides: Partial<GuideEntry> & Pick<GuideEntry, '_id' | 'name'>): GuideEntry {
   return {
@@ -161,5 +161,55 @@ describe('searchGuide', () => {
     expect(searchGuide(regions, 'los angeles').map((hit) => hit.label)).toEqual(['City of Los Angeles'])
     expect(searchGuide(regions, 'secret')).toEqual([])
     expect(searchGuide(regions, 'unlinked')).toEqual([])
+  })
+
+  it('indexes a special district once and links to its own page', () => {
+    const districts: GuideDistrict[] = [
+      {
+        _id: 'lausd',
+        title: 'Los Angeles Unified',
+        slug: 'los-angeles-unified',
+        description: null,
+        citiesServed: [],
+        sections: [
+          {
+            _key: 'board',
+            _type: 'raceGroup',
+            label: 'Board District 4',
+            races: [
+              {
+                _key: 'board-4',
+                title: 'Board District 4',
+                slug: 'board-district-4',
+                office: 'School board',
+                district: 'SB4',
+                context: null,
+                contentStatus: 'published',
+                entries: [entry({_id: 'board-member', name: 'Kelly Gonez'})],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        _id: 'nolink',
+        title: 'Unlinked District',
+        slug: null,
+        description: null,
+        citiesServed: [],
+        sections: [],
+      },
+    ]
+
+    expect(searchGuide(regions, 'unified', districts).map((hit) => hit.href)).toEqual(['/districts/los-angeles-unified'])
+    expect(searchGuide(regions, 'gonez', districts)).toEqual([
+      {
+        key: 'entry:board-member',
+        href: '/districts/los-angeles-unified#kelly-gonez',
+        label: 'Kelly Gonez',
+        context: 'Board District 4 · Los Angeles Unified',
+      },
+    ])
+    expect(searchGuide(regions, 'unlinked district', districts)).toEqual([])
   })
 })

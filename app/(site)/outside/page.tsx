@@ -17,7 +17,7 @@ export const metadata = {
 }
 
 export default async function OutsidePage() {
-  const {regions, settings} = await getGuide()
+  const {regions, specialDistricts, settings} = await getGuide()
   const stateRegion = regionByTier(regions, 'state')
   const countyRegion = regionByTier(regions, 'county')
   const laCity = regions.find(isLosAngelesCity)
@@ -26,6 +26,7 @@ export default async function OutsidePage() {
   return (
     <GuideShell
       regions={regions}
+      districts={specialDistricts}
       title="Outside coverage"
       heading={
         <>

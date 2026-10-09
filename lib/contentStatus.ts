@@ -1,4 +1,4 @@
-import type {ContentStatus, GuideEntry, GuideRegion, MeasureLike, RaceLike} from '@/lib/types'
+import type {ContentStatus, GuideEntry, GuideSection, MeasureLike, RaceLike} from '@/lib/types'
 
 export function isDraftStatus(status: ContentStatus | null | undefined): boolean {
   return status === 'draft'
@@ -43,14 +43,20 @@ export function raceIsExpandable(race: RaceLike): boolean {
   return raceCandidates(race).some(entryIsExpandable)
 }
 
+type ExpandableSource = {
+  races?: RaceLike[]
+  measures?: MeasureLike[]
+  sections?: GuideSection[] | null
+}
+
 /** Which rows can actually open. Coming-soon rows are not tappable. */
-export function expandableContentKind(regions: GuideRegion[]): 'race' | 'measure' | null {
+export function expandableContentKind(sources: ExpandableSource[]): 'race' | 'measure' | null {
   let races = false
   let measures = false
-  for (const region of regions) {
-    const sections = region.sections ?? []
-    if (region.races.some(raceIsExpandable)) races = true
-    if (region.measures.some(measureIsExpandable)) measures = true
+  for (const source of sources) {
+    const sections = source.sections ?? []
+    if ((source.races ?? []).some(raceIsExpandable)) races = true
+    if ((source.measures ?? []).some(measureIsExpandable)) measures = true
     for (const section of sections) {
       if (section._type === 'raceGroup' && (section.races ?? []).some(raceIsExpandable)) races = true
       if (section._type === 'measureGroup' && (section.measures ?? []).some(measureIsExpandable)) {

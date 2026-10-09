@@ -6,12 +6,14 @@ import {useEffect, useMemo} from 'react'
 import {ChangeAddress} from '@/components/ChangeAddress'
 import {Cta} from '@/components/Cta'
 import {CompactLegend} from '@/components/CompactLegend'
+import {DistrictBlock} from '@/components/DistrictBlock'
 import {GuideShell} from '@/components/GuideShell'
 import {Methodology} from '@/components/Methodology'
 import {useMatch} from '@/components/MatchProvider'
 import {RegionSection} from '@/components/RegionSection'
 import {TapHint} from '@/components/TapHint'
-import {filterRegionsByMatch} from '@/lib/districtMatching'
+import {districtHasContent} from '@/lib/districts'
+import {filterDistrictsByMatch, filterRegionsByMatch} from '@/lib/districtMatching'
 import {expandableContentKind} from '@/lib/contentStatus'
 import {
   BALLOT_ADDRESS_PREFIX,
@@ -24,9 +26,9 @@ import {
   TAP_HINT_MEASURE,
   ballotCityImprecision,
 } from '@/lib/copy'
-import {BALLOT_TIER_LABELS} from '@/lib/labels'
+import {BALLOT_TIER_LABELS, SCHOOL_DISTRICTS_LABEL} from '@/lib/labels'
 import {regionMatchingCitySlug} from '@/lib/regions'
-import type {GuideRegion, RegionTier} from '@/lib/types'
+import type {GuideDistrict, GuideRegion, RegionTier} from '@/lib/types'
 
 import styles from './GuideBody.module.css'
 
@@ -34,6 +36,7 @@ const TIER_ORDER: RegionTier[] = ['state', 'county', 'city']
 
 interface GuideBodyProps {
   regions: GuideRegion[]
+  districts?: GuideDistrict[]
   trustStatement?: string
 }
 
@@ -44,7 +47,7 @@ interface GuideBodyProps {
  * "no second Sanity query" promise gets kept for this feature. See
  * docs/address-matching-strategy.md.
  */
-export function GuideBody({regions, trustStatement}: GuideBodyProps) {
+export function GuideBody({regions, districts = [], trustStatement}: GuideBodyProps) {
   const router = useRouter()
   const {match, enteredAddress, ready, showFullGuide, setShowFullGuide} = useMatch()
 
@@ -64,7 +67,12 @@ export function GuideBody({regions, trustStatement}: GuideBodyProps) {
     return filterRegionsByMatch(regions, match)
   }, [regions, match, isFiltering])
 
-  const hintKind = expandableContentKind(effectiveRegions)
+  const effectiveDistricts = useMemo(() => {
+    if (!match || !isFiltering) return districts.filter(districtHasContent)
+    return filterDistrictsByMatch(districts, match)
+  }, [districts, match, isFiltering])
+
+  const hintKind = expandableContentKind([...effectiveRegions, ...effectiveDistricts])
   const matchedCity = match ? regionMatchingCitySlug(regions, match.citySlug) : undefined
   const matchedCityTitle = matchedCity?.title ?? null
 
@@ -78,6 +86,7 @@ export function GuideBody({regions, trustStatement}: GuideBodyProps) {
   return (
     <GuideShell
       regions={regions}
+      districts={districts}
       title="Your ballot"
       crumb="Your ballot"
       activeSlug={matchedCity?.slug ?? match.citySlug}
@@ -116,19 +125,31 @@ export function GuideBody({regions, trustStatement}: GuideBodyProps) {
       <CompactLegend />
       {hintKind && <TapHint>{hintKind === 'measure' ? TAP_HINT_MEASURE : TAP_HINT}</TapHint>}
 
-      {tiers.length === 0 ? (
+      {tiers.length === 0 && effectiveDistricts.length === 0 ? (
         <p className={styles.empty}>{BALLOT_EMPTY}</p>
       ) : (
-        tiers.map(({tier, regions: tierRegions}) => (
-          <section key={tier} className={styles.tierSection} aria-labelledby={`${tier}-tier-heading`}>
-            <h2 id={`${tier}-tier-heading`} className={styles.tierHeading}>
-              {BALLOT_TIER_LABELS[tier]}
-            </h2>
-            {tierRegions.map((region) => (
-              <RegionSection key={region._id} region={region} headingLevel="h3" />
-            ))}
-          </section>
-        ))
+        <>
+          {tiers.map(({tier, regions: tierRegions}) => (
+            <section key={tier} className={styles.tierSection} aria-labelledby={`${tier}-tier-heading`}>
+              <h2 id={`${tier}-tier-heading`} className={styles.tierHeading}>
+                {BALLOT_TIER_LABELS[tier]}
+              </h2>
+              {tierRegions.map((region) => (
+                <RegionSection key={region._id} region={region} headingLevel="h3" />
+              ))}
+            </section>
+          ))}
+          {effectiveDistricts.length > 0 && (
+            <section className={styles.tierSection} aria-labelledby="districts-tier-heading">
+              <h2 id="districts-tier-heading" className={styles.tierHeading}>
+                {SCHOOL_DISTRICTS_LABEL}
+              </h2>
+              {effectiveDistricts.map((district) => (
+                <DistrictBlock key={district._id} district={district} heading="h3" linkTitle />
+              ))}
+            </section>
+          )}
+        </>
       )}
     </GuideShell>
   )

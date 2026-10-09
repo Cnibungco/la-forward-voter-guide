@@ -186,6 +186,8 @@ export const MEASURES_LABEL = 'Ballot measures'
 
 export const REGION_EMPTY = 'Nothing entered for this region yet.'
 
+export const DISTRICT_EMPTY = 'Nothing entered for this district yet.'
+
 export const ENTRY_NO_REASONING = 'No reasoning published yet.'
 
 export const LANDING_LOOKUP_ERROR =

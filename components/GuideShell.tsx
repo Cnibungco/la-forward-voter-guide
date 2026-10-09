@@ -6,17 +6,21 @@ import {BackToTop, GUIDE_TOP_ID} from '@/components/BackToTop'
 import {GuideNav} from '@/components/GuideNav'
 import {PageNav} from '@/components/PageNav'
 import {CLOSE_CITY_LIST_LABEL, JUMP_TO_LABEL, OPEN_CITY_LIST_LABEL} from '@/lib/copy'
+import {adjacentDistricts} from '@/lib/districts'
 import {revealGuideAnchor} from '@/lib/guideSearch'
 import {adjacentRegions} from '@/lib/regions'
-import type {GuideRegion} from '@/lib/types'
+import type {GuideDistrict, GuideRegion} from '@/lib/types'
 
 import styles from './GuideShell.module.css'
 
 interface GuideShellProps {
   regions: GuideRegion[]
+  districts?: GuideDistrict[]
   title: string
   crumb?: string
   activeSlug?: string | null
+  /** Prev/next walks cities and counties, or stays inside the district list. */
+  pageNavScope?: 'regions' | 'districts'
   heading?: ReactNode
   children: ReactNode
   /** Previous/next jurisdiction bar. Off on ballot and outside coverage. */
@@ -27,9 +31,11 @@ interface GuideShellProps {
 
 export function GuideShell({
   regions,
+  districts = [],
   title,
   crumb,
   activeSlug,
+  pageNavScope = 'regions',
   heading,
   children,
   showPageNav = false,
@@ -40,7 +46,12 @@ export function GuideShell({
   const burgerRef = useRef<HTMLButtonElement>(null)
   const drawerRef = useRef<HTMLElement>(null)
   const drawerWasOpen = useRef(false)
-  const {prev, next} = adjacentRegions(regions, showPageNav ? activeSlug : null)
+  const hrefBase = pageNavScope === 'districts' ? '/districts' : '/guide'
+  const {prev, next} =
+    pageNavScope === 'districts'
+      ? adjacentDistricts(districts, showPageNav ? activeSlug : null)
+      : adjacentRegions(regions, showPageNav ? activeSlug : null)
+  const activeHref = activeSlug ? `${hrefBase}/${activeSlug}` : null
 
   function closeDrawer() {
     setDrawerOpen(false)
@@ -99,7 +110,8 @@ export function GuideShell({
         <nav className={styles.rail} aria-label="Jurisdictions">
           <GuideNav
             regions={regions}
-            activeSlug={activeSlug}
+            districts={districts}
+            activeHref={activeHref}
             search={search}
             onSearch={setSearch}
           />
@@ -123,7 +135,8 @@ export function GuideShell({
               <div className={styles.drawerNav}>
                 <GuideNav
                   regions={regions}
-                  activeSlug={activeSlug}
+                  districts={districts}
+                  activeHref={activeHref}
                   search={search}
                   onSearch={setSearch}
                   onNavigate={closeDrawer}
@@ -139,7 +152,7 @@ export function GuideShell({
             {heading ?? <h1 className={styles.title}>{title}</h1>}
           </div>
           {children}
-          {showPageNav && <PageNav prev={prev} next={next} />}
+          {showPageNav && <PageNav prev={prev} next={next} hrefBase={hrefBase} />}
           {(showPageNav || showBackToTop) && <BackToTop />}
         </main>
       </div>

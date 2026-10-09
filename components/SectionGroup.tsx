@@ -4,13 +4,13 @@ import type {GuideSection} from '@/lib/types'
 
 import styles from './RegionSection.module.css'
 
-export function GroupLabel({as: Tag, children}: {as: 'h2' | 'h4'; children: string}) {
+export function GroupLabel({as: Tag, children}: {as: 'h2' | 'h3' | 'h4'; children: string}) {
   return <Tag className={styles.groupLabel}>{children}</Tag>
 }
 
 interface SectionGroupProps {
   section: GuideSection
-  groupTag: 'h2' | 'h4'
+  groupTag: 'h2' | 'h3' | 'h4'
 }
 
 /**

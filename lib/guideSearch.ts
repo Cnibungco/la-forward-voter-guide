@@ -1,6 +1,8 @@
 import {isDraftStatus, raceCandidates, visibleEntries} from '@/lib/contentStatus'
+import {hasDistrictSlug} from '@/lib/districts'
+import {SCHOOL_DISTRICTS_LABEL} from '@/lib/labels'
 import {hasSlug} from '@/lib/regions'
-import type {GuideRegion, MeasureLike, RaceLike} from '@/lib/types'
+import type {GuideDistrict, GuideRegion, MeasureLike, RaceLike} from '@/lib/types'
 
 export interface GuideSearchHit {
   key: string
@@ -23,8 +25,8 @@ function matches(query: string, ...values: Array<string | null | undefined>): bo
   return values.some((value) => value?.toLowerCase().includes(query))
 }
 
-function guideHref(regionSlug: string, anchor: string | null | undefined): string {
-  return anchor ? `/guide/${regionSlug}#${anchor}` : `/guide/${regionSlug}`
+function pageHref(base: string, anchor: string | null | undefined): string {
+  return anchor ? `${base}#${anchor}` : base
 }
 
 interface IndexedRace extends RaceLike {
@@ -43,11 +45,11 @@ function indexRace(race: RaceLike & {_id?: string; _key?: string}, sectionLabel:
   return {...race, key: race._id ?? race._key ?? race.slug ?? race.title, anchor, sectionLabel}
 }
 
-function racesIn(region: GuideRegion): IndexedRace[] {
-  const own = region.races
+function racesIn(source: {races?: GuideRegion['races']; sections?: GuideRegion['sections']}): IndexedRace[] {
+  const own = (source.races ?? [])
     .filter((race) => !isDraftStatus(race.contentStatus))
     .map((race) => indexRace(race, null))
-  const grouped = region.sections.flatMap((section) => {
+  const grouped = (source.sections ?? []).flatMap((section) => {
     if (section._type !== 'raceGroup') return []
     return (section.races ?? [])
       .filter((race) => !isDraftStatus(race.contentStatus))
@@ -63,11 +65,11 @@ function indexMeasure(
   return {...measure, key: measure._id ?? measure._key ?? measure.slug ?? measure.title, sectionLabel}
 }
 
-function measuresIn(region: GuideRegion): IndexedMeasure[] {
-  const own = region.measures
+function measuresIn(source: {measures?: GuideRegion['measures']; sections?: GuideRegion['sections']}): IndexedMeasure[] {
+  const own = (source.measures ?? [])
     .filter((measure) => !isDraftStatus(measure.contentStatus))
     .map((measure) => indexMeasure(measure, null))
-  const grouped = region.sections.flatMap((section) => {
+  const grouped = (source.sections ?? []).flatMap((section) => {
     if (section._type !== 'measureGroup') return []
     return (section.measures ?? [])
       .filter((measure) => !isDraftStatus(measure.contentStatus))
@@ -76,12 +78,60 @@ function measuresIn(region: GuideRegion): IndexedMeasure[] {
   return [...own, ...grouped]
 }
 
+function collectContentHits(
+  hits: ScoredHit[],
+  query: string,
+  parent: {id: string; title: string; base: string},
+  races: IndexedRace[],
+  measures: IndexedMeasure[],
+) {
+  for (const race of races) {
+    if (matches(query, race.title, race.office, race.candidateName, race.sectionLabel)) {
+      hits.push({
+        kind: 'race',
+        key: `race:${parent.id}:${race.key}`,
+        href: pageHref(parent.base, race.anchor),
+        label: race.title,
+        context: parent.title,
+      })
+    }
+
+    for (const entry of raceCandidates(race)) {
+      if (!matches(query, entry.name)) continue
+      if (visibleEntries(race.entries).length === 0 && entry.name === race.title) continue
+      hits.push({
+        kind: 'name',
+        key: `entry:${entry._id}`,
+        href: pageHref(parent.base, entry.slug ?? race.anchor),
+        label: entry.name,
+        context: race.title ? `${race.title} · ${parent.title}` : parent.title,
+      })
+    }
+  }
+
+  for (const measure of measures) {
+    if (!matches(query, measure.title, measure.summary, measure.sectionLabel)) continue
+    hits.push({
+      kind: 'measure',
+      key: `measure:${parent.id}:${measure.key}`,
+      href: pageHref(parent.base, measure.slug),
+      label: measure.title,
+      context: parent.title,
+    })
+  }
+}
+
 /**
- * Sidebar search. Matches a jurisdiction, a race, a candidate name, or a
- * measure — including a section label such as "Ballot measures" — and
- * links to that row when it has a slug.
+ * Sidebar search. Matches a jurisdiction, a district, a race, a candidate
+ * name, or a measure — including a section label such as "Ballot measures"
+ * — and links to that row when it has a slug. Each district is indexed
+ * once, on its own page.
  */
-export function searchGuide(regions: GuideRegion[], rawQuery: string): GuideSearchHit[] {
+export function searchGuide(
+  regions: GuideRegion[],
+  rawQuery: string,
+  districts: GuideDistrict[] = [],
+): GuideSearchHit[] {
   const query = rawQuery.trim().toLowerCase()
   if (!query) return []
 
@@ -100,40 +150,36 @@ export function searchGuide(regions: GuideRegion[], rawQuery: string): GuideSear
       })
     }
 
-    for (const race of racesIn(region)) {
-      if (matches(query, race.title, race.office, race.candidateName, race.sectionLabel)) {
-        hits.push({
-          kind: 'race',
-          key: `race:${region._id}:${race.key}`,
-          href: guideHref(region.slug, race.anchor),
-          label: race.title,
-          context: region.title,
-        })
-      }
+    collectContentHits(
+      hits,
+      query,
+      {id: region._id, title: region.title, base: `/guide/${region.slug}`},
+      racesIn(region),
+      measuresIn(region),
+    )
+  }
 
-      for (const entry of raceCandidates(race)) {
-        if (!matches(query, entry.name)) continue
-        if (visibleEntries(race.entries).length === 0 && entry.name === race.title) continue
-        hits.push({
-          kind: 'name',
-          key: `entry:${entry._id}`,
-          href: guideHref(region.slug, entry.slug ?? race.anchor),
-          label: entry.name,
-          context: race.title ? `${race.title} · ${region.title}` : region.title,
-        })
-      }
-    }
+  for (const district of districts) {
+    if (!hasDistrictSlug(district)) continue
+    const base = `/districts/${district.slug}`
 
-    for (const measure of measuresIn(region)) {
-      if (!matches(query, measure.title, measure.summary, measure.sectionLabel)) continue
+    if (matches(query, district.title)) {
       hits.push({
-        kind: 'measure',
-        key: `measure:${region._id}:${measure.key}`,
-        href: guideHref(region.slug, measure.slug),
-        label: measure.title,
-        context: region.title,
+        kind: 'region',
+        key: `district:${district._id}`,
+        href: base,
+        label: district.title,
+        context: SCHOOL_DISTRICTS_LABEL,
       })
     }
+
+    collectContentHits(
+      hits,
+      query,
+      {id: district._id, title: district.title, base},
+      racesIn(district),
+      measuresIn(district),
+    )
   }
 
   return hits

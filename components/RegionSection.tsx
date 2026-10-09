@@ -9,9 +9,11 @@ import styles from './RegionSection.module.css'
 interface RegionSectionProps {
   region: GuideRegion
   headingLevel?: 'h3' | 'none'
+  /** A city page with school districts below should not say the region is empty. */
+  suppressEmpty?: boolean
 }
 
-export function RegionSection({region, headingLevel = 'none'}: RegionSectionProps) {
+export function RegionSection({region, headingLevel = 'none', suppressEmpty = false}: RegionSectionProps) {
   const sections = region.sections ?? []
   const hasContent = region.races.length > 0 || region.measures.length > 0 || sections.length > 0
   const groupTag = headingLevel === 'h3' ? 'h4' : 'h2'
@@ -51,7 +53,7 @@ export function RegionSection({region, headingLevel = 'none'}: RegionSectionProp
         <SectionGroup key={section._key} section={section} groupTag={groupTag} />
       ))}
 
-      {!hasContent && <p className={styles.empty}>{REGION_EMPTY}</p>}
+      {!hasContent && !suppressEmpty && <p className={styles.empty}>{REGION_EMPTY}</p>}
     </section>
   )
 }

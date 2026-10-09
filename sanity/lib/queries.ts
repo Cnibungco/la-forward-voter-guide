@@ -3,10 +3,10 @@ import {defineQuery} from 'next-sanity'
 const notDraft = `contentStatus != "draft"`
 
 /**
- * Shared projection for a `raceGroup`/`measureGroup` block. Used twice
- * below: once for a Region's own `sections`, once for every
- * `specialDistrict` that references that Region — see the merge pattern
- * in docs/backend-strategy.md §11.
+ * Shared projection for a `raceGroup`/`measureGroup` block. Used for a
+ * Region's own `sections` and for each `specialDistrict`. Districts are
+ * returned once, under `specialDistricts`, and joined to cities in the
+ * app by `citiesServed`.
  *
  * `contentStatus == "draft"` items are dropped here so they never reach
  * the public guide. Pending items are included and rendered as
@@ -56,16 +56,10 @@ const sectionFields = `
  * Sanity query.
  *
  * `races`/`measures` are the State/County path (separate documents
- * referencing this Region). `sections` is the City path — a Region's own
- * ordered raceGroup/measureGroup blocks, concatenated with every
- * specialDistrict's blocks that lists this Region in `citiesServed` (own
- * content first, districts in title order). See §11.
- *
- * The district half cannot be `(*[...]).sections[]`. That attribute
- * access is null even when a district exists, and GROQ's `array + null`
- * is null — `coalesce` then turns the whole merge into `[]`, so a city
- * with its own ballot renders as "Nothing entered." Map the district
- * sections, flatten, and coalesce that half to `[]`.
+ * referencing this Region). `sections` is a city's own ordered
+ * raceGroup/measureGroup blocks. `specialDistricts` is every school and
+ * special district, once, with the cities it covers. The app places
+ * those districts on the city page and the matched ballot.
  */
 export const GUIDE_QUERY = defineQuery(`{
   "regions": *[_type == "region"] | order(tier asc, order asc) {
@@ -105,14 +99,19 @@ export const GUIDE_QUERY = defineQuery(`{
       position,
       contentStatus,
     },
-    "sections":
-      coalesce(sections, [])[]{${sectionFields}}
-      + coalesce(
-          *[_type == "specialDistrict" && references(^._id)] | order(title asc) {
-            "sections": sections[]{${sectionFields}}
-          }.sections[],
-          []
-        )
+    "sections": coalesce(sections, [])[]{${sectionFields}}
+  },
+  "specialDistricts": *[_type == "specialDistrict"] | order(title asc) {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    "citiesServed": citiesServed[]->{
+      _id,
+      title,
+      "slug": slug.current
+    },
+    "sections": coalesce(sections, [])[]{${sectionFields}}
   },
   "settings": *[_id == "siteSettings"][0]{
     disclaimer,
