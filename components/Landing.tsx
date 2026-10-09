@@ -24,6 +24,15 @@ import {
   COURAGE_CA_HREF,
   DONATE_BUTTON_LABEL,
   DONATE_HREF,
+  EARLY_VOTE_ACTIONS,
+  EARLY_VOTE_HEAD,
+  EARLY_VOTE_PLAN_AFTER,
+  EARLY_VOTE_PLAN_BEFORE,
+  EARLY_VOTE_PLEDGE_AFTER,
+  EARLY_VOTE_PLEDGE_BEFORE,
+  EARLY_VOTE_PLEDGE_DATE,
+  EARLY_VOTE_PLEDGE_LABEL,
+  EARLY_VOTE_PLEDGE_MIDDLE,
   FIND_YOUR_CITY_EYEBROW,
   FIND_YOUR_CITY_LABEL,
   HERO_IMAGE_ALT,
@@ -46,6 +55,8 @@ import {
   STATEWIDE_EYEBROW,
   TIKTOK_HREF,
   VIEW_GUIDE_LABEL,
+  VOTE_EARLY_HREF,
+  VOTE_EARLY_LABEL,
 } from '@/lib/copy'
 import {isLosAngelesCity, navCities, preferredGuideHref, regionByTier} from '@/lib/regions'
 import type {ResolvedHomeCopy} from '@/lib/siteSettings'
@@ -233,14 +244,46 @@ export function Landing({regions, sampleBallotUrl, disclaimer, home}: LandingPro
         <RatingLegend />
       </div>
 
-      <section className={styles.datesCard} aria-labelledby="key-dates-heading">
+      <section className={styles.datesCard} aria-labelledby="early-vote-heading">
         <div className={styles.datesAccent} aria-hidden="true">
           <span />
           <span />
         </div>
-        <h2 id="key-dates-heading" className={styles.datesHead}>
-          {KEY_DATES_HEAD}
+        <h2 id="early-vote-heading" className={styles.campaignHead}>
+          {EARLY_VOTE_HEAD}
         </h2>
+        <p className={styles.earlyVoteBody}>
+          {EARLY_VOTE_PLEDGE_BEFORE} <strong>{EARLY_VOTE_PLEDGE_DATE}</strong>{' '}
+          {EARLY_VOTE_PLEDGE_MIDDLE}{' '}
+          <a href={VOTE_EARLY_HREF} target="_blank" rel="noopener noreferrer">
+            {VOTE_EARLY_LABEL}
+          </a>
+          {EARLY_VOTE_PLEDGE_AFTER}
+        </p>
+        <div className={styles.earlyVotePledge}>
+          <Cta href={VOTE_EARLY_HREF} external className={styles.dateBtn}>
+            {EARLY_VOTE_PLEDGE_LABEL}
+          </Cta>
+        </div>
+        <p className={styles.earlyVoteBody}>
+          {EARLY_VOTE_PLAN_BEFORE}{' '}
+          <a href={VOTE_EARLY_HREF} target="_blank" rel="noopener noreferrer">
+            {VOTE_EARLY_LABEL}
+          </a>
+          {EARLY_VOTE_PLAN_AFTER}
+        </p>
+        <ul className={styles.earlyVoteActions}>
+          {EARLY_VOTE_ACTIONS.map((action) => (
+            <li key={action.href}>
+              <a href={action.href} target="_blank" rel="noopener noreferrer">
+                {action.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <h3 id="key-dates-heading" className={styles.datesHead}>
+          {KEY_DATES_HEAD}
+        </h3>
         <ol className={styles.dates}>
           {home.keyDates.map((item) => (
             <li

@@ -30,7 +30,35 @@ export const REGISTER_HREF = 'https://registertovote.ca.gov/'
 
 export const CHECK_REGISTRATION_HREF = 'https://voterstatus.sos.ca.gov'
 
-export const EARLY_VOTING_HREF = 'https://caearlyvoting.sos.ca.gov/'
+export const VOTE_EARLY_HREF = 'https://www.voteearly.la/'
+
+export const VOTE_EARLY_LABEL = 'VoteEarly.LA'
+
+export const EARLY_VOTE_HEAD = "DON'T F*** THIS UP, LA. VOTE EARLY."
+
+export const EARLY_VOTE_PLEDGE_LABEL = 'Take the pledge'
+
+export const EARLY_VOTE_PLEDGE_BEFORE =
+  'Trump and his cronies are trying to steal the election. Our plan starts with the biggest early voter turnout in American history. Do your part by pledging to vote by'
+
+export const EARLY_VOTE_PLEDGE_DATE = 'October 25'
+
+export const EARLY_VOTE_PLEDGE_MIDDLE = 'at'
+
+export const EARLY_VOTE_PLEDGE_AFTER = '.'
+
+export const EARLY_VOTE_PLAN_BEFORE = 'Build your early voting plan at'
+
+export const EARLY_VOTE_PLAN_AFTER = ', and find more ways to take action:'
+
+export const EARLY_VOTE_ACTIONS = [
+  {href: 'https://www.voteearly.la/nvp', label: 'Monitor polls near you'},
+  {href: 'https://www.voteearly.la/ballotparty', label: 'Host your own ballot party'},
+  {
+    href: 'https://www.voteearly.la/network',
+    label: 'Join our election protection mobilization network',
+  },
+] as const
 
 export const REGISTER_LABEL = 'Register to vote'
 
@@ -49,30 +77,14 @@ export interface KeyDate {
 /** Fallback dates for the Nov 3, 2026 general. Live dates are edited in Studio. */
 export const KEY_DATES: KeyDate[] = [
   {
-    date: 'OCT 5',
-    event: [
-      'Ballots mailed to all active registered voters. You can also pick up a ballot (or drop one off) at an ',
-      {href: EARLY_VOTING_HREF, label: 'Early Voting site'},
-      '.',
-    ],
-  },
-  {
-    date: 'OCT 6',
-    event: ['Secure ballot drop-off boxes open.'],
-  },
-  {
     date: 'OCT 19',
     event: [
-      {
-        strong:
-          'Last day to register to vote (or update your registration address) online to receive your ballot by mail. ',
-      },
-      'After October 19, you must complete same-day voter registration and request your ballot in person at a vote center.',
+      'Last day to register online (or update your address) to receive your ballot by mail. After this, register and vote in person at a vote center.',
     ],
   },
   {
     date: 'OCT 24',
-    event: ['Vote centers open across LA County to vote or drop off your ballot.'],
+    event: ['Vote centers open across LA County.'],
   },
   {
     date: 'OCT 27',
@@ -83,7 +95,7 @@ export const KEY_DATES: KeyDate[] = [
   },
   {
     date: 'NOV 3',
-    event: ['Election Day'],
+    event: ["Election Day (but don't wait)."],
     electionDay: true,
   },
 ]
@@ -112,7 +124,7 @@ export const LINKEDIN_HREF =
 export const DONATE_POPUP_TITLE = 'Support LA Forward'
 
 export const DONATE_POPUP_BODY =
-  "If this voter guide has been useful for you, we'd be grateful for a donation of any amount to help cover the costs of making it every election!"
+  "If this voter guide has been useful for you, we'd be grateful for a donation so we can reach even more people."
 
 export const DONATE_POPUP_DISMISS = 'Not now'
 
@@ -249,7 +261,7 @@ export const BALLOT_CHANGE_ERROR =
 export const BALLOT_LOOKUP_STATUS = 'Looking up your ballot…'
 
 export const DONATE_ASK =
-  'Over 75% of our budget comes from small-dollar gifts like yours. No corporate money, no strings.'
+  "If this voter guide has been useful for you, we'd be grateful for a donation so we can reach even more people."
 
 export const SHARE_HEAD = 'Share this Voter Guide'
 
