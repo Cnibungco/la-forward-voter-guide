@@ -1,13 +1,15 @@
 import {CityPicker} from '@/components/CityPicker'
 import {GuideShell} from '@/components/GuideShell'
-import {CITIES_TITLE} from '@/lib/copy'
+import {CITIES_TITLE, guidePageDescription} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
 import {TIER_LABELS} from '@/lib/labels'
 
 export const revalidate = 300
 
 export const metadata = {
-  title: 'Find your city · LA Forward Voter Guide',
+  title: 'Find your city',
+  description: guidePageDescription('Find your city'),
+  alternates: {canonical: '/cities'},
 }
 
 export default async function CitiesPage() {

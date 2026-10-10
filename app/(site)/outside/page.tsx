@@ -3,7 +3,7 @@ import Link from 'next/link'
 import {ChangeAddress} from '@/components/ChangeAddress'
 import {GuideShell} from '@/components/GuideShell'
 import {Methodology} from '@/components/Methodology'
-import {OUTSIDE_BODY, OUTSIDE_EYEBROW, OUTSIDE_TITLE, SAMPLE_BALLOT_LABEL} from '@/lib/copy'
+import {OUTSIDE_BODY, OUTSIDE_EYEBROW, OUTSIDE_TITLE, SAMPLE_BALLOT_LABEL, guidePageDescription} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
 import {isLosAngelesCity, regionByTier} from '@/lib/regions'
 import {resolvedSampleBallotUrl, resolvedTrustStatement} from '@/lib/siteSettings'
@@ -13,7 +13,9 @@ import styles from './outside.module.css'
 export const revalidate = 300
 
 export const metadata = {
-  title: 'Outside coverage · LA Forward Voter Guide',
+  title: 'Outside coverage',
+  description: guidePageDescription('Statewide and Los Angeles County races'),
+  alternates: {canonical: '/outside'},
 }
 
 export default async function OutsidePage() {

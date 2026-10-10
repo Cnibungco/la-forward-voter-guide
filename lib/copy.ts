@@ -8,6 +8,25 @@
  */
 
 /**
+ * Homepage document title. Kept near 60 characters so Google can show
+ * the place, the guide, and the election year without cutting them off.
+ * The fuller name lives in SITE_DESCRIPTION, which is the search snippet.
+ */
+export const SITE_TITLE = 'Los Angeles, CA Progressive Voter Guide | November 2026'
+
+export const SITE_NAME = 'LA Forward Voter Guide'
+
+export const SITE_URL = 'https://voterguide.laforward.org'
+
+export const SITE_DESCRIPTION =
+  'The Los Angeles, California Progressive Voter Guide for the November 2026 General Election by LA Forward. Endorsements and analysis for races and measures.'
+
+/** Meta description for an inner page. `subject` is that page's own name. */
+export function guidePageDescription(subject: string): string {
+  return `${subject} in the Los Angeles Progressive Voter Guide for the November 2026 General Election by LA Forward.`
+}
+
+/**
  * Page heading for assistive tech. The visible title is painted into
  * `public/banner.jpg`, so this string is not shown on the hero.
  */
@@ -99,6 +118,8 @@ export const KEY_DATES: KeyDate[] = [
     electionDay: true,
   },
 ]
+
+export const ORG_NAME = 'LA Forward'
 
 export const ORG_HREF = 'https://www.laforward.org'
 
@@ -285,6 +306,12 @@ export const SHARE_COPIED_LABEL = 'Link copied'
 export const SHARE_COPY_MANUAL = 'Select and copy this link.'
 
 export const SHARE_DOWNLOAD_LABEL = 'Download graphic'
+
+/** Shared folder of ready-to-post social media graphics. */
+export const SHARE_GRAPHICS_HREF =
+  'https://drive.google.com/drive/folders/1ODbfvAOPIelfrYrTWdugV7hm8Q8485DN?usp=sharing'
+
+export const SHARE_GRAPHICS_LABEL = 'Social media graphics'
 
 /**
  * Designed share graphic (2:1 banner). Keep the download filename extension

@@ -12,6 +12,8 @@ import {
   SHARE_COPY_LABEL,
   SHARE_COPY_MANUAL,
   SHARE_DOWNLOAD_LABEL,
+  SHARE_GRAPHICS_HREF,
+  SHARE_GRAPHICS_LABEL,
   SHARE_GRAPHIC_DOWNLOAD,
   SHARE_GRAPHIC_HEIGHT,
   SHARE_GRAPHIC_SRC,
@@ -96,6 +98,9 @@ export function ShareGuide() {
               {SHARE_DOWNLOAD_LABEL}
             </Cta>
           )}
+          <Cta variant="secondary" href={SHARE_GRAPHICS_HREF} external>
+            {SHARE_GRAPHICS_LABEL}
+          </Cta>
           {canShare && (
             <Cta onClick={onShare}>{SHARE_BUTTON_LABEL}</Cta>
           )}
