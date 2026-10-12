@@ -171,8 +171,9 @@ at a real Sanity project.
    ID defaults to `wcogcahu` (same as the Studio), so you do **not** need
    to set `NEXT_PUBLIC_SANITY_PROJECT_ID` in the Vercel dashboard. For
    address lookup in production, add `NEXT_PUBLIC_GEOAPIFY_API_KEY` under
-   Environment Variables (Production and Preview). For Google Analytics,
-   add `NEXT_PUBLIC_GA_MEASUREMENT_ID` on **Production only** (not Preview).
+   Environment Variables (Production and Preview). Google Analytics uses
+   `NEXT_PUBLIC_GA_MEASUREMENT_ID` (`G-VPXW7HE6QM`) on **Production only**
+   (not Preview).
    Deploy the Studio separately (`npx sanity deploy` from the Studio
    folder) — the two have independent deploy pipelines. The hosted Studio
    is [la-forward-voter-guide.sanity.studio](https://la-forward-voter-guide.sanity.studio).
@@ -204,7 +205,7 @@ the voter's address — page paths are enough; custom events are not used.
 Vercel dashboard. Query strings are stripped before a page view is sent, so
 a tagged or mistaken query cannot leak an address there.
 
-**Google Analytics:** set `NEXT_PUBLIC_GA_MEASUREMENT_ID` (`G-XXXXXXXX`) in
+**Google Analytics:** `NEXT_PUBLIC_GA_MEASUREMENT_ID` is `G-VPXW7HE6QM`, set in
 Vercel Production. The script does not load without it, and does not load
 in development or preview. In GA4 Admin → Data collection → Enhanced
 Measurement, turn **off form interactions** (the address field is a form).
