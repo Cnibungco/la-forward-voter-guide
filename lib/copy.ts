@@ -18,7 +18,7 @@ export const SITE_NAME = 'LA Forward Voter Guide'
 /** Visible homepage heading. The hero illustration stays a picture, not the title. */
 export const HOME_HEADING = 'Los Angeles Progressive Voter Guide'
 
-export const SITE_URL = 'https://voterguide.laforward.org'
+export const SITE_URL = 'https://laforwardguide.org'
 
 /** Homepage document title. Kept near 60 characters when `electionName` is short. */
 export function siteTitle(electionName: string): string {

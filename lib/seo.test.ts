@@ -71,13 +71,13 @@ describe('breadcrumbStructuredData', () => {
         '@type': 'ListItem',
         position: 1,
         name: 'LA Forward Voter Guide',
-        item: 'https://voterguide.laforward.org/',
+        item: 'https://laforwardguide.org/',
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: 'Los Angeles',
-        item: 'https://voterguide.laforward.org/guide/los-angeles',
+        item: 'https://laforwardguide.org/guide/los-angeles',
       },
     ])
   })
