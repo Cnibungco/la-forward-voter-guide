@@ -49,6 +49,9 @@ export interface SiteAboutParagraph {
 export interface SiteSettings {
   disclaimer: string | null
   sampleBallotUrl: string | null
+  /** Short cycle label, such as "November 2026". Blank uses the app fallback. */
+  electionName?: string | null
+  updatedAt?: string | null
   announcement?: string | null
   announcementLinkLabel?: string | null
   announcementLinkUrl?: string | null
@@ -68,6 +71,7 @@ export interface GuideEntry {
   rating: EntryRating | null
   reasoning: PortableTextBlock[] | null
   contentStatus?: ContentStatus | null
+  updatedAt?: string | null
 }
 
 /**
@@ -97,6 +101,7 @@ export interface RaceLike {
   candidateName?: string | null
   rating?: EntryRating | null
   reasoning?: PortableTextBlock[] | null
+  updatedAt?: string | null
 }
 
 /**
@@ -110,6 +115,7 @@ export interface MeasureLike {
   position: MeasurePosition | null
   reasoning: PortableTextBlock[] | null
   contentStatus?: ContentStatus | null
+  updatedAt?: string | null
 }
 
 export interface GuideRace extends RaceLike {
@@ -175,6 +181,7 @@ export interface GuideRegion {
   tier: RegionTier
   order: number | null
   description: string | null
+  updatedAt?: string | null
   /** State/County only — city ballots use `sections` instead. */
   races: GuideRace[]
   /** State/County only — city ballots use `sections` instead. */
@@ -203,6 +210,7 @@ export interface GuideDistrict {
   title: string
   slug: string | null
   description: string | null
+  updatedAt?: string | null
   citiesServed: GuideDistrictCity[]
   sections: GuideSection[]
 }

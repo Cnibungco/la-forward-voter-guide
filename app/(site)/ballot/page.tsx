@@ -1,14 +1,20 @@
+import type {Metadata} from 'next'
+
 import {GuideBody} from '@/components/GuideBody'
 import {guidePageDescription} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
-import {resolvedTrustStatement} from '@/lib/siteSettings'
+import {resolvedElectionName, resolvedTrustStatement} from '@/lib/siteSettings'
 
 export const revalidate = 300
 
-export const metadata = {
-  title: 'Your ballot',
-  description: guidePageDescription('Your ballot'),
-  alternates: {canonical: '/ballot'},
+export async function generateMetadata(): Promise<Metadata> {
+  const {settings} = await getGuide()
+  return {
+    title: 'Your ballot',
+    description: guidePageDescription('Your ballot', resolvedElectionName(settings)),
+    alternates: {canonical: '/ballot'},
+    robots: {index: false, follow: true},
+  }
 }
 
 export default async function BallotPage() {

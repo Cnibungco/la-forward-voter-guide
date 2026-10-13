@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {searchGuide} from '@/lib/guideSearch'
+import {guidePageTopics, pageTopics, searchGuide} from '@/lib/guideSearch'
 import type {GuideDistrict, GuideEntry, GuideRegion, GuideRace} from '@/lib/types'
 
 function entry(overrides: Partial<GuideEntry> & Pick<GuideEntry, '_id' | 'name'>): GuideEntry {
@@ -211,5 +211,109 @@ describe('searchGuide', () => {
       },
     ])
     expect(searchGuide(regions, 'unlinked district', districts)).toEqual([])
+  })
+})
+
+describe('pageTopics', () => {
+  it('links each office and measure, and skips rows with no anchor', () => {
+    const city = region({
+      _id: 'burbank',
+      title: 'Burbank',
+      slug: 'burbank',
+      tier: 'city',
+      sections: [
+        {
+          _key: 'council',
+          _type: 'raceGroup',
+          label: 'City Council',
+          races: [
+            {
+              _key: 'at-large',
+              title: 'City Council',
+              slug: 'city-council',
+              office: null,
+              district: null,
+              context: null,
+              contentStatus: 'published',
+              entries: [entry({_id: 'alex', name: 'Alex'})],
+            },
+            {
+              _key: 'draft',
+              title: 'Treasurer',
+              slug: 'treasurer',
+              office: null,
+              district: null,
+              context: null,
+              contentStatus: 'draft',
+              entries: null,
+            },
+          ],
+        },
+        {
+          _key: 'measures',
+          _type: 'measureGroup',
+          label: 'Measures',
+          measures: [
+            {
+              _key: 'bb',
+              title: 'Measure BB',
+              slug: 'measure-bb',
+              summary: null,
+              position: 'support',
+              reasoning: null,
+              contentStatus: 'published',
+            },
+            {
+              _key: 'noslug',
+              title: 'Measure CC',
+              slug: null,
+              summary: null,
+              position: 'support',
+              reasoning: null,
+              contentStatus: 'published',
+            },
+          ],
+        },
+      ],
+    })
+
+    expect(pageTopics(city)).toEqual([
+      {label: 'Alex', anchor: 'city-council'},
+      {label: 'Measure BB', anchor: 'measure-bb'},
+    ])
+  })
+
+  it('includes school-district offices rendered on a city page', () => {
+    const city = region({_id: 'burbank', title: 'Burbank', slug: 'burbank', tier: 'city'})
+    const districts: GuideDistrict[] = [
+      {
+        _id: 'lausd',
+        title: 'Los Angeles Unified',
+        slug: 'lausd',
+        description: null,
+        citiesServed: [{_id: 'burbank', title: 'Burbank', slug: 'burbank'}],
+        sections: [
+          {
+            _key: 'board',
+            _type: 'raceGroup',
+            label: 'Board',
+            races: [
+              {
+                _key: 'seat',
+                title: 'Board District 4',
+                slug: 'board-district-4',
+                office: null,
+                district: null,
+                context: null,
+                contentStatus: 'published',
+                entries: null,
+              },
+            ],
+          },
+        ],
+      },
+    ]
+
+    expect(guidePageTopics(city, districts)).toEqual([{label: 'Board District 4', anchor: 'board-district-4'}])
   })
 })

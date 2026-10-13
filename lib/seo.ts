@@ -3,11 +3,12 @@ import {
   INSTAGRAM_HREF,
   ORG_HREF,
   ORG_NAME,
-  SITE_DESCRIPTION,
   SITE_NAME,
   SITE_URL,
   TIKTOK_HREF,
 } from '@/lib/copy'
+import {districtsOnCityPage} from '@/lib/districts'
+import type {GuideDistrict, GuideRegion, GuideSection, SiteSettings} from '@/lib/types'
 
 /** Company profile, without the feed-view query used by the on-site link. */
 const LINKEDIN_PROFILE = 'https://www.linkedin.com/company/la-forward'
@@ -38,7 +39,7 @@ export function publicGuidePaths(
   return [...new Set(paths)]
 }
 
-export function siteStructuredData() {
+export function siteStructuredData(description: string) {
   const orgId = `${ORG_HREF}/#organization`
   const siteId = `${SITE_URL}/#website`
   return {
@@ -62,7 +63,7 @@ export function siteStructuredData() {
         '@id': siteId,
         name: SITE_NAME,
         url: `${SITE_URL}/`,
-        description: SITE_DESCRIPTION,
+        description,
         publisher: {'@id': orgId},
       },
     ],
@@ -89,4 +90,93 @@ export function breadcrumbStructuredData(pageName: string, pagePath: string) {
 /** Keep `<` out of the script body so a title cannot close the tag. */
 export function jsonLdHtml(data: object): string {
   return JSON.stringify(data).replace(/</g, '\\u003c')
+}
+
+/** Newest ISO timestamp. Sanity `_updatedAt` values sort as strings. */
+export function latestTimestamp(stamps: Array<string | null | undefined>): string | undefined {
+  const values = stamps
+    .map((stamp) => stamp?.trim())
+    .filter((stamp): stamp is string => Boolean(stamp))
+  if (values.length === 0) return undefined
+  return values.reduce((latest, stamp) => (stamp > latest ? stamp : latest))
+}
+
+function contentTimestamps(source: {
+  updatedAt?: string | null
+  races?: GuideRegion['races'] | null
+  measures?: GuideRegion['measures'] | null
+  sections?: GuideSection[] | null
+}): Array<string | null | undefined> {
+  const stamps: Array<string | null | undefined> = [source.updatedAt]
+  for (const race of source.races ?? []) {
+    stamps.push(race.updatedAt)
+    for (const entry of race.entries ?? []) stamps.push(entry?.updatedAt)
+  }
+  for (const measure of source.measures ?? []) stamps.push(measure.updatedAt)
+  for (const section of source.sections ?? []) {
+    if (section._type === 'raceGroup') {
+      for (const race of section.races ?? []) {
+        stamps.push(race.updatedAt)
+        for (const entry of race.entries ?? []) stamps.push(entry?.updatedAt)
+      }
+    } else {
+      for (const measure of section.measures ?? []) stamps.push(measure.updatedAt)
+    }
+  }
+  return stamps
+}
+
+export interface SitemapEntry {
+  path: string
+  lastModified?: string
+}
+
+/**
+ * Public URLs plus the newest edit that shows on that URL.
+ * Home, the city index, and outside coverage use the newest stamp in the guide.
+ */
+export function guideSitemap(guide: {
+  regions: GuideRegion[]
+  specialDistricts: GuideDistrict[]
+  settings: SiteSettings | null
+}): SitemapEntry[] {
+  const paths = publicGuidePaths(guide.regions, guide.specialDistricts)
+  const everything = [
+    guide.settings?.updatedAt,
+    ...guide.regions.flatMap((region) => contentTimestamps(region)),
+    ...guide.specialDistricts.flatMap((district) => contentTimestamps(district)),
+  ]
+  const siteWide = latestTimestamp(everything)
+
+  return paths.map((path) => {
+    const lastModified = lastModifiedFor(path, guide, siteWide)
+    return lastModified ? {path, lastModified} : {path}
+  })
+}
+
+function lastModifiedFor(
+  path: string,
+  guide: {regions: GuideRegion[]; specialDistricts: GuideDistrict[]},
+  siteWide: string | undefined,
+): string | undefined {
+  if (path === '/' || path === '/cities' || path === '/outside') return siteWide
+
+  const guideSlug = path.startsWith('/guide/') ? path.slice('/guide/'.length) : null
+  if (guideSlug) {
+    const region = guide.regions.find((item) => item.slug === guideSlug)
+    if (!region) return undefined
+    const related = districtsOnCityPage(region, guide.specialDistricts)
+    return latestTimestamp([
+      ...contentTimestamps(region),
+      ...related.flatMap((district) => contentTimestamps(district)),
+    ])
+  }
+
+  const districtSlug = path.startsWith('/districts/') ? path.slice('/districts/'.length) : null
+  if (districtSlug) {
+    const district = guide.specialDistricts.find((item) => item.slug === districtSlug)
+    return district ? latestTimestamp(contentTimestamps(district)) : undefined
+  }
+
+  return undefined
 }

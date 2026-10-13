@@ -1,5 +1,5 @@
 import {citySlugsMatch} from '@/lib/regions'
-import type {GuideDistrict, GuideSection} from '@/lib/types'
+import type {GuideDistrict, GuideRegion, GuideSection} from '@/lib/types'
 
 export type LinkedDistrict = GuideDistrict & {slug: string}
 
@@ -38,6 +38,12 @@ export function sectionHasContent(section: GuideSection): boolean {
 
 export function districtHasContent(district: GuideDistrict): boolean {
   return district.sections.some(sectionHasContent)
+}
+
+/** School districts actually rendered under a city guide page. */
+export function districtsOnCityPage(region: GuideRegion, districts: GuideDistrict[]): GuideDistrict[] {
+  if (region.tier !== 'city' || !region.slug) return []
+  return districtsServingCity(districts, region.slug).filter(districtHasContent)
 }
 
 /** Previous and next district around `slug`, in sidebar order. */

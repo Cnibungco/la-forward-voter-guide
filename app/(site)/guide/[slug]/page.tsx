@@ -5,16 +5,18 @@ import {JsonLd} from '@/components/JsonLd'
 import {DistrictBlock} from '@/components/DistrictBlock'
 import {GuideShell} from '@/components/GuideShell'
 import {Methodology} from '@/components/Methodology'
+import {PageContents} from '@/components/PageContents'
 import {RegionSection} from '@/components/RegionSection'
 import {TapHint} from '@/components/TapHint'
 import {expandableContentKind} from '@/lib/contentStatus'
-import {SITE_NAME, TAP_HINT, TAP_HINT_MEASURE, guidePageDescription} from '@/lib/copy'
-import {districtHasContent, districtsServingCity} from '@/lib/districts'
+import {SITE_NAME, TAP_HINT, TAP_HINT_MEASURE, guideSnippet} from '@/lib/copy'
+import {districtsOnCityPage} from '@/lib/districts'
 import {getGuide} from '@/lib/guide'
+import {guidePageTopics} from '@/lib/guideSearch'
 import {TIER_LABELS} from '@/lib/labels'
 import {hasSlug, regionBySlug} from '@/lib/regions'
 import {breadcrumbStructuredData} from '@/lib/seo'
-import {resolvedTrustStatement} from '@/lib/siteSettings'
+import {resolvedElectionName, resolvedTrustStatement} from '@/lib/siteSettings'
 
 export const revalidate = 300
 
@@ -29,12 +31,17 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({params}: RegionPageProps) {
   const {slug} = await params
-  const {regions} = await getGuide()
+  const {regions, specialDistricts, settings} = await getGuide()
   const region = regionBySlug(regions, slug)
   if (!region?.slug) return {title: {absolute: SITE_NAME}}
+  const topics = guidePageTopics(region, specialDistricts)
   return {
     title: region.title,
-    description: guidePageDescription(region.title),
+    description: guideSnippet(
+      region.title,
+      resolvedElectionName(settings),
+      topics.map((topic) => topic.label),
+    ),
     alternates: {canonical: `/guide/${region.slug}`},
   }
 }
@@ -44,8 +51,8 @@ export default async function RegionPage({params}: RegionPageProps) {
   const {regions, specialDistricts, settings} = await getGuide()
   const region = regionBySlug(regions, slug)
   if (!region) notFound()
-  const serving =
-    region.tier === 'city' ? districtsServingCity(specialDistricts, region.slug).filter(districtHasContent) : []
+  const serving = districtsOnCityPage(region, specialDistricts)
+  const topics = guidePageTopics(region, specialDistricts)
   const hintKind = expandableContentKind([region, ...serving])
 
   return (
@@ -59,6 +66,7 @@ export default async function RegionPage({params}: RegionPageProps) {
         activeSlug={slug}
         showPageNav
       >
+        <PageContents items={topics} />
         <Methodology trustStatement={resolvedTrustStatement(settings)} />
         <CompactLegend />
         {hintKind && (

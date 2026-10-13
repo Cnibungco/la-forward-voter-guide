@@ -25,6 +25,7 @@ const sectionFields = `
       district,
       context,
       contentStatus,
+      "updatedAt": _updatedAt,
       "entries": coalesce(entries, [])[defined(@->_id) && @->contentStatus != "draft"]->{
         _id,
         name,
@@ -33,6 +34,7 @@ const sectionFields = `
         rating,
         reasoning,
         contentStatus,
+        "updatedAt": _updatedAt,
       }
     }
   },
@@ -45,6 +47,7 @@ const sectionFields = `
       position,
       reasoning,
       contentStatus,
+      "updatedAt": _updatedAt,
     }
   }
 `
@@ -69,6 +72,7 @@ export const GUIDE_QUERY = defineQuery(`{
     tier,
     order,
     description,
+    "updatedAt": _updatedAt,
     "races": *[_type == "race" && references(^._id) && ${notDraft}] | order(order asc) {
       _id,
       title,
@@ -80,6 +84,7 @@ export const GUIDE_QUERY = defineQuery(`{
       candidateName,
       rating,
       reasoning,
+      "updatedAt": _updatedAt,
       "entries": *[_type == "entry" && references(^._id) && ${notDraft}] | order(order asc) {
         _id,
         name,
@@ -88,6 +93,7 @@ export const GUIDE_QUERY = defineQuery(`{
         rating,
         reasoning,
         contentStatus,
+        "updatedAt": _updatedAt,
       }
     },
     "measures": *[_type == "measure" && references(^._id) && ${notDraft}] | order(order asc) {
@@ -98,6 +104,7 @@ export const GUIDE_QUERY = defineQuery(`{
       reasoning,
       position,
       contentStatus,
+      "updatedAt": _updatedAt,
     },
     "sections": coalesce(sections, [])[]{${sectionFields}}
   },
@@ -106,6 +113,7 @@ export const GUIDE_QUERY = defineQuery(`{
     title,
     "slug": slug.current,
     description,
+    "updatedAt": _updatedAt,
     "citiesServed": citiesServed[]->{
       _id,
       title,
@@ -132,6 +140,8 @@ export const GUIDE_QUERY = defineQuery(`{
     },
     trustStatement,
     donateAsk,
-    campaignDonor
+    campaignDonor,
+    electionName,
+    "updatedAt": _updatedAt
   }
 }`)

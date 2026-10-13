@@ -1,8 +1,9 @@
 import {isDraftStatus, raceCandidates, visibleEntries} from '@/lib/contentStatus'
-import {hasDistrictSlug} from '@/lib/districts'
+import {districtsOnCityPage, hasDistrictSlug} from '@/lib/districts'
 import {SCHOOL_DISTRICTS_LABEL} from '@/lib/labels'
+import {displayedRaceTitle} from '@/lib/raceLabel'
 import {hasSlug} from '@/lib/regions'
-import type {GuideDistrict, GuideRegion, MeasureLike, RaceLike} from '@/lib/types'
+import type {GuideDistrict, GuideRegion, GuideSection, MeasureLike, RaceLike} from '@/lib/types'
 
 export interface GuideSearchHit {
   key: string
@@ -63,6 +64,60 @@ function indexMeasure(
   sectionLabel: string | null,
 ): IndexedMeasure {
   return {...measure, key: measure._id ?? measure._key ?? measure.slug ?? measure.title, sectionLabel}
+}
+
+export interface PageTopic {
+  label: string
+  anchor: string
+}
+
+type TopicSource = {
+  races?: GuideRegion['races']
+  measures?: GuideRegion['measures']
+  sections?: GuideSection[]
+}
+
+function raceTopicLabel(race: IndexedRace): string {
+  const display = displayedRaceTitle(race.title, race.sectionLabel).trim()
+  if (display) return display
+  const names = visibleEntries(race.entries)
+    .map((entry) => entry.name.trim())
+    .filter((name) => name.length > 0)
+  if (names.length === 1) return names[0]
+  const section = race.sectionLabel?.trim()
+  if (section) return section
+  return typeof race.title === 'string' ? race.title.trim() : ''
+}
+
+/** One link per published office or measure that has an anchor on the page. */
+export function pageTopics(source: TopicSource): PageTopic[] {
+  const topics: PageTopic[] = []
+  for (const race of racesIn(source)) {
+    const label = raceTopicLabel(race)
+    if (!race.anchor || !label) continue
+    topics.push({label, anchor: race.anchor})
+  }
+  for (const measure of measuresIn(source)) {
+    const label = measure.title.trim()
+    if (!measure.slug || !label) continue
+    topics.push({label, anchor: measure.slug})
+  }
+  return topics
+}
+
+function dedupeTopics(topics: PageTopic[]): PageTopic[] {
+  const seen = new Set<string>()
+  return topics.filter((topic) => {
+    if (seen.has(topic.anchor)) return false
+    seen.add(topic.anchor)
+    return true
+  })
+}
+
+/** Offices on a guide page, including school districts rendered under a city. */
+export function guidePageTopics(region: GuideRegion, districts: GuideDistrict[]): PageTopic[] {
+  const sources = [region, ...districtsOnCityPage(region, districts)]
+  return dedupeTopics(sources.flatMap((source) => pageTopics(source)))
 }
 
 function measuresIn(source: {measures?: GuideRegion['measures']; sections?: GuideRegion['sections']}): IndexedMeasure[] {

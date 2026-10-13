@@ -5,6 +5,7 @@ import {
   CAMPAIGN_DISCLAIMER,
   DEFAULT_DISCLAIMER,
   DONATE_ASK,
+  ELECTION_NAME_FALLBACK,
   KEY_DATES,
   LANDING_ABOUT_BODY,
   LANDING_ABOUT_SUMMARY,
@@ -17,6 +18,7 @@ import {
   resolvedCampaignDonor,
   resolvedDisclaimer,
   resolvedDonateAsk,
+  resolvedElectionName,
   resolvedKeyDates,
   resolvedSampleBallotUrl,
   resolvedTrustStatement,
@@ -162,6 +164,18 @@ describe('resolved about, donate, and donor copy', () => {
     expect(resolvedCampaignDonor({...emptySettings, campaignDonor: '  Ada Lovelace in the amount of $10  '})).toBe(
       'Ada Lovelace in the amount of $10',
     )
+  })
+})
+
+describe('resolvedElectionName', () => {
+  it('falls back when the field is missing or blank', () => {
+    expect(resolvedElectionName(null)).toBe(ELECTION_NAME_FALLBACK)
+    expect(resolvedElectionName(emptySettings)).toBe(ELECTION_NAME_FALLBACK)
+    expect(resolvedElectionName({...emptySettings, electionName: '   '})).toBe(ELECTION_NAME_FALLBACK)
+  })
+
+  it('uses the CMS label after trimming', () => {
+    expect(resolvedElectionName({...emptySettings, electionName: '  March 2028  '})).toBe('March 2028')
   })
 })
 

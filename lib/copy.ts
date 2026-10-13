@@ -8,29 +8,75 @@
  */
 
 /**
- * Homepage document title. Kept near 60 characters so Google can show
- * the place, the guide, and the election year without cutting them off.
- * The fuller name lives in SITE_DESCRIPTION, which is the search snippet.
+ * Used when Site Settings has no election name. Editors replace this
+ * each cycle with a short label such as "November 2026".
  */
-export const SITE_TITLE = 'Los Angeles, CA Progressive Voter Guide | November 2026'
+export const ELECTION_NAME_FALLBACK = 'November 2026'
 
 export const SITE_NAME = 'LA Forward Voter Guide'
 
+/** Visible homepage heading. The hero illustration stays a picture, not the title. */
+export const HOME_HEADING = 'Los Angeles Progressive Voter Guide'
+
 export const SITE_URL = 'https://voterguide.laforward.org'
 
-export const SITE_DESCRIPTION =
-  'The Los Angeles, California Progressive Voter Guide for the November 2026 General Election by LA Forward. Endorsements and analysis for races and measures.'
+/** Homepage document title. Kept near 60 characters when `electionName` is short. */
+export function siteTitle(electionName: string): string {
+  return `Los Angeles, CA Progressive Voter Guide | ${electionName}`
+}
+
+/** Homepage search snippet. "election" stays here so a primary is not called a general election. */
+export function siteDescription(electionName: string): string {
+  return `The Los Angeles, California Progressive Voter Guide for the ${electionName} election by LA Forward. Endorsements and analysis for races and measures.`
+}
 
 /** Meta description for an inner page. `subject` is that page's own name. */
-export function guidePageDescription(subject: string): string {
-  return `${subject} in the Los Angeles Progressive Voter Guide for the November 2026 General Election by LA Forward.`
+export function guidePageDescription(subject: string, electionName: string): string {
+  return `${subject} in the Los Angeles Progressive Voter Guide for the ${electionName} election by LA Forward.`
+}
+
+/** Search snippets longer than this get cut off in Google. */
+export const SNIPPET_MAX = 155
+
+function joinTopics(names: string[]): string {
+  if (names.length <= 1) return names[0] ?? ''
+  if (names.length === 2) return `${names[0]} and ${names[1]}`
+  return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`
+}
+
+function topicClause(names: string[], more: boolean): string {
+  const list = more
+    ? names.length === 1
+      ? `${names[0]} and more`
+      : `${joinTopics(names)}, and more`
+    : joinTopics(names)
+  return ` Includes ${list}.`
 }
 
 /**
- * Page heading for assistive tech. The visible title is painted into
- * `public/banner.jpg`, so this string is not shown on the hero.
+ * Inner-page snippet. Names offices and measures until the text would
+ * pass `SNIPPET_MAX`, then closes with "and more."
  */
-export const HERO_TITLE = 'Know your ballot before you walk in.'
+export function guideSnippet(subject: string, electionName: string, topics: string[]): string {
+  const base = guidePageDescription(subject, electionName)
+  const names = [...new Set(topics.map((topic) => topic.trim()).filter((topic) => topic.length > 0))]
+  if (names.length === 0 || base.length >= SNIPPET_MAX) return base
+
+  const included: string[] = []
+  for (const name of names) {
+    const withName = `${base}${topicClause([...included, name], false)}`
+    if (withName.length > SNIPPET_MAX) break
+    included.push(name)
+  }
+
+  if (included.length === 0) return base
+  if (included.length === names.length) return `${base}${topicClause(included, false)}`
+
+  const withMore = `${base}${topicClause(included, true)}`
+  if (withMore.length <= SNIPPET_MAX) return withMore
+  if (included.length === 1) return base
+  return `${base}${topicClause(included.slice(0, -1), true)}`
+}
 
 export const VIEW_GUIDE_LABEL = 'View the Guide'
 

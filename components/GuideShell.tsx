@@ -58,10 +58,18 @@ export function GuideShell({
   }
 
   useEffect(() => {
-    const id = decodeURIComponent(window.location.hash.replace(/^#/, ''))
-    if (!id) return
-    const frame = requestAnimationFrame(() => revealGuideAnchor(id))
-    return () => cancelAnimationFrame(frame)
+    function openFromHash() {
+      const id = decodeURIComponent(window.location.hash.replace(/^#/, ''))
+      if (!id) return
+      revealGuideAnchor(id)
+    }
+
+    const frame = requestAnimationFrame(openFromHash)
+    window.addEventListener('hashchange', openFromHash)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('hashchange', openFromHash)
+    }
   }, [activeSlug])
 
   useEffect(() => {

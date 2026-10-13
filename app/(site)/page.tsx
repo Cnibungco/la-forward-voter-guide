@@ -3,7 +3,7 @@ import type {Metadata} from 'next'
 import {Landing} from '@/components/Landing'
 import {EMPTY_GUIDE_COPY} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
-import {resolvedDisclaimer, resolvedHomeCopy, resolvedSampleBallotUrl} from '@/lib/siteSettings'
+import {resolvedDisclaimer, resolvedElectionName, resolvedHomeCopy, resolvedSampleBallotUrl} from '@/lib/siteSettings'
 
 import styles from './page.module.css'
 
@@ -27,6 +27,7 @@ export default async function LandingPage() {
       sampleBallotUrl={resolvedSampleBallotUrl(settings)}
       disclaimer={resolvedDisclaimer(settings)}
       home={resolvedHomeCopy(settings)}
+      electionName={resolvedElectionName(settings)}
     />
   )
 }

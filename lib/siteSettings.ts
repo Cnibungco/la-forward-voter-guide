@@ -4,6 +4,7 @@ import {
   CAMPAIGN_DISCLAIMER,
   DEFAULT_DISCLAIMER,
   DONATE_ASK,
+  ELECTION_NAME_FALLBACK,
   KEY_DATES,
   LANDING_ABOUT_BODY,
   LANDING_ABOUT_SUMMARY,
@@ -15,6 +16,11 @@ import type {SiteKeyDate, SiteSettings} from '@/lib/types'
 
 export function resolvedDisclaimer(settings: SiteSettings | null | undefined): string {
   return settings?.disclaimer?.trim() || DEFAULT_DISCLAIMER
+}
+
+/** Blank or missing election name keeps the current cycle label in copy.ts. */
+export function resolvedElectionName(settings: SiteSettings | null | undefined): string {
+  return settings?.electionName?.trim() || ELECTION_NAME_FALLBACK
 }
 
 export function resolvedSampleBallotUrl(settings: SiteSettings | null | undefined): string | null {

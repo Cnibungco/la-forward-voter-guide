@@ -39,7 +39,7 @@ import {
   HERO_IMAGE_HEIGHT,
   HERO_IMAGE_SRC,
   HERO_IMAGE_WIDTH,
-  HERO_TITLE,
+  HOME_HEADING,
   INSTAGRAM_HREF,
   KEY_DATES_HEAD,
   LANDING_LOOKUP_ERROR,
@@ -69,6 +69,7 @@ interface LandingProps {
   sampleBallotUrl: string | null
   disclaimer: string
   home: ResolvedHomeCopy
+  electionName: string
 }
 
 function SocialIcon({name}: {name: 'instagram' | 'bluesky' | 'tiktok' | 'linkedin'}) {
@@ -103,7 +104,7 @@ const SOCIAL_LINKS = [
   {href: LINKEDIN_HREF, label: 'LA Forward on LinkedIn', name: 'linkedin' as const, brand: styles.socialLinkedin},
 ]
 
-export function Landing({regions, sampleBallotUrl, disclaimer, home}: LandingProps) {
+export function Landing({regions, sampleBallotUrl, disclaimer, home, electionName}: LandingProps) {
   const router = useRouter()
   const {lookupAddress, status} = useMatch()
   const [heroFailed, setHeroFailed] = useState(false)
@@ -123,7 +124,6 @@ export function Landing({regions, sampleBallotUrl, disclaimer, home}: LandingPro
   return (
     <main className={styles.wrap}>
       <section aria-label="Voter guide">
-        <h1 className={styles.visuallyHidden}>{HERO_TITLE}</h1>
         <div className={styles.heroMedia}>
           {!heroFailed && (
             <Image
@@ -147,6 +147,11 @@ export function Landing({regions, sampleBallotUrl, disclaimer, home}: LandingPro
           </div>
         </div>
       </section>
+
+      <header className={styles.pageHeading}>
+        <h1 className={styles.pageTitle}>{HOME_HEADING}</h1>
+        <p className={styles.pageElection}>{electionName} election</p>
+      </header>
 
       {home.announcement && (
         <aside className={styles.announcement} aria-label="Announcement">

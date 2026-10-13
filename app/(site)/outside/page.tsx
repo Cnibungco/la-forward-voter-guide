@@ -1,3 +1,4 @@
+import type {Metadata} from 'next'
 import Link from 'next/link'
 
 import {ChangeAddress} from '@/components/ChangeAddress'
@@ -6,16 +7,19 @@ import {Methodology} from '@/components/Methodology'
 import {OUTSIDE_BODY, OUTSIDE_EYEBROW, OUTSIDE_TITLE, SAMPLE_BALLOT_LABEL, guidePageDescription} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
 import {isLosAngelesCity, regionByTier} from '@/lib/regions'
-import {resolvedSampleBallotUrl, resolvedTrustStatement} from '@/lib/siteSettings'
+import {resolvedElectionName, resolvedSampleBallotUrl, resolvedTrustStatement} from '@/lib/siteSettings'
 
 import styles from './outside.module.css'
 
 export const revalidate = 300
 
-export const metadata = {
-  title: 'Outside coverage',
-  description: guidePageDescription('Statewide and Los Angeles County races'),
-  alternates: {canonical: '/outside'},
+export async function generateMetadata(): Promise<Metadata> {
+  const {settings} = await getGuide()
+  return {
+    title: 'Outside coverage',
+    description: guidePageDescription('Statewide and Los Angeles County races', resolvedElectionName(settings)),
+    alternates: {canonical: '/outside'},
+  }
 }
 
 export default async function OutsidePage() {
