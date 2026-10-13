@@ -5,7 +5,6 @@ import {JsonLd} from '@/components/JsonLd'
 import {DistrictBlock} from '@/components/DistrictBlock'
 import {GuideShell} from '@/components/GuideShell'
 import {Methodology} from '@/components/Methodology'
-import {PageContents} from '@/components/PageContents'
 import {RegionSection} from '@/components/RegionSection'
 import {TapHint} from '@/components/TapHint'
 import {expandableContentKind} from '@/lib/contentStatus'
@@ -52,7 +51,6 @@ export default async function RegionPage({params}: RegionPageProps) {
   const region = regionBySlug(regions, slug)
   if (!region) notFound()
   const serving = districtsOnCityPage(region, specialDistricts)
-  const topics = guidePageTopics(region, specialDistricts)
   const hintKind = expandableContentKind([region, ...serving])
 
   return (
@@ -66,7 +64,6 @@ export default async function RegionPage({params}: RegionPageProps) {
         activeSlug={slug}
         showPageNav
       >
-        <PageContents items={topics} />
         <Methodology trustStatement={resolvedTrustStatement(settings)} />
         <CompactLegend />
         {hintKind && (

@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import {usePathname} from 'next/navigation'
 import {useState} from 'react'
 
 import {Cta} from '@/components/Cta'
@@ -11,17 +12,14 @@ import {DONATE_BUTTON_LABEL, DONATE_HREF, ORG_HREF} from '@/lib/copy'
 
 import styles from './SiteHeader.module.css'
 
-export function SiteHeader() {
+export function SiteHeader({tagline}: {tagline: string}) {
+  const pathname = usePathname()
   const [logoFailed, setLogoFailed] = useState(false)
+  const Tagline = pathname === '/' ? 'h1' : 'p'
 
   return (
     <header className={styles.header}>
-      <Link
-        href="/"
-        className={`${styles.brand} notranslate`}
-        translate="no"
-        aria-label="LA Forward Voter Guide home"
-      >
+      <Link href="/" className={`${styles.brand} notranslate`} translate="no">
         {logoFailed ? (
           <span className={styles.logoFallback} aria-hidden="true">
             LA FORWARD
@@ -37,7 +35,7 @@ export function SiteHeader() {
             priority
           />
         )}
-        <span className={styles.tagline}>Voter Guide</span>
+        <Tagline className={styles.tagline}>{tagline}</Tagline>
       </Link>
       <div className={styles.right}>
         <GoogleTranslate />

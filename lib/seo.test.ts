@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {ELECTION_NAME_FALLBACK, guidePageDescription, guideSnippet, siteDescription, siteTitle} from '@/lib/copy'
+import {ELECTION_NAME_FALLBACK, guidePageDescription, guideSnippet, headerTagline, siteDescription, siteTitle} from '@/lib/copy'
 import {
   absoluteUrl,
   breadcrumbStructuredData,
@@ -90,6 +90,11 @@ describe('jsonLdHtml', () => {
 })
 
 describe('site title and snippets', () => {
+  it('puts the election name in the header tagline', () => {
+    expect(headerTagline('November 2026')).toBe('November 2026 LA Progressive Voter Guide')
+    expect(headerTagline('March 2028')).toBe('March 2028 LA Progressive Voter Guide')
+  })
+
   it('keeps the homepage title near 60 characters', () => {
     const title = siteTitle(ELECTION_NAME_FALLBACK)
     expect(title).toBe('Los Angeles, CA Progressive Voter Guide | November 2026')

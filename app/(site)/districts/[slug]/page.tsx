@@ -5,7 +5,6 @@ import {JsonLd} from '@/components/JsonLd'
 import {DistrictBlock} from '@/components/DistrictBlock'
 import {GuideShell} from '@/components/GuideShell'
 import {Methodology} from '@/components/Methodology'
-import {PageContents} from '@/components/PageContents'
 import {TapHint} from '@/components/TapHint'
 import {expandableContentKind} from '@/lib/contentStatus'
 import {SITE_NAME, TAP_HINT, TAP_HINT_MEASURE, guideSnippet} from '@/lib/copy'
@@ -49,7 +48,6 @@ export default async function DistrictPage({params}: DistrictPageProps) {
   const {regions, specialDistricts, settings} = await getGuide()
   const district = districtBySlug(specialDistricts, slug)
   if (!district) notFound()
-  const topics = pageTopics(district)
   const hintKind = expandableContentKind([district])
 
   return (
@@ -64,7 +62,6 @@ export default async function DistrictPage({params}: DistrictPageProps) {
         pageNavScope="districts"
         showPageNav
       >
-        <PageContents items={topics} />
         <Methodology trustStatement={resolvedTrustStatement(settings)} />
         <CompactLegend />
         {hintKind && <TapHint>{hintKind === 'measure' ? TAP_HINT_MEASURE : TAP_HINT}</TapHint>}

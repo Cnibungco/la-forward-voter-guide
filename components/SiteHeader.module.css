@@ -35,14 +35,16 @@
 }
 
 .tagline {
+  margin: 0;
+  min-width: 0;
   color: var(--color-on-navy);
   font-family: var(--font-heading), sans-serif;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
+  line-height: 1.05;
   letter-spacing: 0.02em;
   border-left: 1px solid rgba(255, 255, 255, 0.25);
   padding-left: 12px;
-  white-space: nowrap;
 }
 
 .right {

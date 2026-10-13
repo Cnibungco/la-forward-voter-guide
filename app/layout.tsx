@@ -8,7 +8,7 @@ import {JsonLd} from '@/components/JsonLd'
 import {MatchProvider} from '@/components/MatchProvider'
 import {SiteHeader} from '@/components/SiteHeader'
 import {VercelAnalytics} from '@/components/VercelAnalytics'
-import {SITE_NAME, SITE_URL, siteDescription, siteTitle} from '@/lib/copy'
+import {SITE_NAME, SITE_URL, headerTagline, siteDescription, siteTitle} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
 import {siteStructuredData} from '@/lib/seo'
 import {resolvedElectionName} from '@/lib/siteSettings'
@@ -55,14 +55,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const {settings} = await getGuide()
-  const description = siteDescription(resolvedElectionName(settings))
+  const electionName = resolvedElectionName(settings)
+  const description = siteDescription(electionName)
 
   return (
     <html lang="en" className={`${headingFont.variable} ${bodyFont.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning>
         <JsonLd data={siteStructuredData(description)} />
         <MatchProvider>
-          <SiteHeader />
+          <SiteHeader tagline={headerTagline(electionName)} />
           {children}
           <DonatePrompt />
         </MatchProvider>

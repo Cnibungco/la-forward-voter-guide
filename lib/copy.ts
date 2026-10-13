@@ -15,8 +15,10 @@ export const ELECTION_NAME_FALLBACK = 'November 2026'
 
 export const SITE_NAME = 'LA Forward Voter Guide'
 
-/** Visible homepage heading. The hero illustration stays a picture, not the title. */
-export const HOME_HEADING = 'Los Angeles Progressive Voter Guide'
+/** Text beside the logo. `electionName` is the short label from Site Settings. */
+export function headerTagline(electionName: string): string {
+  return `${electionName} LA Progressive Voter Guide`
+}
 
 export const SITE_URL = 'https://laforwardguide.org'
 
