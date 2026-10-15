@@ -16,14 +16,21 @@ const KIND_RANK = {name: 0, race: 1, measure: 2, region: 3} as const
 
 type Kind = keyof typeof KIND_RANK
 
-interface ScoredHit extends GuideSearchHit {
+export interface IndexedSearchHit extends GuideSearchHit {
   kind: Kind
+  /** Lowercased strings `searchGuide` tests. Stored so the browser does not need the guide body. */
+  fields: string[]
 }
 
 const REGION_CONTEXT = {state: 'State', county: 'County', city: 'City'} as const
 
-function matches(query: string, ...values: Array<string | null | undefined>): boolean {
-  return values.some((value) => value?.toLowerCase().includes(query))
+function searchFields(...values: Array<string | null | undefined>): string[] {
+  const fields: string[] = []
+  for (const value of values) {
+    if (!value) continue
+    fields.push(value.toLowerCase())
+  }
+  return fields
 }
 
 function pageHref(base: string, anchor: string | null | undefined): string {
@@ -133,47 +140,109 @@ function measuresIn(source: {measures?: GuideRegion['measures']; sections?: Guid
   return [...own, ...grouped]
 }
 
-function collectContentHits(
-  hits: ScoredHit[],
-  query: string,
+function collectContentRecords(
+  records: IndexedSearchHit[],
   parent: {id: string; title: string; base: string},
   races: IndexedRace[],
   measures: IndexedMeasure[],
 ) {
   for (const race of races) {
-    if (matches(query, race.title, race.office, race.candidateName, race.sectionLabel)) {
-      hits.push({
-        kind: 'race',
-        key: `race:${parent.id}:${race.key}`,
-        href: pageHref(parent.base, race.anchor),
-        label: race.title,
-        context: parent.title,
-      })
-    }
+    records.push({
+      kind: 'race',
+      key: `race:${parent.id}:${race.key}`,
+      href: pageHref(parent.base, race.anchor),
+      label: race.title,
+      context: parent.title,
+      fields: searchFields(race.title, race.office, race.candidateName, race.sectionLabel),
+    })
 
     for (const entry of raceCandidates(race)) {
-      if (!matches(query, entry.name)) continue
       if (visibleEntries(race.entries).length === 0 && entry.name === race.title) continue
-      hits.push({
+      records.push({
         kind: 'name',
         key: `entry:${entry._id}`,
         href: pageHref(parent.base, entry.slug ?? race.anchor),
         label: entry.name,
         context: race.title ? `${race.title} · ${parent.title}` : parent.title,
+        fields: searchFields(entry.name),
       })
     }
   }
 
   for (const measure of measures) {
-    if (!matches(query, measure.title, measure.summary, measure.sectionLabel)) continue
-    hits.push({
+    records.push({
       kind: 'measure',
       key: `measure:${parent.id}:${measure.key}`,
       href: pageHref(parent.base, measure.slug),
       label: measure.title,
       context: parent.title,
+      fields: searchFields(measure.title, measure.summary, measure.sectionLabel),
     })
   }
+}
+
+/**
+ * Every sidebar search row, without the guide's write-ups. The browser
+ * filters this list. `searchGuide` is the same walk plus a query.
+ */
+export function guideSearchIndex(
+  regions: GuideRegion[],
+  districts: GuideDistrict[] = [],
+): IndexedSearchHit[] {
+  const records: IndexedSearchHit[] = []
+
+  for (const region of regions) {
+    if (!hasSlug(region)) continue
+
+    records.push({
+      kind: 'region',
+      key: `region:${region._id}`,
+      href: `/guide/${region.slug}`,
+      label: region.title,
+      context: REGION_CONTEXT[region.tier],
+      fields: searchFields(region.title),
+    })
+
+    collectContentRecords(
+      records,
+      {id: region._id, title: region.title, base: `/guide/${region.slug}`},
+      racesIn(region),
+      measuresIn(region),
+    )
+  }
+
+  for (const district of districts) {
+    if (!hasDistrictSlug(district)) continue
+    const base = `/districts/${district.slug}`
+
+    records.push({
+      kind: 'region',
+      key: `district:${district._id}`,
+      href: base,
+      label: district.title,
+      context: SCHOOL_DISTRICTS_LABEL,
+      fields: searchFields(district.title),
+    })
+
+    collectContentRecords(
+      records,
+      {id: district._id, title: district.title, base},
+      racesIn(district),
+      measuresIn(district),
+    )
+  }
+
+  return records
+}
+
+export function filterGuideSearch(records: IndexedSearchHit[], rawQuery: string): GuideSearchHit[] {
+  const query = rawQuery.trim().toLowerCase()
+  if (!query) return []
+
+  return records
+    .filter((hit) => hit.fields.some((field) => field.includes(query)))
+    .sort((a, b) => KIND_RANK[a.kind] - KIND_RANK[b.kind] || a.label.localeCompare(b.label))
+    .map(({key, href, label, context}) => ({key, href, label, context}))
 }
 
 /**
@@ -187,59 +256,7 @@ export function searchGuide(
   rawQuery: string,
   districts: GuideDistrict[] = [],
 ): GuideSearchHit[] {
-  const query = rawQuery.trim().toLowerCase()
-  if (!query) return []
-
-  const hits: ScoredHit[] = []
-
-  for (const region of regions) {
-    if (!hasSlug(region)) continue
-
-    if (matches(query, region.title)) {
-      hits.push({
-        kind: 'region',
-        key: `region:${region._id}`,
-        href: `/guide/${region.slug}`,
-        label: region.title,
-        context: REGION_CONTEXT[region.tier],
-      })
-    }
-
-    collectContentHits(
-      hits,
-      query,
-      {id: region._id, title: region.title, base: `/guide/${region.slug}`},
-      racesIn(region),
-      measuresIn(region),
-    )
-  }
-
-  for (const district of districts) {
-    if (!hasDistrictSlug(district)) continue
-    const base = `/districts/${district.slug}`
-
-    if (matches(query, district.title)) {
-      hits.push({
-        kind: 'region',
-        key: `district:${district._id}`,
-        href: base,
-        label: district.title,
-        context: SCHOOL_DISTRICTS_LABEL,
-      })
-    }
-
-    collectContentHits(
-      hits,
-      query,
-      {id: district._id, title: district.title, base},
-      racesIn(district),
-      measuresIn(district),
-    )
-  }
-
-  return hits
-    .sort((a, b) => KIND_RANK[a.kind] - KIND_RANK[b.kind] || a.label.localeCompare(b.label))
-    .map(({key, href, label, context}) => ({key, href, label, context}))
+  return filterGuideSearch(guideSearchIndex(regions, districts), rawQuery)
 }
 
 /** Scroll a guide row into view and open it when it is a collapsed write-up. */

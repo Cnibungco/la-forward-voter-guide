@@ -10,12 +10,13 @@ import {expandableContentKind} from '@/lib/contentStatus'
 import {SITE_NAME, TAP_HINT, TAP_HINT_MEASURE, guideSnippet} from '@/lib/copy'
 import {districtBySlug, hasDistrictSlug} from '@/lib/districts'
 import {getGuide} from '@/lib/guide'
+import {shellModel} from '@/lib/shellPayload'
 import {pageTopics} from '@/lib/guideSearch'
 import {SCHOOL_DISTRICTS_LABEL} from '@/lib/labels'
 import {breadcrumbStructuredData} from '@/lib/seo'
 import {resolvedElectionName, resolvedTrustStatement} from '@/lib/siteSettings'
 
-export const revalidate = 300
+export const revalidate = 3600
 
 interface DistrictPageProps {
   params: Promise<{slug: string}>
@@ -54,8 +55,7 @@ export default async function DistrictPage({params}: DistrictPageProps) {
     <>
       <JsonLd data={breadcrumbStructuredData(district.title, `/districts/${slug}`)} />
       <GuideShell
-        regions={regions}
-        districts={specialDistricts}
+        model={shellModel(regions, specialDistricts)}
         title={district.title}
         crumb={SCHOOL_DISTRICTS_LABEL}
         activeSlug={slug}

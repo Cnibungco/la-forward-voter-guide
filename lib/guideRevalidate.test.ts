@@ -42,7 +42,7 @@ describe('shouldRefreshGuide', () => {
     expect(shouldRefreshGuide({_type: 'sanity.imageAsset'})).toBe(false)
   })
 
-  it('refreshes when the projection is missing the type, so a mistake waits at most 5 minutes', () => {
+  it('refreshes when the projection is missing the type, so a mistake waits at most an hour', () => {
     expect(shouldRefreshGuide({})).toBe(true)
     expect(shouldRefreshGuide(null)).toBe(true)
   })

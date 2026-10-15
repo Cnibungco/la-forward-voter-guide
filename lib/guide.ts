@@ -1,6 +1,6 @@
 import {cache} from 'react'
 
-import {GUIDE_CACHE_TAG} from '@/lib/guideRevalidate'
+import {GUIDE_CACHE_TAG, GUIDE_REVALIDATE_SECONDS} from '@/lib/guideRevalidate'
 import {normalizeGuidePayload, type GuidePayload} from '@/lib/guidePayload'
 import {withTransientRetries} from '@/lib/transientFetch'
 import {client} from '@/sanity/lib/client'
@@ -10,8 +10,9 @@ export type {GuidePayload}
 
 /**
  * The whole published guide, via the one nested GROQ query. Pages that
- * call this should also set `export const revalidate = 300`. That timer
- * is the fallback; `app/api/revalidate` refreshes the same cache tag when
+ * call this should also set `export const revalidate` to
+ * `GUIDE_REVALIDATE_SECONDS`. That timer is the fallback;
+ * `app/api/revalidate` refreshes the same cache tag when
  * Studio content is saved. See docs/backend-strategy.md §13.
  *
  * Wrapped in React `cache()` so multiple callers on the same request
@@ -25,7 +26,7 @@ export type {GuidePayload}
  */
 export const getGuide = cache(async (): Promise<GuidePayload> => {
   const data = (await withTransientRetries(() =>
-    client.fetch(GUIDE_QUERY, {}, {useCdn: false, next: {revalidate: 300, tags: [GUIDE_CACHE_TAG]}}),
+    client.fetch(GUIDE_QUERY, {}, {useCdn: false, next: {revalidate: GUIDE_REVALIDATE_SECONDS, tags: [GUIDE_CACHE_TAG]}}),
   )) as {
     regions: GuidePayload['regions'] | null
     specialDistricts: GuidePayload['specialDistricts'] | null

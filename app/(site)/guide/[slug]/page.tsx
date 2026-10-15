@@ -11,13 +11,14 @@ import {expandableContentKind} from '@/lib/contentStatus'
 import {SITE_NAME, TAP_HINT, TAP_HINT_MEASURE, guideSnippet} from '@/lib/copy'
 import {districtsOnCityPage} from '@/lib/districts'
 import {getGuide} from '@/lib/guide'
+import {shellModel} from '@/lib/shellPayload'
 import {guidePageTopics} from '@/lib/guideSearch'
 import {TIER_LABELS} from '@/lib/labels'
 import {hasSlug, regionBySlug} from '@/lib/regions'
 import {breadcrumbStructuredData} from '@/lib/seo'
 import {resolvedElectionName, resolvedTrustStatement} from '@/lib/siteSettings'
 
-export const revalidate = 300
+export const revalidate = 3600
 
 interface RegionPageProps {
   params: Promise<{slug: string}>
@@ -57,8 +58,7 @@ export default async function RegionPage({params}: RegionPageProps) {
     <>
       <JsonLd data={breadcrumbStructuredData(region.title, `/guide/${slug}`)} />
       <GuideShell
-        regions={regions}
-        districts={specialDistricts}
+        model={shellModel(regions, specialDistricts)}
         title={region.title}
         crumb={TIER_LABELS[region.tier]}
         activeSlug={slug}

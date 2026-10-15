@@ -3,6 +3,7 @@ import type {Metadata} from 'next'
 import {Landing} from '@/components/Landing'
 import {EMPTY_GUIDE_COPY} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
+import {homeLinks} from '@/lib/shellPayload'
 import {resolvedDisclaimer, resolvedHomeCopy, resolvedSampleBallotUrl} from '@/lib/siteSettings'
 
 import styles from './page.module.css'
@@ -11,8 +12,8 @@ export const metadata: Metadata = {
   alternates: {canonical: '/'},
 }
 
-// 5-minute ISR fallback. The Sanity webhook also revalidates this page on publish.
-export const revalidate = 300
+// Hourly fallback. The Sanity webhook refreshes this page on publish.
+export const revalidate = 3600
 
 export default async function LandingPage() {
   const {regions, settings} = await getGuide()
@@ -23,7 +24,7 @@ export default async function LandingPage() {
 
   return (
     <Landing
-      regions={regions}
+      links={homeLinks(regions)}
       sampleBallotUrl={resolvedSampleBallotUrl(settings)}
       disclaimer={resolvedDisclaimer(settings)}
       home={resolvedHomeCopy(settings)}

@@ -57,14 +57,13 @@ import {
   VOTE_EARLY_HREF,
   VOTE_EARLY_LABEL,
 } from '@/lib/copy'
-import {isLosAngelesCity, navCities, preferredGuideHref, regionByTier} from '@/lib/regions'
+import type {HomeLinks} from '@/lib/shellPayload'
 import type {ResolvedHomeCopy} from '@/lib/siteSettings'
-import type {GuideRegion} from '@/lib/types'
 
 import styles from './Landing.module.css'
 
 interface LandingProps {
-  regions: GuideRegion[]
+  links: HomeLinks
   sampleBallotUrl: string | null
   disclaimer: string
   home: ResolvedHomeCopy
@@ -102,16 +101,12 @@ const SOCIAL_LINKS = [
   {href: LINKEDIN_HREF, label: 'LA Forward on LinkedIn', name: 'linkedin' as const, brand: styles.socialLinkedin},
 ]
 
-export function Landing({regions, sampleBallotUrl, disclaimer, home}: LandingProps) {
+export function Landing({links, sampleBallotUrl, disclaimer, home}: LandingProps) {
   const router = useRouter()
   const {lookupAddress, status} = useMatch()
   const [heroFailed, setHeroFailed] = useState(false)
 
-  const stateRegion = regionByTier(regions, 'state')
-  const countyRegion = regionByTier(regions, 'county')
-  const laCity = regions.find(isLosAngelesCity)
-  const hasCities = navCities(regions).length > 0
-  const guideHref = preferredGuideHref(regions)
+  const {state: stateRegion, county: countyRegion, laCity, hasCities, guideHref} = links
 
   async function handleAddressSelected(address: string) {
     const destination = await lookupAddress(address)

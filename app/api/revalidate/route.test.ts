@@ -93,6 +93,7 @@ describe('POST /api/revalidate', () => {
       expect(revalidatePath).toHaveBeenCalledWith('/ballot')
       expect(revalidatePath).toHaveBeenCalledWith('/outside')
       expect(revalidatePath).toHaveBeenCalledWith('/guide/[slug]', 'page')
+      expect(revalidatePath).toHaveBeenCalledWith('/districts/[slug]', 'page')
     },
     10000,
   )

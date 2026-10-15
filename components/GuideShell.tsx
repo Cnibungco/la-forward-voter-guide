@@ -6,16 +6,13 @@ import {BackToTop, GUIDE_TOP_ID} from '@/components/BackToTop'
 import {GuideNav} from '@/components/GuideNav'
 import {PageNav} from '@/components/PageNav'
 import {CLOSE_CITY_LIST_LABEL, JUMP_TO_LABEL, OPEN_CITY_LIST_LABEL} from '@/lib/copy'
-import {adjacentDistricts} from '@/lib/districts'
 import {revealGuideAnchor} from '@/lib/guideSearch'
-import {adjacentRegions} from '@/lib/regions'
-import type {GuideDistrict, GuideRegion} from '@/lib/types'
+import type {ShellModel, ShellPlace} from '@/lib/shellPayload'
 
 import styles from './GuideShell.module.css'
 
 interface GuideShellProps {
-  regions: GuideRegion[]
-  districts?: GuideDistrict[]
+  model: ShellModel
   title: string
   crumb?: string
   activeSlug?: string | null
@@ -29,9 +26,15 @@ interface GuideShellProps {
   showBackToTop?: boolean
 }
 
+function neighbors(places: ShellPlace[], slug: string | null | undefined): {prev: ShellPlace | null; next: ShellPlace | null} {
+  if (!slug) return {prev: null, next: null}
+  const index = places.findIndex((place) => place.slug === slug)
+  if (index === -1) return {prev: null, next: null}
+  return {prev: places[index - 1] ?? null, next: places[index + 1] ?? null}
+}
+
 export function GuideShell({
-  regions,
-  districts = [],
+  model,
   title,
   crumb,
   activeSlug,
@@ -47,10 +50,10 @@ export function GuideShell({
   const drawerRef = useRef<HTMLElement>(null)
   const drawerWasOpen = useRef(false)
   const hrefBase = pageNavScope === 'districts' ? '/districts' : '/guide'
-  const {prev, next} =
-    pageNavScope === 'districts'
-      ? adjacentDistricts(districts, showPageNav ? activeSlug : null)
-      : adjacentRegions(regions, showPageNav ? activeSlug : null)
+  const {prev, next} = neighbors(
+    pageNavScope === 'districts' ? model.districts : [...model.stateCounty, ...model.cities],
+    showPageNav ? activeSlug : null,
+  )
   const activeHref = activeSlug ? `${hrefBase}/${activeSlug}` : null
 
   function closeDrawer() {
@@ -117,8 +120,7 @@ export function GuideShell({
       <div className={styles.body}>
         <nav className={styles.rail} aria-label="Jurisdictions">
           <GuideNav
-            regions={regions}
-            districts={districts}
+            model={model}
             activeHref={activeHref}
             search={search}
             onSearch={setSearch}
@@ -142,8 +144,7 @@ export function GuideShell({
               </div>
               <div className={styles.drawerNav}>
                 <GuideNav
-                  regions={regions}
-                  districts={districts}
+                  model={model}
                   activeHref={activeHref}
                   search={search}
                   onSearch={setSearch}

@@ -12,7 +12,7 @@ alwaysApply: false
   confirmed decision, see `docs/backend-strategy.md` §3. `getGuide()`
   returns `{regions, settings}` and is wrapped in React `cache()` so
   multiple calls on the same request share one fetch.
-- Use `export const revalidate = 300` (ISR) on pages that fetch guide
+- Use `export const revalidate = 3600` (ISR) on pages that fetch guide
   content — not `force-dynamic`. That timer is the fallback.
   `app/api/revalidate/route.ts` refreshes the guide when Studio content
   is saved. Keep both. See docs/backend-strategy.md §13.

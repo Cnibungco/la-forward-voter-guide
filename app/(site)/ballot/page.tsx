@@ -5,7 +5,7 @@ import {guidePageDescription} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
 import {resolvedElectionName, resolvedTrustStatement} from '@/lib/siteSettings'
 
-export const revalidate = 300
+export const revalidate = 3600
 
 export async function generateMetadata(): Promise<Metadata> {
   const {settings} = await getGuide()

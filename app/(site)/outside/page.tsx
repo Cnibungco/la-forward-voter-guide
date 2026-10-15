@@ -6,12 +6,13 @@ import {GuideShell} from '@/components/GuideShell'
 import {Methodology} from '@/components/Methodology'
 import {OUTSIDE_BODY, OUTSIDE_EYEBROW, OUTSIDE_TITLE, SAMPLE_BALLOT_LABEL, guidePageDescription} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
+import {shellModel} from '@/lib/shellPayload'
 import {isLosAngelesCity, regionByTier} from '@/lib/regions'
 import {resolvedElectionName, resolvedSampleBallotUrl, resolvedTrustStatement} from '@/lib/siteSettings'
 
 import styles from './outside.module.css'
 
-export const revalidate = 300
+export const revalidate = 3600
 
 export async function generateMetadata(): Promise<Metadata> {
   const {settings} = await getGuide()
@@ -31,8 +32,7 @@ export default async function OutsidePage() {
 
   return (
     <GuideShell
-      regions={regions}
-      districts={specialDistricts}
+      model={shellModel(regions, specialDistricts)}
       title="Outside coverage"
       heading={
         <>

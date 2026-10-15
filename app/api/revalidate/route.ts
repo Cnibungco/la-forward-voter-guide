@@ -4,6 +4,7 @@ import {parseBody} from 'next-sanity/webhook'
 
 import {
   GUIDE_CACHE_TAG,
+  GUIDE_DISTRICT_PATH,
   GUIDE_DYNAMIC_PATH,
   GUIDE_PATHS,
   shouldRefreshGuide,
@@ -18,7 +19,7 @@ import {
  * `parseBody` checks the `sanity-webhook-signature` header against
  * `SANITY_REVALIDATE_SECRET` and, on a valid signature, waits briefly so
  * the Content Lake has caught up before the next `getGuide()` read.
- * The 5-minute ISR on the guide pages stays as the fallback.
+ * The hourly ISR on the guide pages stays as the fallback.
  */
 export async function POST(req: NextRequest) {
   const secret = process.env.SANITY_REVALIDATE_SECRET?.trim()
@@ -48,6 +49,7 @@ export async function POST(req: NextRequest) {
     revalidatePath(path)
   }
   revalidatePath(GUIDE_DYNAMIC_PATH, 'page')
+  revalidatePath(GUIDE_DISTRICT_PATH, 'page')
 
   return NextResponse.json({revalidated: true})
 }

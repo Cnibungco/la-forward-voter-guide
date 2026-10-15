@@ -41,6 +41,7 @@ export function EntryCard({entry, label}: EntryCardProps) {
             width={photoSize?.width ?? 819}
             height={photoSize?.height ?? 1024}
             sizes="(max-width: 480px) 100vw, 249px"
+            unoptimized
           />
         )}
         {entry.reasoning ? (

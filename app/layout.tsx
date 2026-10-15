@@ -29,7 +29,7 @@ const bodyFont = Work_Sans({
   weight: ['400', '500', '600', '700'],
 })
 
-export const revalidate = 300
+export const revalidate = 3600
 
 export async function generateMetadata(): Promise<Metadata> {
   const {settings} = await getGuide()

@@ -1,10 +1,19 @@
 /** Data-cache tag for the one guide query. Invalidated by the Sanity webhook. */
 export const GUIDE_CACHE_TAG = 'guide'
 
-/** Static guide pages. Dynamic region pages use `GUIDE_DYNAMIC_PATH`. */
+/**
+ * How long a cached page may sit if the Sanity webhook never arrives.
+ * A successful publish refreshes immediately via `app/api/revalidate`.
+ * Page files set `export const revalidate` to this same number.
+ */
+export const GUIDE_REVALIDATE_SECONDS = 60 * 60
+
+/** Static guide pages. Dynamic region and district pages use the paths below. */
 export const GUIDE_PATHS = ['/', '/cities', '/ballot', '/outside'] as const
 
 export const GUIDE_DYNAMIC_PATH = '/guide/[slug]'
+
+export const GUIDE_DISTRICT_PATH = '/districts/[slug]'
 
 const GUIDE_DOCUMENT_TYPES = new Set([
   'region',
@@ -34,7 +43,7 @@ export type GuideWebhookBody = {
  * pending or published content do.
  *
  * Unknown or missing types refresh anyway, so a projection mistake hides
- * content for at most the 5-minute ISR fallback.
+ * content for at most the hourly ISR fallback.
  */
 export function shouldRefreshGuide(body: GuideWebhookBody | null): boolean {
   if (!body || typeof body !== 'object') return true

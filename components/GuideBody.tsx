@@ -28,6 +28,7 @@ import {
 } from '@/lib/copy'
 import {BALLOT_TIER_LABELS, SCHOOL_DISTRICTS_LABEL} from '@/lib/labels'
 import {regionMatchingCitySlug} from '@/lib/regions'
+import {shellModel} from '@/lib/shellPayload'
 import type {GuideDistrict, GuideRegion, RegionTier} from '@/lib/types'
 
 import styles from './GuideBody.module.css'
@@ -60,6 +61,7 @@ export function GuideBody({regions, districts = [], trustStatement}: GuideBodyPr
     if (match.precision === 'none') router.replace('/outside')
   }, [match, ready, router])
 
+  const model = useMemo(() => shellModel(regions, districts), [regions, districts])
   const isFiltering = match !== null && match.precision !== 'none' && !showFullGuide
 
   const effectiveRegions = useMemo(() => {
@@ -85,8 +87,7 @@ export function GuideBody({regions, districts = [], trustStatement}: GuideBodyPr
 
   return (
     <GuideShell
-      regions={regions}
-      districts={districts}
+      model={model}
       title="Your ballot"
       crumb="Your ballot"
       activeSlug={matchedCity?.slug ?? match.citySlug}

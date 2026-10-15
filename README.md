@@ -146,8 +146,9 @@ independent of Sanity's own draft documents:
 - `published` — rating/position and the write-up are required and shown. A measure write-up is one text field, not separate pros and cons.
 
 New items default to `pending`. Flip to `published` in Studio when the
-write-up is ready. The public site can take up to 5 minutes to catch up
-(ISR). Measures without a finished write-up should stay `pending` so they
+write-up is ready. A publish shows on the public site within a few
+seconds. If that hook is down, the site catches up within an hour.
+Measures without a finished write-up should stay `pending` so they
 render the coming-soon row instead of an empty accordion.
 
 ## Setup

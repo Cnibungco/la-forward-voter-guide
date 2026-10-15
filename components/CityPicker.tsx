@@ -5,16 +5,14 @@ import {useState} from 'react'
 
 import {SearchIcon} from '@/components/SearchIcon'
 import {CITIES_BODY, CITIES_EMPTY, CITIES_NONE, FIND_YOUR_CITY_LABEL} from '@/lib/copy'
-import {navCities} from '@/lib/regions'
-import type {GuideRegion} from '@/lib/types'
+import type {ShellPlace} from '@/lib/shellPayload'
 
 import styles from './CityPicker.module.css'
 
-export function CityPicker({regions}: {regions: GuideRegion[]}) {
+export function CityPicker({cities: allCities}: {cities: ShellPlace[]}) {
   const [search, setSearch] = useState('')
   const query = search.trim().toLowerCase()
-  const allCities = navCities(regions)
-  const cities = allCities.filter((region) => !query || region.title.toLowerCase().includes(query))
+  const cities = allCities.filter((city) => !query || city.title.toLowerCase().includes(query))
 
   if (allCities.length === 0) {
     return <p className={styles.empty}>{CITIES_NONE}</p>
@@ -41,7 +39,7 @@ export function CityPicker({regions}: {regions: GuideRegion[]}) {
       ) : (
         <ul className={styles.list}>
           {cities.map((city) => (
-            <li key={city._id}>
+            <li key={city.id}>
               <Link href={`/guide/${city.slug}`} className={styles.item}>
                 {city.title}
               </Link>

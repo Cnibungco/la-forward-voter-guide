@@ -4,10 +4,11 @@ import {CityPicker} from '@/components/CityPicker'
 import {GuideShell} from '@/components/GuideShell'
 import {CITIES_TITLE, guidePageDescription} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
+import {shellModel} from '@/lib/shellPayload'
 import {TIER_LABELS} from '@/lib/labels'
 import {resolvedElectionName} from '@/lib/siteSettings'
 
-export const revalidate = 300
+export const revalidate = 3600
 
 export async function generateMetadata(): Promise<Metadata> {
   const {settings} = await getGuide()
@@ -20,10 +21,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function CitiesPage() {
   const {regions, specialDistricts} = await getGuide()
+  const model = shellModel(regions, specialDistricts)
 
   return (
-    <GuideShell regions={regions} districts={specialDistricts} title={CITIES_TITLE} crumb={TIER_LABELS.city}>
-      <CityPicker regions={regions} />
+    <GuideShell model={model} title={CITIES_TITLE} crumb={TIER_LABELS.city}>
+      <CityPicker cities={model.cities} />
     </GuideShell>
   )
 }
