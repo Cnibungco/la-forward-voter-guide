@@ -281,8 +281,7 @@ boundary-file edit fails a test. District matches may be kept in this
 tab's session storage; the street address is not.
 
 Other suites: sidebar order and previous/next helpers (`lib/regions.test.ts`);
-when Back to top appears (`lib/contentLength.test.ts`); analytics URL redaction
-(`lib/analytics.test.ts`); rating copy and icons, pending vs
+when Back to top appears (`lib/contentLength.test.ts`); rating copy and icons, pending vs
 published display, address widget wrapper, payload defaults, Site Settings
 fallbacks, and transient fetch retries.
 

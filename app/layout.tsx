@@ -7,7 +7,6 @@ import {DonatePrompt} from '@/components/DonatePrompt'
 import {JsonLd} from '@/components/JsonLd'
 import {MatchProvider} from '@/components/MatchProvider'
 import {SiteHeader} from '@/components/SiteHeader'
-import {VercelAnalytics} from '@/components/VercelAnalytics'
 import {SITE_NAME, SITE_URL, headerTagline, siteDescription, siteTitle} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
 import {siteStructuredData} from '@/lib/seo'
@@ -70,7 +69,6 @@ export default async function RootLayout({children}: {children: React.ReactNode}
         <footer>
           <CampaignDisclaimer />
         </footer>
-        <VercelAnalytics />
       </body>
       {gaId && process.env.NODE_ENV === 'production' && (
         <GoogleAnalytics gaId={gaId} />
