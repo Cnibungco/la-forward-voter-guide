@@ -5,6 +5,8 @@ import {
   DEFAULT_DISCLAIMER,
   DONATE_ASK,
   ELECTION_NAME_FALLBACK,
+  siteDescription,
+  siteTitle,
   KEY_DATES,
   LANDING_ABOUT_BODY,
   LANDING_ABOUT_SUMMARY,
@@ -21,6 +23,16 @@ export function resolvedDisclaimer(settings: SiteSettings | null | undefined): s
 /** Blank or missing election name keeps the current cycle label in copy.ts. */
 export function resolvedElectionName(settings: SiteSettings | null | undefined): string {
   return settings?.electionName?.trim() || ELECTION_NAME_FALLBACK
+}
+
+/** Blank SEO title keeps the built-in homepage title, which includes the election name. */
+export function resolvedSeoTitle(settings: SiteSettings | null | undefined): string {
+  return settings?.seoTitle?.trim() || siteTitle(resolvedElectionName(settings))
+}
+
+/** Blank SEO description keeps the built-in homepage description. */
+export function resolvedSeoDescription(settings: SiteSettings | null | undefined): string {
+  return settings?.seoDescription?.trim() || siteDescription()
 }
 
 export function resolvedSampleBallotUrl(settings: SiteSettings | null | undefined): string | null {

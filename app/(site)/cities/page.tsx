@@ -2,7 +2,7 @@ import type {Metadata} from 'next'
 
 import {CityPicker} from '@/components/CityPicker'
 import {GuideShell} from '@/components/GuideShell'
-import {CITIES_TITLE, guidePageDescription} from '@/lib/copy'
+import {CITIES_TITLE, guidePageDescription, guidePageTitle} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
 import {shellModel} from '@/lib/shellPayload'
 import {TIER_LABELS} from '@/lib/labels'
@@ -13,8 +13,8 @@ export const revalidate = 3600
 export async function generateMetadata(): Promise<Metadata> {
   const {settings} = await getGuide()
   return {
-    title: 'Find your city',
-    description: guidePageDescription('Find your city', resolvedElectionName(settings)),
+    title: {absolute: guidePageTitle('Los Angeles Cities', resolvedElectionName(settings))},
+    description: guidePageDescription('Los Angeles cities', resolvedElectionName(settings)),
     alternates: {canonical: '/cities'},
   }
 }

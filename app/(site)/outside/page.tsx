@@ -4,7 +4,7 @@ import Link from 'next/link'
 import {ChangeAddress} from '@/components/ChangeAddress'
 import {GuideShell} from '@/components/GuideShell'
 import {Methodology} from '@/components/Methodology'
-import {OUTSIDE_BODY, OUTSIDE_EYEBROW, OUTSIDE_TITLE, SAMPLE_BALLOT_LABEL, guidePageDescription} from '@/lib/copy'
+import {OUTSIDE_BODY, OUTSIDE_EYEBROW, OUTSIDE_TITLE, SAMPLE_BALLOT_LABEL, guidePageDescription, guidePageTitle} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
 import {shellModel} from '@/lib/shellPayload'
 import {isLosAngelesCity, regionByTier} from '@/lib/regions'
@@ -17,7 +17,7 @@ export const revalidate = 3600
 export async function generateMetadata(): Promise<Metadata> {
   const {settings} = await getGuide()
   return {
-    title: 'Outside coverage',
+    title: {absolute: guidePageTitle('Statewide and Los Angeles County', resolvedElectionName(settings))},
     description: guidePageDescription('Statewide and Los Angeles County races', resolvedElectionName(settings)),
     alternates: {canonical: '/outside'},
   }

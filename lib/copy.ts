@@ -15,21 +15,29 @@ export const ELECTION_NAME_FALLBACK = 'November 2026'
 
 export const SITE_NAME = 'LA Forward Voter Guide'
 
-/** Text beside the logo. `electionName` is the short label from Site Settings. */
+/** Homepage heading, and the text beside the logo on other pages. */
 export function headerTagline(electionName: string): string {
-  return `${electionName} LA Progressive Voter Guide`
+  return `${electionName} Los Angeles Progressive Voter Guide`
 }
 
 export const SITE_URL = 'https://laforwardguide.org'
 
-/** Homepage document title. Kept near 60 characters when `electionName` is short. */
+/**
+ * Homepage document title. The date comes from Site Settings.
+ * "General Election" is this cycle's wording; change it in code for a primary.
+ */
 export function siteTitle(electionName: string): string {
-  return `Los Angeles, CA Progressive Voter Guide | ${electionName}`
+  return `Los Angeles Progressive Voter Guide - ${electionName} - Comprehensive General Election Ballot — LA Forward`
 }
 
-/** Homepage search snippet. "election" stays here so a primary is not called a general election. */
-export function siteDescription(electionName: string): string {
-  return `The Los Angeles, California Progressive Voter Guide for the ${electionName} election by LA Forward. Endorsements and analysis for races and measures.`
+/** Homepage search snippet. The description that ranked on the old Squarespace page. */
+export function siteDescription(): string {
+  return "Welcome to LA Forward's comprehensive progressive voter guide with detailed recommendations of measures and candidates for council, legislature, and judge for Los Angeles County, California, and dozens of cities including LA, Santa Clarita, Burbank, Santa Monica, Culver City, West Hollywood, Alhambra, West Covina, Pasadena, Palmdale, and more."
+}
+
+/** Browser title for a city, district, or index page. Not the on-page heading. */
+export function guidePageTitle(subject: string, electionName: string): string {
+  return `${subject} Progressive Voter Guide - ${electionName} — LA Forward`
 }
 
 /** Meta description for an inner page. `subject` is that page's own name. */

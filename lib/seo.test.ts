@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {ELECTION_NAME_FALLBACK, guidePageDescription, guideSnippet, headerTagline, siteDescription, siteTitle} from '@/lib/copy'
+import {ELECTION_NAME_FALLBACK, guidePageDescription, guidePageTitle, guideSnippet, headerTagline, siteDescription, siteTitle} from '@/lib/copy'
 import {
   absoluteUrl,
   breadcrumbStructuredData,
@@ -34,7 +34,7 @@ describe('publicGuidePaths', () => {
 
 describe('siteStructuredData', () => {
   it('names LA Forward as the publisher and links its profiles', () => {
-    const description = siteDescription(ELECTION_NAME_FALLBACK)
+    const description = siteDescription()
     const graph = siteStructuredData(description)['@graph']
     const org = graph[0]
     const site = graph[1]
@@ -91,19 +91,28 @@ describe('jsonLdHtml', () => {
 
 describe('site title and snippets', () => {
   it('puts the election name in the header tagline', () => {
-    expect(headerTagline('November 2026')).toBe('November 2026 LA Progressive Voter Guide')
-    expect(headerTagline('March 2028')).toBe('March 2028 LA Progressive Voter Guide')
+    expect(headerTagline('November 2026')).toBe('November 2026 Los Angeles Progressive Voter Guide')
+    expect(headerTagline('March 2028')).toBe('March 2028 Los Angeles Progressive Voter Guide')
   })
 
-  it('keeps the homepage title near 60 characters', () => {
-    const title = siteTitle(ELECTION_NAME_FALLBACK)
-    expect(title).toBe('Los Angeles, CA Progressive Voter Guide | November 2026')
-    expect(title.length).toBeLessThanOrEqual(60)
+  it('uses the Squarespace homepage title and keeps the election name editable', () => {
+    expect(siteTitle(ELECTION_NAME_FALLBACK)).toBe(
+      'Los Angeles Progressive Voter Guide - November 2026 - Comprehensive General Election Ballot — LA Forward',
+    )
+    expect(siteTitle('March 2028')).toBe(
+      'Los Angeles Progressive Voter Guide - March 2028 - Comprehensive General Election Ballot — LA Forward',
+    )
   })
 
-  it('names the election without calling every cycle a general election', () => {
-    expect(siteDescription('March 2028')).toBe(
-      'The Los Angeles, California Progressive Voter Guide for the March 2028 election by LA Forward. Endorsements and analysis for races and measures.',
+  it('names the place and election on inner-page titles', () => {
+    expect(guidePageTitle('Burbank', 'November 2026')).toBe(
+      'Burbank Progressive Voter Guide - November 2026 — LA Forward',
+    )
+  })
+
+  it('uses the Squarespace homepage description', () => {
+    expect(siteDescription()).toBe(
+      "Welcome to LA Forward's comprehensive progressive voter guide with detailed recommendations of measures and candidates for council, legislature, and judge for Los Angeles County, California, and dozens of cities including LA, Santa Clarita, Burbank, Santa Monica, Culver City, West Hollywood, Alhambra, West Covina, Pasadena, Palmdale, and more.",
     )
   })
 

@@ -51,6 +51,10 @@ export interface SiteSettings {
   sampleBallotUrl: string | null
   /** Short cycle label, such as "November 2026". Blank uses the app fallback. */
   electionName?: string | null
+  /** Homepage Google title. Blank uses the built-in title. */
+  seoTitle?: string | null
+  /** Homepage Google description. Blank uses the built-in description. */
+  seoDescription?: string | null
   updatedAt?: string | null
   announcement?: string | null
   announcementLinkLabel?: string | null

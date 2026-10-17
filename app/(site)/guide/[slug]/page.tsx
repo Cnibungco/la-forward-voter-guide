@@ -8,7 +8,7 @@ import {Methodology} from '@/components/Methodology'
 import {RegionSection} from '@/components/RegionSection'
 import {TapHint} from '@/components/TapHint'
 import {expandableContentKind} from '@/lib/contentStatus'
-import {SITE_NAME, TAP_HINT, TAP_HINT_MEASURE, guideSnippet} from '@/lib/copy'
+import {SITE_NAME, TAP_HINT, TAP_HINT_MEASURE, guidePageTitle, guideSnippet} from '@/lib/copy'
 import {districtsOnCityPage} from '@/lib/districts'
 import {getGuide} from '@/lib/guide'
 import {shellModel} from '@/lib/shellPayload'
@@ -36,7 +36,7 @@ export async function generateMetadata({params}: RegionPageProps) {
   if (!region?.slug) return {title: {absolute: SITE_NAME}}
   const topics = guidePageTopics(region, specialDistricts)
   return {
-    title: region.title,
+    title: {absolute: guidePageTitle(region.title, resolvedElectionName(settings))},
     description: guideSnippet(
       region.title,
       resolvedElectionName(settings),

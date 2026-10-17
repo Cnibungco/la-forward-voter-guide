@@ -21,6 +21,8 @@ import {
   resolvedElectionName,
   resolvedKeyDates,
   resolvedSampleBallotUrl,
+  resolvedSeoDescription,
+  resolvedSeoTitle,
   resolvedTrustStatement,
   trustCalloutAfter,
 } from '@/lib/siteSettings'
@@ -176,6 +178,31 @@ describe('resolvedElectionName', () => {
 
   it('uses the CMS label after trimming', () => {
     expect(resolvedElectionName({...emptySettings, electionName: '  March 2028  '})).toBe('March 2028')
+  })
+})
+
+describe('resolved SEO title and description', () => {
+  it('falls back to the built-in homepage copy', () => {
+    expect(resolvedSeoTitle(null)).toBe(
+      'Los Angeles Progressive Voter Guide - November 2026 - Comprehensive General Election Ballot — LA Forward',
+    )
+    expect(resolvedSeoTitle({...emptySettings, seoTitle: '  '})).toBe(
+      'Los Angeles Progressive Voter Guide - November 2026 - Comprehensive General Election Ballot — LA Forward',
+    )
+    expect(resolvedSeoDescription(null)).toContain('comprehensive progressive voter guide')
+  })
+
+  it('uses the CMS strings after trimming', () => {
+    expect(resolvedSeoTitle({...emptySettings, seoTitle: '  Custom title  '})).toBe('Custom title')
+    expect(resolvedSeoDescription({...emptySettings, seoDescription: '  Custom description.  '})).toBe(
+      'Custom description.',
+    )
+  })
+
+  it('puts a custom election name in the fallback title', () => {
+    expect(resolvedSeoTitle({...emptySettings, electionName: 'March 2028'})).toBe(
+      'Los Angeles Progressive Voter Guide - March 2028 - Comprehensive General Election Ballot — LA Forward',
+    )
   })
 })
 

@@ -142,6 +142,8 @@ export const GUIDE_QUERY = defineQuery(`{
     donateAsk,
     campaignDonor,
     electionName,
+    seoTitle,
+    seoDescription,
     "updatedAt": _updatedAt
   }
 }`)

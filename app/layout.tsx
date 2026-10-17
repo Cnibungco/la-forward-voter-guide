@@ -7,10 +7,10 @@ import {DonatePrompt} from '@/components/DonatePrompt'
 import {JsonLd} from '@/components/JsonLd'
 import {MatchProvider} from '@/components/MatchProvider'
 import {SiteHeader} from '@/components/SiteHeader'
-import {SITE_NAME, SITE_URL, headerTagline, siteDescription, siteTitle} from '@/lib/copy'
+import {SITE_NAME, SITE_URL, headerTagline} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
 import {siteStructuredData} from '@/lib/seo'
-import {resolvedElectionName} from '@/lib/siteSettings'
+import {resolvedElectionName, resolvedSeoDescription, resolvedSeoTitle} from '@/lib/siteSettings'
 
 import './globals.css'
 
@@ -31,14 +31,15 @@ export const revalidate = 3600
 
 export async function generateMetadata(): Promise<Metadata> {
   const {settings} = await getGuide()
-  const electionName = resolvedElectionName(settings)
+  const title = resolvedSeoTitle(settings)
+  const description = resolvedSeoDescription(settings)
   return {
     metadataBase: new URL(SITE_URL),
     title: {
-      default: siteTitle(electionName),
+      default: title,
       template: `%s · ${SITE_NAME}`,
     },
-    description: siteDescription(electionName),
+    description,
     applicationName: SITE_NAME,
     openGraph: {
       siteName: SITE_NAME,
@@ -54,7 +55,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const {settings} = await getGuide()
   const electionName = resolvedElectionName(settings)
-  const description = siteDescription(electionName)
+  const description = resolvedSeoDescription(settings)
 
   return (
     <html lang="en" className={`${headingFont.variable} ${bodyFont.variable}`} suppressHydrationWarning>

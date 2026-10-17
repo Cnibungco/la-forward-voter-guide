@@ -7,7 +7,7 @@ import {GuideShell} from '@/components/GuideShell'
 import {Methodology} from '@/components/Methodology'
 import {TapHint} from '@/components/TapHint'
 import {expandableContentKind} from '@/lib/contentStatus'
-import {SITE_NAME, TAP_HINT, TAP_HINT_MEASURE, guideSnippet} from '@/lib/copy'
+import {SITE_NAME, TAP_HINT, TAP_HINT_MEASURE, guidePageTitle, guideSnippet} from '@/lib/copy'
 import {districtBySlug, hasDistrictSlug} from '@/lib/districts'
 import {getGuide} from '@/lib/guide'
 import {shellModel} from '@/lib/shellPayload'
@@ -34,7 +34,7 @@ export async function generateMetadata({params}: DistrictPageProps) {
   if (!district?.slug) return {title: {absolute: SITE_NAME}}
   const topics = pageTopics(district)
   return {
-    title: district.title,
+    title: {absolute: guidePageTitle(district.title, resolvedElectionName(settings))},
     description: guideSnippet(
       district.title,
       resolvedElectionName(settings),
