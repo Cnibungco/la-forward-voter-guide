@@ -22,8 +22,7 @@ import {
   BALLOT_FULL_COPY,
   SHOW_EVERYTHING_LABEL,
   SHOW_ONLY_MY_BALLOT_LABEL,
-  TAP_HINT,
-  TAP_HINT_MEASURE,
+  TAP_HINT_BALLOT,
   ballotCityImprecision,
 } from '@/lib/copy'
 import {BALLOT_TIER_LABELS, SCHOOL_DISTRICTS_LABEL} from '@/lib/labels'
@@ -89,7 +88,6 @@ export function GuideBody({regions, districts = [], trustStatement}: GuideBodyPr
     <GuideShell
       model={model}
       title="Your ballot"
-      crumb="Your ballot"
       activeSlug={matchedCity?.slug ?? match.citySlug}
       showBackToTop
     >
@@ -124,7 +122,7 @@ export function GuideBody({regions, districts = [], trustStatement}: GuideBodyPr
 
       <Methodology trustStatement={trustStatement} />
       <CompactLegend />
-      {hintKind && <TapHint>{hintKind === 'measure' ? TAP_HINT_MEASURE : TAP_HINT}</TapHint>}
+      {hintKind && <TapHint>{TAP_HINT_BALLOT}</TapHint>}
 
       {tiers.length === 0 && effectiveDistricts.length === 0 ? (
         <p className={styles.empty}>{BALLOT_EMPTY}</p>

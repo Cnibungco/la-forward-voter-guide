@@ -65,7 +65,7 @@ a.heroCta {
   background: var(--color-surface);
   border: 1.5px solid color-mix(in srgb, var(--color-gold) 70%, white);
   border-radius: 18px;
-  font-size: 14.5px;
+  font-size: 16px;
   line-height: 1.5;
   color: var(--color-ink);
 }
@@ -116,7 +116,7 @@ a.heroCta {
 
 .earlyVoteBody {
   margin: 0 0 14px;
-  font-size: 14.5px;
+  font-size: 16px;
   line-height: 1.5;
   color: var(--color-ink);
 }
@@ -138,7 +138,7 @@ a.heroCta {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-size: 14.5px;
+  font-size: 16px;
   line-height: 1.45;
 }
 
@@ -164,7 +164,7 @@ a.heroCta {
   grid-template-columns: 4.6rem 1fr;
   gap: 16px;
   align-items: start;
-  font-size: 14.5px;
+  font-size: 16px;
   line-height: 1.5;
   color: var(--color-ink);
 }
@@ -184,7 +184,7 @@ a.heroCta {
 }
 
 .electionDay .dateEvent {
-  font-family: var(--font-heading), sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
   font-weight: 800;
   font-size: 16px;
   letter-spacing: 0.02em;
@@ -247,7 +247,7 @@ a.heroCta {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  font-size: 13.5px;
+  font-size: 16px;
   color: var(--color-ink-2);
   line-height: 1.6;
   border-top: 1px solid var(--color-line);
@@ -260,7 +260,7 @@ a.heroCta {
 
 .courage {
   margin: 16px 0 0;
-  font-size: 13.5px;
+  font-size: 16px;
   line-height: 1.5;
   color: var(--color-ink);
 }
@@ -398,7 +398,7 @@ a.heroCta {
 }
 
 .legendSub {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--color-ink-2);
   margin: 0 0 14px;
 }
@@ -418,7 +418,7 @@ a.heroCta {
   flex: 1;
   min-width: 0;
   color: var(--color-on-navy);
-  font-size: 13px;
+  font-size: 16px;
   margin: 0;
 }
 
@@ -537,7 +537,7 @@ a.heroCta {
   .dateRow {
     grid-template-columns: 5.5rem 1fr;
     gap: 24px;
-    font-size: 15px;
+    font-size: 16px;
   }
 
   .dateActions {

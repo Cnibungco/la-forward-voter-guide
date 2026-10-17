@@ -24,12 +24,12 @@
 .statusCopy > p {
   margin: 0;
   max-width: 42rem;
-  font-size: 13.5px;
+  font-size: 16px;
 }
 
 .statusCopy > .addressLine {
   color: var(--color-navy);
-  font-size: 14.5px;
+  font-size: 16px;
 }
 
 .address {

@@ -32,6 +32,9 @@ export function BackToTop() {
   return (
     <p className={styles.wrap}>
       <a href={`#${GUIDE_TOP_ID}`} className={styles.link}>
+        <span className={styles.arrow} aria-hidden="true">
+          ↑
+        </span>
         Back to top
       </a>
     </p>

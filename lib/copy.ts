@@ -280,6 +280,8 @@ export const TAP_HINT = 'Tap a name to read why.'
 
 export const TAP_HINT_MEASURE = 'Tap a Ballot Measure to read why.'
 
+export const TAP_HINT_BALLOT = 'Tap a race/measure to read why.'
+
 export const BALLOT_EMPTY = 'No races or measures match your address in this guide.'
 
 export const SHOW_EVERYTHING_LABEL = 'Show everything'

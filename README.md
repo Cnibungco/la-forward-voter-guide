@@ -107,7 +107,7 @@ Site Settings has a URL).
 
 Official brand hexes live in `app/globals.css` (`#00285a`, `#003da6`,
 `#0681fc`, `#ffa400`, `#ffc845`, `#ffe8b1`). Headings are Barlow Condensed;
-body is Work Sans.
+body is Atkinson Hyperlegible Next.
 
 ## Ratings
 

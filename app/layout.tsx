@@ -1,6 +1,6 @@
 import {GoogleAnalytics} from '@next/third-parties/google'
 import type {Metadata} from 'next'
-import {Barlow_Condensed, Work_Sans} from 'next/font/google'
+import {Atkinson_Hyperlegible_Next, Barlow_Condensed} from 'next/font/google'
 
 import {CampaignDisclaimer} from '@/components/CampaignDisclaimer'
 import {DonatePrompt} from '@/components/DonatePrompt'
@@ -22,10 +22,9 @@ const headingFont = Barlow_Condensed({
   weight: ['600', '700', '800'],
 })
 
-const bodyFont = Work_Sans({
+const bodyFont = Atkinson_Hyperlegible_Next({
   subsets: ['latin'],
   variable: '--font-body',
-  weight: ['400', '500', '600', '700'],
 })
 
 export const revalidate = 3600
