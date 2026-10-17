@@ -59,6 +59,7 @@ body {
   background: var(--color-bg);
   color: var(--color-ink);
   font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 18px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   /* Google Translate offsets <body> when it injects its banner. */
