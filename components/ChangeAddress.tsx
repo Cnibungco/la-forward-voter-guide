@@ -3,7 +3,7 @@
 import {useRouter} from 'next/navigation'
 import {useState} from 'react'
 
-import {AddressLookup} from '@/components/AddressLookup'
+import {AddressLookup, type AddressNotice} from '@/components/AddressLookup'
 import {Cta} from '@/components/Cta'
 import {useMatch} from '@/components/MatchProvider'
 import {
@@ -25,9 +25,11 @@ export function ChangeAddress({appearance = 'link'}: ChangeAddressProps) {
   const {lookupAddress, status} = useMatch()
   const [open, setOpen] = useState(false)
   const [error, setError] = useState(false)
+  const [notice, setNotice] = useState<AddressNotice>(null)
 
   async function handleAddressSelected(address: string) {
     setError(false)
+    setNotice(null)
     const destination = await lookupAddress(address)
     if (destination === 'outside') {
       setOpen(false)
@@ -35,7 +37,9 @@ export function ChangeAddress({appearance = 'link'}: ChangeAddressProps) {
     } else if (destination === 'ballot') {
       setOpen(false)
       router.push('/ballot')
-    } else {
+    } else if (destination === 'incomplete' || destination === 'unmatched') {
+      setNotice(destination)
+    } else if (destination === 'error') {
       setError(true)
     }
   }
@@ -43,6 +47,7 @@ export function ChangeAddress({appearance = 'link'}: ChangeAddressProps) {
   function toggle() {
     setOpen((value) => !value)
     setError(false)
+    setNotice(null)
   }
 
   const label = open ? CANCEL_CHANGE_ADDRESS_LABEL : CHANGE_ADDRESS_LABEL
@@ -60,9 +65,21 @@ export function ChangeAddress({appearance = 'link'}: ChangeAddressProps) {
       )}
       {open && (
         <div className={styles.changePanel}>
-          <AddressLookup onSelect={handleAddressSelected} />
+          <AddressLookup
+            invalid={error}
+            notice={notice}
+            onEdit={() => {
+              setNotice(null)
+              setError(false)
+            }}
+            onSelect={handleAddressSelected}
+          />
           {status === 'loading' && <p className={styles.changeStatus}>{BALLOT_LOOKUP_STATUS}</p>}
-          {error && <p className={styles.changeError}>{BALLOT_CHANGE_ERROR}</p>}
+          {error && (
+            <p className={styles.changeError} role="alert">
+              {BALLOT_CHANGE_ERROR}
+            </p>
+          )}
         </div>
       )}
     </>

@@ -6,8 +6,13 @@ export function isMatchBallotResult(value: unknown): value is MatchBallotResult 
   if (!value || typeof value !== 'object') return false
   const record = value as Record<string, unknown>
   const precision = record.precision
+  const reason = record.reason
+  const reasonOk =
+    reason === undefined ||
+    (precision === 'none' && (reason === 'outside' || reason === 'unmatched' || reason === 'incomplete'))
   return (
     (precision === 'precise' || precision === 'city' || precision === 'none') &&
+    reasonOk &&
     (record.citySlug === null || typeof record.citySlug === 'string') &&
     Array.isArray(record.districtCodes) &&
     record.districtCodes.every((code) => typeof code === 'string')

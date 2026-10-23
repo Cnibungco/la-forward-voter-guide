@@ -6,6 +6,7 @@ import {point} from '@turf/helpers'
 import type {Feature, FeatureCollection, MultiPolygon, Polygon} from 'geojson'
 import {NextResponse} from 'next/server'
 
+import {censusMatchConfirmsHouseNumber, isIncompleteAddress} from '@/lib/geoapifyAddress'
 import type {MatchBallotResult} from '@/lib/types'
 import {slugifyPlaceName} from '@/lib/districtMatching'
 
@@ -153,7 +154,28 @@ function findLayerValue(
   return typeof value === 'string' ? value : null
 }
 
-const NONE_RESULT: MatchBallotResult = {precision: 'none', citySlug: null, districtCodes: []}
+const OUTSIDE_RESULT: MatchBallotResult = {
+  precision: 'none',
+  citySlug: null,
+  districtCodes: [],
+  reason: 'outside',
+}
+const UNMATCHED_RESULT: MatchBallotResult = {
+  precision: 'none',
+  citySlug: null,
+  districtCodes: [],
+  reason: 'unmatched',
+}
+const INCOMPLETE_RESULT: MatchBallotResult = {
+  precision: 'none',
+  citySlug: null,
+  districtCodes: [],
+  reason: 'incomplete',
+}
+
+function lookupFailed() {
+  return NextResponse.json({error: 'lookup failed'}, {status: 503})
+}
 
 export async function POST(request: Request) {
   let address: unknown
@@ -168,6 +190,12 @@ export async function POST(request: Request) {
     return NextResponse.json({error: 'address must be a non-empty string'}, {status: 400})
   }
 
+  // A zip, a street name, or a PO Box is not a failed geocode and it is not
+  // outside LA County. Don't send it to Census.
+  if (isIncompleteAddress(address)) {
+    return NextResponse.json(INCOMPLETE_RESULT)
+  }
+
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), CENSUS_TIMEOUT_MS)
 
@@ -180,25 +208,36 @@ export async function POST(request: Request) {
     url.searchParams.set('format', 'json')
 
     const response = await fetch(url, {signal: controller.signal})
-    if (!response.ok) return NextResponse.json(NONE_RESULT)
+    if (!response.ok) return lookupFailed()
 
     const data = (await response.json()) as {
       result?: {
         addressMatches?: Array<{
+          matchedAddress?: string
           coordinates?: {x: number; y: number}
+          addressComponents?: {fromAddress?: string; toAddress?: string}
           geographies?: Record<string, unknown>
         }>
       }
     }
 
     const match = data.result?.addressMatches?.[0]
-    if (!match?.coordinates || !match.geographies) return NextResponse.json(NONE_RESULT)
+    if (!match?.coordinates || !match.geographies) return NextResponse.json(UNMATCHED_RESULT)
+
+    // A street-level snap, or a match of a different house number, is not
+    // this address. That is "not found", including when the snapped point
+    // happens to sit outside the county.
+    const confirmed = censusMatchConfirmsHouseNumber(address, match.matchedAddress, {
+      from: match.addressComponents?.fromAddress,
+      to: match.addressComponents?.toAddress,
+    })
+    if (!confirmed) return NextResponse.json(UNMATCHED_RESULT)
 
     const countyGeoid = findLayerValue(match.geographies, ['counties'], 'GEOID')
     if (countyGeoid !== LA_COUNTY_GEOID) {
       // Outside LA County — every race/measure in this guide is LA-County
       // scoped, so there's nothing to match against.
-      return NextResponse.json(NONE_RESULT)
+      return NextResponse.json(OUTSIDE_RESULT)
     }
 
     const congressional = findLayerValue(match.geographies, ['congressional', 'district'], 'BASENAME')
@@ -243,7 +282,7 @@ export async function POST(request: Request) {
     // full (it can echo the request), and never the address itself.
     const name = error instanceof Error ? error.name : 'UnknownError'
     console.error(`[match-ballot] ${name} at ${new Date().toISOString()}`)
-    return NextResponse.json(NONE_RESULT)
+    return lookupFailed()
   } finally {
     clearTimeout(timeout)
   }

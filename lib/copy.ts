@@ -234,6 +234,12 @@ export const ADDRESS_PLACEHOLDER = 'Start typing your address'
 
 export const ADDRESS_PICK_HINT = 'Start typing, then tap your address in the list.'
 
+export const ADDRESS_NEED_STREET =
+  'We need a street address with a house number to find your ballot. A zip code or a street name covers more than one set of races. Type the full street address, then tap it in the list.'
+
+export const ADDRESS_NOT_FOUND =
+  "We couldn't find that house number. Check it, then tap the address in the list."
+
 export const ADDRESS_LOOKUP_UNAVAILABLE =
   "Address lookup isn't available right now. You can still browse the guide by city."
 

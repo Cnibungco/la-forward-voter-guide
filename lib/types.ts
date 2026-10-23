@@ -161,8 +161,13 @@ export type GuideSection = GuideRaceGroup | GuideMeasureGroup
  * Response shape for `POST /api/match-ballot` — see
  * docs/address-matching-strategy.md and docs/backend-strategy.md §12.
  *
- * - `precision: "none"` — geocode failed, or the address is outside LA
- *   County. `citySlug`/`districtCodes` are meaningless in this case.
+ * - `precision: "none"` — no ballot. `reason` says which:
+ *   `"outside"` is a street address outside LA County (stored, so Your
+ *   ballot opens the outside page). `"unmatched"` is a house number Census
+ *   could not confirm. `"incomplete"` is a zip, street name, or other line
+ *   with no house number. Those two are not stored. A stored `none` from
+ *   before `reason` existed is treated as outside. `citySlug` and
+ *   `districtCodes` are meaningless whenever precision is none.
  * - `precision: "city"` — matched a city, but that city's own
  *   council-district boundary isn't sourced yet (see
  *   data/boundaries/README.md), so its races/measures render unfiltered.
@@ -172,10 +177,14 @@ export type GuideSection = GuideRaceGroup | GuideMeasureGroup
  *   `app/api/match-ballot/route.ts`), or the address is in unincorporated
  *   LA County (`citySlug: null`, nothing further to resolve).
  */
+export type MatchFailureReason = 'outside' | 'unmatched' | 'incomplete'
+
 export interface MatchBallotResult {
   precision: 'precise' | 'city' | 'none'
   citySlug: string | null
   districtCodes: string[]
+  /** Present when `precision` is `"none"`. Omitted on older stored matches. */
+  reason?: MatchFailureReason
 }
 
 export interface GuideRegion {

@@ -30,6 +30,11 @@
   color: var(--color-navy);
 }
 
+.searchIconError,
+.inputWrap:focus-within .searchIconError {
+  color: var(--color-red);
+}
+
 .autocomplete {
   width: 100%;
 }
@@ -52,6 +57,11 @@
   outline-offset: 2px;
 }
 
+.invalid :global(.geoapify-autocomplete-input),
+.invalid :global(.geoapify-autocomplete-input:focus) {
+  border-color: var(--color-red);
+}
+
 .autocomplete :global(.geoapify-autocomplete-items) {
   border: 1px solid var(--color-line);
   border-radius: 8px;
@@ -67,6 +77,11 @@
 
 .hintEmphasized {
   color: var(--color-navy);
+  font-weight: 600;
+}
+
+.hintZip {
+  color: var(--color-red);
   font-weight: 600;
 }
 

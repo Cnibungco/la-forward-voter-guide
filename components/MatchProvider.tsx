@@ -1,14 +1,15 @@
 'use client'
 
-import {createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode} from 'react'
+import {createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode} from 'react'
 
 import {isMatchBallotResult} from '@/lib/districtMatching'
+import {isIncompleteAddress} from '@/lib/geoapifyAddress'
 import {readStoredMatch, writeStoredMatch} from '@/lib/matchStorage'
 import type {MatchBallotResult} from '@/lib/types'
 
 export type LookupStatus = 'idle' | 'loading' | 'error'
 
-export type LookupDestination = 'ballot' | 'outside' | 'error'
+export type LookupDestination = 'ballot' | 'outside' | 'incomplete' | 'unmatched' | 'error' | 'stale'
 
 interface MatchContextValue {
   match: MatchBallotResult | null
@@ -34,6 +35,7 @@ export function MatchProvider({children}: {children: ReactNode}) {
   const [status, setStatus] = useState<LookupStatus>('idle')
   const [showFullGuide, setShowFullGuide] = useState(false)
   const [ready, setReady] = useState(false)
+  const lookupAbortRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
     const stored = readStoredMatch()
@@ -42,6 +44,20 @@ export function MatchProvider({children}: {children: ReactNode}) {
   }, [])
 
   const lookupAddress = useCallback(async (address: string): Promise<LookupDestination> => {
+    // A newer lookup supersedes this one. The aborted request must not
+    // store a match or navigate after the visitor has moved on.
+    lookupAbortRef.current?.abort()
+    lookupAbortRef.current = null
+
+    // A zip, street name, or PO Box is not outside LA County. Don't send it,
+    // and don't store a "none" match that would open the outside page.
+    if (isIncompleteAddress(address)) {
+      setStatus('idle')
+      return 'incomplete'
+    }
+
+    const controller = new AbortController()
+    lookupAbortRef.current = controller
     setStatus('loading')
     setShowFullGuide(false)
 
@@ -50,16 +66,31 @@ export function MatchProvider({children}: {children: ReactNode}) {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({address}),
+        signal: controller.signal,
       })
-      if (!response.ok) throw new Error('match-ballot request failed')
+      if (controller.signal.aborted) return 'stale'
+      if (!response.ok) {
+        setStatus('error')
+        return 'error'
+      }
       const result: unknown = await response.json()
+      if (controller.signal.aborted) return 'stale'
       if (!isMatchBallotResult(result)) throw new Error('match-ballot response was malformed')
+
+      if (result.precision === 'none' && (result.reason === 'incomplete' || result.reason === 'unmatched')) {
+        setStatus('idle')
+        return result.reason
+      }
+
       setMatch(result)
       setEnteredAddress(address)
       writeStoredMatch(result)
       setStatus('idle')
       return result.precision === 'none' ? 'outside' : 'ballot'
-    } catch {
+    } catch (error) {
+      if (controller.signal.aborted || (error instanceof Error && error.name === 'AbortError')) {
+        return 'stale'
+      }
       setStatus('error')
       return 'error'
     }

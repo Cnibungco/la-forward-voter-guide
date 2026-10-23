@@ -5,7 +5,7 @@ import Link from 'next/link'
 import {useRouter} from 'next/navigation'
 import {Fragment, useState} from 'react'
 
-import {AddressLookup} from '@/components/AddressLookup'
+import {AddressLookup, type AddressNotice} from '@/components/AddressLookup'
 import {Cta} from '@/components/Cta'
 import {useMatch} from '@/components/MatchProvider'
 import {PortableText} from '@/components/PortableText'
@@ -105,13 +105,19 @@ export function Landing({links, sampleBallotUrl, disclaimer, home}: LandingProps
   const router = useRouter()
   const {lookupAddress, status} = useMatch()
   const [heroFailed, setHeroFailed] = useState(false)
+  const [notice, setNotice] = useState<AddressNotice>(null)
+  const [lookupError, setLookupError] = useState(false)
 
   const {state: stateRegion, county: countyRegion, laCity, hasCities, guideHref} = links
 
   async function handleAddressSelected(address: string) {
+    setNotice(null)
+    setLookupError(false)
     const destination = await lookupAddress(address)
     if (destination === 'ballot') router.push('/ballot')
     else if (destination === 'outside') router.push('/outside')
+    else if (destination === 'incomplete' || destination === 'unmatched') setNotice(destination)
+    else if (destination === 'error') setLookupError(true)
   }
 
   return (
@@ -159,10 +165,18 @@ export function Landing({links, sampleBallotUrl, disclaimer, home}: LandingProps
 
       <div className={styles.addressCard}>
         <p className={styles.addressLabel}>{ADDRESS_LABEL}</p>
-        <AddressLookup onSelect={handleAddressSelected} />
+        <AddressLookup
+          invalid={lookupError}
+          notice={notice}
+          onEdit={() => {
+            setNotice(null)
+            setLookupError(false)
+          }}
+          onSelect={handleAddressSelected}
+        />
         {status === 'loading' && <p className={styles.status}>{BALLOT_LOOKUP_STATUS}</p>}
-        {status === 'error' && (
-          <p className={styles.statusError}>
+        {lookupError && (
+          <p className={styles.statusError} role="alert">
             {LANDING_LOOKUP_ERROR}
             {sampleBallotUrl && (
               <>

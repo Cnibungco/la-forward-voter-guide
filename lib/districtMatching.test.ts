@@ -318,5 +318,12 @@ describe('isMatchBallotResult', () => {
     expect(isMatchBallotResult({precision: 'maybe', citySlug: null, districtCodes: []})).toBe(false)
     expect(isMatchBallotResult({precision: 'precise', citySlug: 'los-angeles'})).toBe(false)
     expect(isMatchBallotResult({precision: 'precise', citySlug: null, districtCodes: [14]})).toBe(false)
+    expect(isMatchBallotResult({precision: 'none', citySlug: null, districtCodes: [], reason: 'nope'})).toBe(false)
+    expect(isMatchBallotResult({precision: 'precise', citySlug: null, districtCodes: [], reason: 'outside'})).toBe(
+      false,
+    )
+    expect(isMatchBallotResult({precision: 'none', citySlug: null, districtCodes: [], reason: 'unmatched'})).toBe(
+      true,
+    )
   })
 })
