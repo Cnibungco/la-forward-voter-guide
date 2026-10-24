@@ -32,7 +32,24 @@ import type {GuideDistrict, GuideRegion, RegionTier} from '@/lib/types'
 
 import styles from './GuideBody.module.css'
 
-const TIER_ORDER: RegionTier[] = ['state', 'county', 'city']
+/**
+ * Ballot order follows a printed ballot: the voter's city, then school and
+ * special districts, then county, then state. The sidebar keeps state first.
+ */
+const TIER_ORDER: RegionTier[] = ['city', 'county', 'state']
+
+function TierBlock({tier, regions}: {tier: RegionTier; regions: GuideRegion[]}) {
+  return (
+    <section className={styles.tierSection} aria-labelledby={`${tier}-tier-heading`}>
+      <h2 id={`${tier}-tier-heading`} className={styles.tierHeading}>
+        {BALLOT_TIER_LABELS[tier]}
+      </h2>
+      {regions.map((region) => (
+        <RegionSection key={region._id} region={region} headingLevel="h3" />
+      ))}
+    </section>
+  )
+}
 
 interface GuideBodyProps {
   regions: GuideRegion[]
@@ -81,6 +98,8 @@ export function GuideBody({regions, districts = [], trustStatement}: GuideBodyPr
     tier,
     regions: effectiveRegions.filter((region) => region.tier === tier),
   })).filter(({regions: tierRegions}) => tierRegions.length > 0)
+  const cityTiers = tiers.filter((item) => item.tier === 'city')
+  const laterTiers = tiers.filter((item) => item.tier !== 'city')
 
   if (!ready || !match || match.precision === 'none') return null
 
@@ -128,15 +147,8 @@ export function GuideBody({regions, districts = [], trustStatement}: GuideBodyPr
         <p className={styles.empty}>{BALLOT_EMPTY}</p>
       ) : (
         <>
-          {tiers.map(({tier, regions: tierRegions}) => (
-            <section key={tier} className={styles.tierSection} aria-labelledby={`${tier}-tier-heading`}>
-              <h2 id={`${tier}-tier-heading`} className={styles.tierHeading}>
-                {BALLOT_TIER_LABELS[tier]}
-              </h2>
-              {tierRegions.map((region) => (
-                <RegionSection key={region._id} region={region} headingLevel="h3" />
-              ))}
-            </section>
+          {cityTiers.map(({tier, regions: tierRegions}) => (
+            <TierBlock key={tier} tier={tier} regions={tierRegions} />
           ))}
           {effectiveDistricts.length > 0 && (
             <section className={styles.tierSection} aria-labelledby="districts-tier-heading">
@@ -148,6 +160,9 @@ export function GuideBody({regions, districts = [], trustStatement}: GuideBodyPr
               ))}
             </section>
           )}
+          {laterTiers.map(({tier, regions: tierRegions}) => (
+            <TierBlock key={tier} tier={tier} regions={tierRegions} />
+          ))}
         </>
       )}
     </GuideShell>
