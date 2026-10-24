@@ -398,7 +398,7 @@ export const SHARE_GRAPHIC_DOWNLOAD = 'la-forward-voter-guide.jpg'
  * percent-encoded so it stays in the query string.
  */
 export const CAMPAIGN_DISCLAIMER = {
-  paidForPrefix: 'Paid for LA Forward Action Fund, ',
+  paidForPrefix: 'Paid for by LA Forward Action Fund, ',
   address: '2012 Business Center Dr #130 Irvine, CA 92612',
   addressHref:
     'https://www.google.com/maps/search/?api=1&query=2012%20Business%20Center%20Dr%20%23130%20Irvine%2C%20CA%2092612',

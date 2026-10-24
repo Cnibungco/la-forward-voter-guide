@@ -5,7 +5,7 @@ import {CAMPAIGN_DISCLAIMER} from '@/lib/copy'
 describe('CAMPAIGN_DISCLAIMER', () => {
   it('keeps the counsel wording, including the donor line', () => {
     expect(CAMPAIGN_DISCLAIMER).toMatchObject({
-      paidForPrefix: 'Paid for LA Forward Action Fund, ',
+      paidForPrefix: 'Paid for by LA Forward Action Fund, ',
       address: '2012 Business Center Dr #130 Irvine, CA 92612',
       majorFundingBy: 'Major Funding by:',
       donor: 'Elizabeth Thomas in the amount of $5,000',
