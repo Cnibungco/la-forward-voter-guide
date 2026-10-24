@@ -7,7 +7,15 @@ import {DonatePrompt} from '@/components/DonatePrompt'
 import {JsonLd} from '@/components/JsonLd'
 import {MatchProvider} from '@/components/MatchProvider'
 import {SiteHeader} from '@/components/SiteHeader'
-import {SITE_NAME, SITE_URL, headerTagline} from '@/lib/copy'
+import {
+  HERO_IMAGE_ALT,
+  HERO_IMAGE_HEIGHT,
+  HERO_IMAGE_SRC,
+  HERO_IMAGE_WIDTH,
+  SITE_NAME,
+  SITE_URL,
+  headerTagline,
+} from '@/lib/copy'
 import {getGuide} from '@/lib/guide'
 import {siteStructuredData} from '@/lib/seo'
 import {resolvedElectionName, resolvedSeoDescription, resolvedSeoTitle} from '@/lib/siteSettings'
@@ -45,9 +53,18 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: SITE_NAME,
       type: 'website',
       locale: 'en_US',
+      images: [
+        {
+          url: HERO_IMAGE_SRC,
+          width: HERO_IMAGE_WIDTH,
+          height: HERO_IMAGE_HEIGHT,
+          alt: HERO_IMAGE_ALT,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
+      images: [HERO_IMAGE_SRC],
     },
   }
 }
