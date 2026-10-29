@@ -9,6 +9,7 @@ import {NextResponse} from 'next/server'
 import {censusMatchConfirmsHouseNumber, isIncompleteAddress} from '@/lib/geoapifyAddress'
 import type {MatchBallotResult} from '@/lib/types'
 import {slugifyPlaceName} from '@/lib/districtMatching'
+import {geographiesCooldown} from '@/lib/geographiesCooldown'
 
 /**
  * Address-based ballot matching. See docs/address-matching-strategy.md for
@@ -18,14 +19,30 @@ import {slugifyPlaceName} from '@/lib/districtMatching'
  * model (see `.cursor/rules/data-fetching.mdc`) — Census's Geocoder has no
  * CORS support, so it can only be called server-side.
  *
- * Privacy: the submitted address is used only to make the one Census call
- * below and is never persisted, logged, or echoed into an analytics event
- * — including on error. Do not add a `console.error(err)` here that could
- * capture the request body; log only `error.name`/timestamp.
+ * Census's `geographies` service (address → coordinates + districts in one
+ * call) goes down on its own while `locations` (address → coordinates) and
+ * TIGERweb (coordinates → districts) stay up — seen 2026-10-28. When the
+ * first call times out or answers 5xx, the route falls back to those two
+ * and skips `geographies` for the next minute (see geographiesCooldown).
+ * Both are Census services and return the same layer names and fields, so
+ * everything after the lookup is shared.
+ *
+ * Privacy: the submitted address, and the point it geocodes to, are sent
+ * only to the Census calls below and are never persisted, logged, or echoed
+ * into an analytics event — including on error. Do not add a
+ * `console.error(err)` here that could capture the request body; log only
+ * `error.name`/timestamp.
  */
 
-const CENSUS_GEOCODER_URL = 'https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress'
-const CENSUS_TIMEOUT_MS = 8000
+const CENSUS_GEOGRAPHIES_URL = 'https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress'
+const CENSUS_LOCATIONS_URL = 'https://geocoding.geo.census.gov/geocoder/locations/onelineaddress'
+const TIGERWEB_IDENTIFY_URL =
+  'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/identify'
+
+// Short enough that a stalled `geographies` call (it 502s after ~10s when
+// down) leaves time for the fallback. Normal responses take under a second.
+const GEOGRAPHIES_TIMEOUT_MS = 4000
+const FALLBACK_TIMEOUT_MS = 2500
 
 // LA County's own GEOID (state 06 = California, county 037 = LA County).
 const LA_COUNTY_GEOID = '06037'
@@ -50,8 +67,18 @@ const CITY_COUNCIL_LAYERS: Record<string, {file: string; prefix: string; propert
     prefix: 'CC',
     property: 'District',
   },
+  alhambra: {
+    file: 'alhambra-council-districts.geojson',
+    prefix: 'CC',
+    property: 'DIV_CITY',
+  },
   carson: {
     file: 'carson-council-districts.geojson',
+    prefix: 'CC',
+    property: 'DIV_CITY',
+  },
+  claremont: {
+    file: 'claremont-council-districts.geojson',
     prefix: 'CC',
     property: 'DIV_CITY',
   },
@@ -59,6 +86,16 @@ const CITY_COUNCIL_LAYERS: Record<string, {file: string; prefix: string; propert
     file: 'covina-council-districts.geojson',
     prefix: 'CC',
     property: 'District',
+  },
+  duarte: {
+    file: 'duarte-council-districts.geojson',
+    prefix: 'CC',
+    property: 'DIV_CITY',
+  },
+  glendora: {
+    file: 'glendora-council-districts.geojson',
+    prefix: 'CC',
+    property: 'DIV_CITY',
   },
   inglewood: {
     file: 'inglewood-council-districts.geojson',
@@ -85,8 +122,18 @@ const CITY_COUNCIL_LAYERS: Record<string, {file: string; prefix: string; propert
     prefix: 'CC',
     property: 'DIV_CITY',
   },
+  'south-pasadena': {
+    file: 'south-pasadena-council-districts.geojson',
+    prefix: 'CC',
+    property: 'DIV_CITY',
+  },
   torrance: {
     file: 'torrance-council-districts.geojson',
+    prefix: 'CC',
+    property: 'DIV_CITY',
+  },
+  'west-covina': {
+    file: 'west-covina-council-districts.geojson',
     prefix: 'CC',
     property: 'DIV_CITY',
   },
@@ -127,8 +174,9 @@ function matchDistrictCode(lonLat: [number, number], layer: BoundaryLayer): stri
     const value = feature?.properties?.[layer.property]
     return value === undefined || value === null ? null : `${layer.prefix}${value}`
   } catch (error) {
-    const name = error instanceof Error ? error.name : 'UnknownError'
-    console.error(`[match-ballot] boundary layer "${layer.file}" failed to load/match: ${name}`)
+    console.error(
+      `[match-ballot] boundary layer "${layer.file}" failed to load/match: ${describeError(error)}`,
+    )
     return null
   }
 }
@@ -173,6 +221,116 @@ const INCOMPLETE_RESULT: MatchBallotResult = {
   reason: 'incomplete',
 }
 
+type CensusMatch = {
+  matchedAddress?: string
+  coordinates?: {x: number; y: number}
+  addressComponents?: {fromAddress?: string; toAddress?: string}
+  geographies?: Record<string, unknown>
+}
+
+class UpstreamStatusError extends Error {
+  name = 'UpstreamStatusError'
+  constructor(readonly status: number) {
+    super(`HTTP ${status}`)
+  }
+}
+
+/** Error name plus HTTP status — never the message, which can echo the URL. */
+function describeError(error: unknown): string {
+  if (error instanceof UpstreamStatusError) return `${error.name} ${error.status}`
+  return error instanceof Error ? error.name : 'UnknownError'
+}
+
+async function fetchJson(url: URL, timeoutMs: number): Promise<unknown> {
+  const response = await fetch(url, {signal: AbortSignal.timeout(timeoutMs)})
+  if (!response.ok) throw new UpstreamStatusError(response.status)
+  return response.json()
+}
+
+function censusOnelineUrl(base: string, address: string): URL {
+  const url = new URL(base)
+  url.searchParams.set('address', address)
+  url.searchParams.set('benchmark', 'Public_AR_Current')
+  url.searchParams.set('format', 'json')
+  return url
+}
+
+/**
+ * A body with no `result` is an upstream error, not "address not found" —
+ * telling a voter their real address doesn't exist is worse than a retry.
+ */
+function firstAddressMatch(data: unknown): CensusMatch | undefined {
+  const result = (data as {result?: {addressMatches?: CensusMatch[]}} | null)?.result
+  if (!result) throw new Error('Census response had no result')
+  return result.addressMatches?.[0]
+}
+
+/** A 4xx is about this request, and the fallback would reject it too. */
+function isOutage(error: unknown): boolean {
+  return !(error instanceof UpstreamStatusError && error.status < 500)
+}
+
+async function geocode(address: string): Promise<CensusMatch | undefined> {
+  if (!geographiesCooldown.active()) {
+    try {
+      return await matchWithGeographies(address)
+    } catch (error) {
+      if (!isOutage(error)) throw error
+      geographiesCooldown.trip()
+      console.error(
+        `[match-ballot] Census geographies failed (${describeError(error)}), falling back to locations + TIGERweb`,
+      )
+    }
+  }
+  return matchWithLocations(address)
+}
+
+async function matchWithGeographies(address: string): Promise<CensusMatch | undefined> {
+  const url = censusOnelineUrl(CENSUS_GEOGRAPHIES_URL, address)
+  url.searchParams.set('vintage', 'Current_Current')
+  url.searchParams.set('layers', 'all')
+  return firstAddressMatch(await fetchJson(url, GEOGRAPHIES_TIMEOUT_MS))
+}
+
+/** Same match shape as `matchWithGeographies`, minus `geographies`. */
+async function matchWithLocations(address: string): Promise<CensusMatch | undefined> {
+  const url = censusOnelineUrl(CENSUS_LOCATIONS_URL, address)
+  return firstAddressMatch(await fetchJson(url, FALLBACK_TIMEOUT_MS))
+}
+
+/**
+ * Looks up every TIGERweb layer under a point and reshapes the result into
+ * the `geographies` record the Census geocoder returns (layer name → list of
+ * attribute objects), so `findLayerValue` reads both the same way. The
+ * "... Labels" layers repeat their parent's attributes and are skipped so a
+ * substring match can't land on them.
+ */
+async function tigerwebGeographies([lon, lat]: [number, number]): Promise<Record<string, unknown>> {
+  const url = new URL(TIGERWEB_IDENTIFY_URL)
+  url.searchParams.set('geometry', `${lon},${lat}`)
+  url.searchParams.set('geometryType', 'esriGeometryPoint')
+  url.searchParams.set('sr', '4326')
+  url.searchParams.set('layers', 'all')
+  url.searchParams.set('tolerance', '0')
+  url.searchParams.set('mapExtent', `${lon - 0.01},${lat - 0.01},${lon + 0.01},${lat + 0.01}`)
+  url.searchParams.set('imageDisplay', '100,100,96')
+  url.searchParams.set('returnGeometry', 'false')
+  url.searchParams.set('f', 'json')
+
+  // ArcGIS reports errors as HTTP 200 with an `error` body instead of `results`.
+  const data = (await fetchJson(url, FALLBACK_TIMEOUT_MS)) as {
+    results?: Array<{layerName?: unknown; attributes?: unknown}>
+  }
+  if (!Array.isArray(data.results)) throw new Error('TIGERweb identify returned no results array')
+
+  const geographies: Record<string, unknown[]> = {}
+  for (const result of data.results) {
+    if (typeof result.layerName !== 'string' || result.layerName.endsWith('Labels')) continue
+    ;(geographies[result.layerName] ??= []).push(result.attributes)
+  }
+  return geographies
+}
+
 function lookupFailed() {
   return NextResponse.json({error: 'lookup failed'}, {status: 503})
 }
@@ -196,33 +354,9 @@ export async function POST(request: Request) {
     return NextResponse.json(INCOMPLETE_RESULT)
   }
 
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), CENSUS_TIMEOUT_MS)
-
   try {
-    const url = new URL(CENSUS_GEOCODER_URL)
-    url.searchParams.set('address', address)
-    url.searchParams.set('benchmark', 'Public_AR_Current')
-    url.searchParams.set('vintage', 'Current_Current')
-    url.searchParams.set('layers', 'all')
-    url.searchParams.set('format', 'json')
-
-    const response = await fetch(url, {signal: controller.signal})
-    if (!response.ok) return lookupFailed()
-
-    const data = (await response.json()) as {
-      result?: {
-        addressMatches?: Array<{
-          matchedAddress?: string
-          coordinates?: {x: number; y: number}
-          addressComponents?: {fromAddress?: string; toAddress?: string}
-          geographies?: Record<string, unknown>
-        }>
-      }
-    }
-
-    const match = data.result?.addressMatches?.[0]
-    if (!match?.coordinates || !match.geographies) return NextResponse.json(UNMATCHED_RESULT)
+    const match = await geocode(address)
+    if (!match?.coordinates) return NextResponse.json(UNMATCHED_RESULT)
 
     // A street-level snap, or a match of a different house number, is not
     // this address. That is "not found", including when the snapped point
@@ -233,27 +367,34 @@ export async function POST(request: Request) {
     })
     if (!confirmed) return NextResponse.json(UNMATCHED_RESULT)
 
-    const countyGeoid = findLayerValue(match.geographies, ['counties'], 'GEOID')
+    const lonLat: [number, number] = [match.coordinates.x, match.coordinates.y]
+    // A `geographies` answer without the county layer is a degraded
+    // response, not proof the address is outside LA County.
+    const geographies =
+      match.geographies && findLayerValue(match.geographies, ['counties'], 'GEOID') !== null
+        ? match.geographies
+        : await tigerwebGeographies(lonLat)
+
+    const countyGeoid = findLayerValue(geographies, ['counties'], 'GEOID')
     if (countyGeoid !== LA_COUNTY_GEOID) {
       // Outside LA County — every race/measure in this guide is LA-County
       // scoped, so there's nothing to match against.
       return NextResponse.json(OUTSIDE_RESULT)
     }
 
-    const congressional = findLayerValue(match.geographies, ['congressional', 'district'], 'BASENAME')
+    const congressional = findLayerValue(geographies, ['congressional', 'district'], 'BASENAME')
     const stateSenate = findLayerValue(
-      match.geographies,
+      geographies,
       ['state legislative districts', 'upper'],
       'BASENAME',
     )
     const stateAssembly = findLayerValue(
-      match.geographies,
+      geographies,
       ['state legislative districts', 'lower'],
       'BASENAME',
     )
-    const placeName = findLayerValue(match.geographies, ['incorporated places'], 'BASENAME')
+    const placeName = findLayerValue(geographies, ['incorporated places'], 'BASENAME')
 
-    const lonLat: [number, number] = [match.coordinates.x, match.coordinates.y]
     const supervisorial = matchDistrictCode(lonLat, COUNTY_SUPERVISORIAL_LAYER)
 
     const citySlug = placeName ? slugifyPlaceName(placeName) : null
@@ -280,10 +421,7 @@ export async function POST(request: Request) {
   } catch (error) {
     // Deliberately log only the error name/timestamp — never `error` in
     // full (it can echo the request), and never the address itself.
-    const name = error instanceof Error ? error.name : 'UnknownError'
-    console.error(`[match-ballot] ${name} at ${new Date().toISOString()}`)
+    console.error(`[match-ballot] ${describeError(error)} at ${new Date().toISOString()}`)
     return lookupFailed()
-  } finally {
-    clearTimeout(timeout)
   }
 }

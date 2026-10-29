@@ -378,7 +378,7 @@ or field-filtered from ArcGIS REST GeoJSON exports via `mapshaper`. See
 that folder's README for exact sources and the "add another city" recipe.
 Congressional/State Senate/State Assembly/city-name/county boundaries need
 no local file — Census's `geographies` endpoint returns them in the same
-call used to get coordinates.
+call used to get coordinates (or TIGERweb does, in the fallback below).
 
 **Per-city boundary survey (2026-08-13).** Of the ~20 non-LA cities this
 guide covers, most turned out to need no boundary file at all: their
@@ -417,6 +417,18 @@ support, so geocoding can't happen in the browser). `POST {address}` →
 - `'precise'` — either unincorporated LA County (`citySlug: null`, nothing
   further to resolve) or a city whose council boundary *did* resolve a
   code for this address.
+
+**Fallback when `geographies` is down (added 2026-10-28).** Census's
+`geographies` endpoint went down on its own (HTTP 502 after ~10s) while
+`locations/onelineaddress` (address → coordinates) and TIGERweb's
+`tigerWMS_Current/MapServer/identify` (point → every layer under it) stayed
+up. The route now gives `geographies` 4s, then falls back to `locations` +
+TIGERweb, 2.5s each. TIGERweb's layer names and `BASENAME`/`GEOID` fields
+match the geocoder's, so its result is reshaped into the same
+`geographies` record and everything downstream is shared. Its
+"... Labels" layers are skipped, and ArcGIS's HTTP-200-with-`error` bodies
+are treated as failures. Both are Census services, so the privacy posture
+is unchanged. If every step fails, the route still returns 503.
 
 Census's layer names change on a schedule outside our control (e.g. the
 "119th Congressional Districts" layer becomes "120th" after the next

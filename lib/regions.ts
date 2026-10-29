@@ -8,11 +8,17 @@ export function hasSlug(region: GuideRegion): region is LinkedRegion {
 
 /**
  * Census slugifies "Los Angeles" to `los-angeles`. Editors sometimes title
- * the region "Los Angeles City", which generates `los-angeles-city`. Treat
- * those as the same city everywhere we match or highlight a ballot.
+ * the region "Los Angeles City", which generates `los-angeles-city`, or
+ * slug a city from its official name ("City of Palmdale" →
+ * `city-of-palmdale`, "The City of Huntington Park" →
+ * `the-city-of-huntington-park`). Census never includes "City of" in a
+ * place name (City of Industry is just "Industry"), so treat all of those
+ * as the same city everywhere we match or highlight a ballot. Public URLs
+ * keep the editor's slug.
  */
 export function canonicalCitySlug(slug: string): string {
-  return slug === 'los-angeles-city' ? 'los-angeles' : slug
+  const withoutPrefix = slug.replace(/^(?:the-)?city-of-/, '')
+  return withoutPrefix === 'los-angeles-city' ? 'los-angeles' : withoutPrefix
 }
 
 export function citySlugsMatch(a: string | null | undefined, b: string | null | undefined): boolean {

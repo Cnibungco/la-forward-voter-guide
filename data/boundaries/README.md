@@ -7,7 +7,8 @@ matching. Not served to the browser — read server-side only. See
 
 Congressional, State Senate, State Assembly, city (Incorporated Place), and
 LAUSD boundaries are **not** here — the Census Geocoder returns those directly
-in the same call used to get coordinates, so no local file is needed for them.
+in the same call used to get coordinates (or Census TIGERweb does, when the
+route falls back), so no local file is needed for them.
 
 ## Files
 
@@ -21,6 +22,12 @@ in the same call used to get coordinates, so no local file is needed for them.
 | `pasadena-council-districts.geojson` | same RRCC layer as above | 7 | 2026-08-13 |
 | `pomona-council-districts.geojson` | same RRCC layer as above | 6 | 2026-08-13 |
 | `torrance-council-districts.geojson` | same RRCC layer as above | 6 | 2026-08-13 |
+| `alhambra-council-districts.geojson` | same RRCC layer as above | 5 | 2026-10-28 |
+| `claremont-council-districts.geojson` | same RRCC layer as above | 5 | 2026-10-28 |
+| `duarte-council-districts.geojson` | same RRCC layer as above | 7 | 2026-10-28 |
+| `glendora-council-districts.geojson` | same RRCC layer as above | 5 | 2026-10-28 |
+| `south-pasadena-council-districts.geojson` | same RRCC layer as above | 5 | 2026-10-28 |
+| `west-covina-council-districts.geojson` | same RRCC layer as above | 5 | 2026-10-28 |
 | `lakewood-council-districts.geojson` | [City of Lakewood, CA GIS — Council District Boundaries](https://services5.arcgis.com/bkaqPVf76HqGHC0b/arcgis/rest/services/Lakewood_City_Council_Districts/FeatureServer/0) | 5 | 2026-08-13 |
 | `covina-council-districts.geojson` | [City of Covina districting site — Covina_Voting_Districts_WFL1](https://services2.arcgis.com/nzGFbmT76gMzTNvU/arcgis/rest/services/Covina_Voting_Districts_WFL1/FeatureServer/0) | 5 | 2026-08-13 |
 
@@ -49,6 +56,18 @@ npx mapshaper <raw-file>.geojson -filter-fields <FIELD> -simplify dp 8% keep-sha
 npx mapshaper <raw-file>.geojson -filter-fields <FIELD> -o format=geojson precision=0.00001 <output>.geojson
 ```
 
+The six files added 2026-10-28 were pulled from the same layer
+(`LABEL LIKE 'CITY OF <NAME> %COUNCIL'`, `outSR=4326`, `f=geojson`), then
+stripped to `DIV_CITY` and rounded to 5 decimal places in Python (same
+result as the mapshaper command, no simplification). Each was checked
+against the city's current number of council seats before wiring it in.
+
+**Check the district count before adding a city from this layer.** The
+layer has no edit date and is not current everywhere: it still has 4
+Palmdale districts, but Palmdale's city code (Chapter 4.10) now elects
+five, and the guide has a District 5 race. A stale map would hide that
+race from every matched Palmdale voter, so Palmdale has no file.
+
 ## Per-city boundary survey (2026-08-13)
 
 Covers the ~20 cities outside LA City that this guide's spring coverage
@@ -71,6 +90,10 @@ to need nothing at all:
 - **LA City and the 8 other by-district cities'** council maps also
   redraw only after redistricting (each roughly once per decade) — same
   low-maintenance profile.
+- **Palmdale, Huntington Park and Santa Clarita** (checked 2026-10-28)
+  have council-district races in the guide but no usable file: Palmdale's
+  RRCC map is out of date (see above), and the other two aren't in the
+  RRCC layer. Addresses there match at the city level only.
 - **Lomita** (by-district since the 2024 election, 5 districts) has no
   machine-readable boundary source — only a static map image on the
   city's site. Addresses there match at the city level only, until

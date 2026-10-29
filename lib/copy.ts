@@ -105,36 +105,6 @@ export const REGISTER_HREF = 'https://registertovote.ca.gov/'
 
 export const CHECK_REGISTRATION_HREF = 'https://voterstatus.sos.ca.gov'
 
-export const VOTE_EARLY_HREF = 'https://www.voteearly.la/'
-
-export const VOTE_EARLY_LABEL = 'VoteEarly.LA'
-
-export const EARLY_VOTE_HEAD = "DON'T F*** THIS UP, LA. VOTE EARLY."
-
-export const EARLY_VOTE_PLEDGE_LABEL = 'Take the pledge'
-
-export const EARLY_VOTE_PLEDGE_BEFORE =
-  'Trump and his cronies are trying to steal the election. Our plan starts with the biggest early voter turnout in American history. Do your part by pledging to vote by'
-
-export const EARLY_VOTE_PLEDGE_DATE = 'October 25'
-
-export const EARLY_VOTE_PLEDGE_MIDDLE = 'at'
-
-export const EARLY_VOTE_PLEDGE_AFTER = '.'
-
-export const EARLY_VOTE_PLAN_BEFORE = 'Build your early voting plan at'
-
-export const EARLY_VOTE_PLAN_AFTER = ', and find more ways to take action:'
-
-export const EARLY_VOTE_ACTIONS = [
-  {href: 'https://www.voteearly.la/nvp', label: 'Monitor polls near you'},
-  {href: 'https://www.voteearly.la/ballotparty', label: 'Host your own ballot party'},
-  {
-    href: 'https://www.voteearly.la/network',
-    label: 'Join our election protection mobilization network',
-  },
-] as const
-
 export const REGISTER_LABEL = 'Register to vote'
 
 export const CHECK_REGISTRATION_LABEL = 'Check registration'
