@@ -104,50 +104,12 @@ a.heroCta {
   background: var(--color-gold);
 }
 
-.campaignHead {
-  font-family: var(--font-heading), sans-serif;
-  font-weight: 800;
-  font-size: 28px;
-  line-height: 0.95;
-  letter-spacing: 0.01em;
-  color: var(--color-navy);
-  margin: 0 0 14px;
-}
-
-.earlyVoteBody {
-  margin: 0 0 14px;
-  font-size: 18px;
-  line-height: 1.5;
-  color: var(--color-ink);
-}
-
-.earlyVoteBody a,
-.earlyVoteActions a {
-  font-weight: 600;
-}
-
-.earlyVotePledge {
-  display: flex;
-  justify-content: center;
-  margin: 2px 0 18px;
-}
-
-.earlyVoteActions {
-  margin: 0 0 22px;
-  padding: 0 0 0 1.2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 18px;
-  line-height: 1.45;
-}
-
 .datesHead {
   font-family: var(--font-heading), sans-serif;
   font-weight: 800;
-  font-size: 22px;
+  font-size: 26px;
   color: var(--color-navy);
-  margin: 0 0 16px;
+  margin: 0 0 18px;
 }
 
 .dates {
@@ -522,14 +484,7 @@ a.heroCta {
     padding: 28px 28px 24px;
   }
 
-  .campaignHead {
-    font-size: 36px;
-  }
-
-  .datesHead {
-    font-size: 28px;
-  }
-
+  .datesHead,
   .addressLabel {
     font-size: 32px;
   }
