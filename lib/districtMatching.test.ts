@@ -155,6 +155,16 @@ describe('filterRegionsByMatch', () => {
     expect(result.map((r) => r._id)).toEqual(['la'])
   })
 
+  it('keeps a "city of" region when Census returns the plain city slug', () => {
+    // Ten live regions are slugged like `city-of-palmdale` while Census
+    // returns "Palmdale" → `palmdale`. Without folding, the matched city
+    // was dropped along with every other city.
+    const palmdale = makeRegion({_id: 'palmdale', tier: 'city', slug: 'city-of-palmdale'})
+    const other = makeRegion({_id: 'whittier', tier: 'city', slug: 'city-of-whittier'})
+    const match = {precision: 'city', citySlug: 'palmdale', districtCodes: []} satisfies MatchBallotResult
+    expect(filterRegionsByMatch([palmdale, other], match).map((r) => r._id)).toEqual(['palmdale'])
+  })
+
   it('drops every city region for an unincorporated-county match (citySlug null)', () => {
     const cityRegion = makeRegion({_id: 'la', tier: 'city', slug: 'los-angeles'})
     const result = filterRegionsByMatch([cityRegion], UNINCORPORATED)

@@ -54,6 +54,19 @@ describe('canonicalCitySlug / citySlugsMatch', () => {
     expect(citySlugsMatch('los-angeles', null)).toBe(false)
     expect(citySlugsMatch(null, null)).toBe(false)
   })
+
+  it('folds "city of" slugs onto the Census slug', () => {
+    expect(canonicalCitySlug('city-of-palmdale')).toBe('palmdale')
+    expect(canonicalCitySlug('city-of-redondo-beach')).toBe('redondo-beach')
+    expect(canonicalCitySlug('the-city-of-huntington-park')).toBe('huntington-park')
+    expect(citySlugsMatch('city-of-glendora', 'glendora')).toBe(true)
+  })
+
+  it('leaves "city" alone anywhere but a leading "city of"', () => {
+    expect(canonicalCitySlug('culver-city')).toBe('culver-city')
+    expect(canonicalCitySlug('city-terrace')).toBe('city-terrace')
+    expect(citySlugsMatch('city-of-palmdale', 'lancaster')).toBe(false)
+  })
 })
 
 describe('isLosAngelesCity', () => {
@@ -97,6 +110,11 @@ describe('regionBySlug / regionMatchingCitySlug', () => {
   it('matches Census los-angeles to a los-angeles-city region', () => {
     const regions = [city('Los Angeles City', 'los-angeles-city'), city('Burbank', 'burbank')]
     expect(regionMatchingCitySlug(regions, 'los-angeles')?.slug).toBe('los-angeles-city')
+  })
+
+  it('matches a Census slug to a "city of" region slug', () => {
+    const regions = [city('Palmdale', 'city-of-palmdale'), city('Burbank', 'burbank')]
+    expect(regionMatchingCitySlug(regions, 'palmdale')?.slug).toBe('city-of-palmdale')
   })
 
   it('does not match a null citySlug to a slugless region', () => {
